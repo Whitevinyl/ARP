@@ -39,7 +39,7 @@ var mouseIsDown = false;
 
 
 // COLORS //
-var bgCols = [new RGBA(0,55,66,1),new RGBA(255,236,88,1)];
+var bgCols = [new RGBA(5,10,20,1),new RGBA(255,236,88,1)];
 var masterCol = new RGBA(0,0,0,0);
 var highPass = new RGBA(0,0,0,0);
 var lowPass = new RGBA(0,0,0,0);
@@ -121,7 +121,7 @@ function draw() {
         drawScene();
     }
 
-    requestAnimationFrame(draw,canvas);
+    //requestAnimationFrame(draw,canvas);
 }
 
 

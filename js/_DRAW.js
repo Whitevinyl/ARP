@@ -33,6 +33,76 @@ function drawScene() {
 
 }
 
+function drawGen() {
+    setColor(bgCols[0]);
+    cxa.fillRect(0,0,fullX,fullY);
+    setRGBA(255,255,255,1);
+    /*cxa.textAlign = 'center';
+    cxa.font = '400 '+midType+'px Cabin';
+    cxa.fillText('RECEIVING', halfX, halfY + (50*units));*/
+
+    var cw = 50*units;
+    var cx = halfX - (cw*0.5);
+    var cy = halfY + (50*units);
+    var rects = tombola.range(9,18);
+    for (var i=0; i<rects; i++) {
+        cxa.fillRect(cx + ((cw/(rects-1))*i) - (0.5*units),cy - (tombola.range(0,50)*units),units,-tombola.dice(4,18)*units);
+    }
+
+}
+
+function drawWave() {
+    var l = sampleRate*3;
+    var w = 600*units;
+    var h = 40*units;
+    var cx = halfX - (w*0.5);
+    var cy = halfY;
+    var sx = w/l;
+    var i,j;
+
+
+    setColor(bgCols[0]);
+    cxa.fillRect(0,0,fullX,fullY);
+    setRGBA(255,255,255,1);
+    cxa.fillRect(cx,cy,w,0.2);
+    cxa.fillRect(cx,cy-h,w,0.2);
+    cxa.fillRect(cx,cy+h,w,0.2);
+
+    var voice = new Voice(20);
+    // things to test //
+    var totals = [];
+    var tests = [
+        //new WalkSmooth(),
+        new Glide()
+    ];
+
+    var processes = [
+        //function(n,n2){totals[n] = tests[n].process(20, 200);},
+        //function(n,n2){totals[n] = tests[n].process(10, 10000, -1);}
+        function(n,n2){totals[n] = waveArc3(voice,0.3,n2);}
+    ];
+
+    // LOOP THROUGH SAMPLES //
+    for (i=0; i<l; i++) {
+
+        // LOOP THROUGH TESTS //
+        for (j=0; j<tests.length; j++) {
+
+            // PROCESS //
+            totals[j] = 0;
+            //processes[j](j,i);
+            waveArc3(voice,0.3,i);
+            totals[j] += voice.amplitude;
+            //totals[j] = waveArc(4,i);
+            //console.log(totals[j]);
+
+
+            // DRAW //
+            cxa.fillRect(cx + (sx*i),cy + (totals[j] * h),0.2,0.2);
+        }
+    }
+}
+
 
 
 //-------------------------------------------------------------------------------------------

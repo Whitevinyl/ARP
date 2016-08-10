@@ -14,7 +14,16 @@ function mousePress() {
     rolloverCheck();
 
     //generateTweet();
-    generateWaveform();
+    if (noiseSource) {
+        noiseSource.stop();
+    }
+
+    drawGen();
+    setTimeout(function() {
+        generateWaveform();
+        //drawWave();
+    },20);
+
 }
 
 function mouseRelease() {
