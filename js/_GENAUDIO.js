@@ -13,11 +13,45 @@
 var sampleRate = 44100;
 var noiseSource;
 
+
 function generateAudio() {
 
 }
 
+function genTest(x) {
+    var startPerf = performance.now();
+    var l = sampleRate*20;
+    var i,j;
+    var c = 40;
 
+    if (x<halfX) {
+
+        for (i=0; i<l; i++) {
+            var signal = [0,0];
+            for (j=0; j<c; j++) {
+                signal[0] = tombola.range(1,10000);
+                signal[1] = tombola.range(1,10000);
+            }
+        }
+
+    } else {
+
+        for (i=0; i<l; i++) {
+            var signal0 = 0;
+            var signal1 = 0;
+            for (j=0; j<c; j++) {
+                signal0 = tombola.range(1,10000);
+                signal1 = tombola.range(1,10000);
+            }
+        }
+
+    }
+
+
+    // EXECUTION TIME //
+    var endPerf = performance.now();
+    console.log("Generated in: "+Math.round(endPerf - startPerf)+"ms");
+}
 
 
 function generateWaveform(seed) {
@@ -31,13 +65,12 @@ function generateWaveform(seed) {
 
 function printWaveform(seconds) {
 
+    var startPerf = performance.now();
+
     var l = sampleRate * seconds;
-    var channels = [];
-    channels[0] = new Float32Array(l);
-    channels[1] = new Float32Array(l);
+    var channels = [new Float32Array(l),new Float32Array(l)];
     var amp = 1;
     var peak = 0;
-    var peak2 = 0;
 
 
     // draw //
@@ -53,12 +86,10 @@ function printWaveform(seconds) {
 
     // voices //
     var voice = new Voice(tombola.rangeFloat(40,70));
-    var voice2 = new Voice(tombola.rangeFloat(80,200));
-    var v2f = 1000;
 
     var noise = [];
     noise.push(new VoiceCracklePeak());
-    noise.push(tombola.fromArray([new VoiceRoar(), new VoiceCrackle()]));
+    noise.push(tombola.item([new VoiceRoar(), new VoiceCrackle()]));
 
 
     var LPL = new FilterLowPass2();
@@ -86,7 +117,6 @@ function printWaveform(seconds) {
     var Wlk = new Walk();
     var Wlk2 = new WalkSmooth();
     var Wlk3 = new Walk();
-    //var Jmp = new Jump();
     var walkVoice = new WalkSmooth();
     var chop = new FilterChopper();
     var chopRate = 4000;
@@ -94,55 +124,49 @@ function printWaveform(seconds) {
     var glide = new Glide();
     var takeoff = new Takeoff();
     var flipper = new FilterFlipper();
+    var Jmp = new Jump();
 
     // LOOP THROUGH SAMPLES //
     for (var i=0; i<l; i++) {
 
-        var totalL = 0;
-        var totalR = 0;
-
-        // UPDATE FREQUENCY //
+        var signal = [0,0];
 
 
-        //voice.detune = (Lfo.process(12)*50);
-        voice.frequency = valueInRange(voice.frequency, 10, 19000);
-
+        // UPDATE VOICE //
         if (tombola.chance(1,500)) {
             voice.gain += (tombola.fudge(1, 1))*0.01;
         }
-        voice.gain = valueInRange(voice.gain, 0, 0.5);
-
-
         voice.panning += (tombola.fudge(1,1)*0.005);
+
+        voice.frequency = valueInRange(voice.frequency, 10, 19000);
+        voice.gain = valueInRange(voice.gain, 0, 0.5);
         voice.panning = valueInRange(voice.panning, -1, 1);
 
 
-        // UPDATE WAVE SHAPES //
+        // UPDATE VOICE WAVE SHAPES //
         if (tombola.chance(1,5000)) {
             voice.type = -voice.type;
         }
-
         if (voice.type===-1) {
             waveSawtooth(voice, amp);
         } else {
             waveTriangle(voice, amp);
         }
+        signal[0] += ((voice.amplitude * voice.gain) * (1 + (-voice.panning)));
+        signal[1] += ((voice.amplitude * voice.gain) * (1 + voice.panning));
 
-
-        totalL += ((voice.amplitude * voice.gain) * (1 + (-voice.panning)));
-        totalR += ((voice.amplitude * voice.gain) * (1 + voice.panning));
 
         // RUMBLE //
         if (rumble) {
-            var wv = walkVoice.process(650,10);
-            totalL += (wv * 0.5);
-            totalR += (wv * 0.5);
+            var wv = walkVoice.process(650,10) * 0.5;
+            signal[0] += (wv);
+            signal[1] += (wv);
         }
 
 
         // BIT CRUSH //
-        totalL = holdL.process(hold,totalL);
-        totalR = holdR.process(hold,totalR);
+        signal[0] = holdL.process(hold,signal[0]);
+        signal[1] = holdR.process(hold,signal[1]);
 
         if (tombola.chance(1,5000)) {
             hold += tombola.fudge(3, 2);
@@ -150,14 +174,17 @@ function printWaveform(seconds) {
         hold = valueInRange(hold, 10, 150);
 
 
+        // NOISE CHANGE //
         if (tombola.chance(1,20000)) {
             var g = noise[1].gain;
             var p = noise[1].panning;
-            noise[1] = tombola.fromArray([new VoiceWhite(), new VoiceBrown(), new VoiceRoar(), new VoiceCracklePeak(), new VoiceCrackle()]);
+            noise[1] = tombola.item([new VoiceWhite(), new VoiceBrown(), new VoiceRoar(), new VoiceCracklePeak(), new VoiceCrackle()]);
             //noise[1].gain = g;
             noise[1].panning = p;
         }
 
+
+        // NOISE LOOP //
         for (var h=1; h<noise.length; h++) {
             noise[h].panning += tombola.rangeFloat(-0.005,0.005);
             noise[h].panning = valueInRange(noise[h].panning, -1, 1);
@@ -172,97 +199,81 @@ function printWaveform(seconds) {
                 noise[h].threshold = valueInRange(noise[h].threshold, 0.05, 1);
             }
 
-
             var noiseAmp = noise[h].process();
-            totalL += (noiseAmp  * (1 + (-noise[h].panning)) );
-            totalR += (noiseAmp  * (1 + noise[h].panning) );
+            signal[0] += (noiseAmp  * (1 + (-noise[h].panning)) );
+            signal[1] += (noiseAmp  * (1 + noise[h].panning) );
         }
 
 
 
 
-
+        // FEEDBACK FILTER //
         if (tombola.chance(1,500)) {
             delay += (tombola.fudge(3, 2)*0.5);
         }
         delay = valueInRange(delay, 5, 5000);
-
-        // FEEDBACK FILTER //
-        totalL += filterFeedback(0.6,delay,channels[1],i);
-        totalR += filterFeedback(0.6,delay,channels[0],i);
-
-
-
-
+        signal[0] += filterFeedback(0.6,delay,channels[1],i);
+        signal[1] += filterFeedback(0.6,delay,channels[0],i);
 
 
         // FEEDBACK FILTER //
         var dt = modRoot + (Lfo.process(1.2)*1500);
-        totalL += filterFeedback(modLevel,dt,channels[1],i);
-        totalR += filterFeedback(modLevel,dt,channels[0],i);
+        signal[0] += filterFeedback(modLevel,dt,channels[1],i);
+        signal[1] += filterFeedback(modLevel,dt,channels[0],i);
 
 
-
-
-
-
-
-        // FOLD BACK //
+        // FOLDBACK DISTORTION //
         if (fold) {
             if (tombola.chance(1,500)) {
                 foldback += (tombola.fudge(1, 1)*0.02);
             }
             foldback = valueInRange(foldback, 0.05, 1);
-            totalL = filterFoldBack(totalL,foldback);
-            totalR = filterFoldBack(totalR,foldback);
+            signal[0] = filterFoldBack(signal[0],foldback);
+            signal[1] = filterFoldBack(signal[1],foldback);
         }
 
 
+        // CHOPPER FILTER //
         chopRate = 6000 + (Wlk3.process(1,20000)*5800);
         chopDepth = 1 + (Wlk2.process(3,100));
         if (chopDepth>1) {
             chopDepth = 1;
         }
         var chp = chop.process(chopRate,chopDepth);
-        totalL *= chp;
-        totalR *= chp;
-
-
-
+        signal[0] *= chp;
+        signal[1] *= chp;
 
 
         // REVERB //
         if (reverb) {
-            totalL += filterReverb(0.5,20,11,channels[1],i);
-            totalR += filterReverb(0.5,20,11,channels[0],i);
+            signal[0] += filterReverb(0.5,20,11,channels[1],i);
+            signal[1] += filterReverb(0.5,20,11,channels[0],i);
         }
-
 
 
         // CLIPPER //
         //totalL = filterClipper(totalL, clipping, 1);
         //totalR = filterClipper(totalR, clipping, 1);
 
+
+        // FOLDBACK 2 DISTORTION //
         //totalL = filterFoldBack2(totalL, 0.2, 2);
         //totalR = filterFoldBack2(totalR, 0.2, 2);
 
-        totalL = filterClipping2(totalL, clipping, 0.2);
-        totalR = filterClipping2(totalR, clipping, 0.2);
+
+        // CLIPPING 2 DISTORTION //
+        signal[0] = filterClipping2(signal[0], clipping, 0.2);
+        signal[1] = filterClipping2(signal[1], clipping, 0.2);
 
         // LOW PASS FILTER //
-        totalL = LPL.process(cutoff,0.9,totalL);
-        totalR = LPR.process(cutoff,0.9,totalR);
-        /*if (tombola.chance(1,500)) {
-            cutoff += tombola.fudge(4, 30);
-        }
-        cutoff = this.valueInRange(cutoff, 400, 9000);
-        */
+        signal[0] = LPL.process(cutoff,0.92,signal[0]);
+        signal[1] = LPR.process(cutoff,0.92,signal[1]);
         cutoff = 4700 + (Wlk.process(0.2, 30000)*4300);
-        //cutoff = 4700 + (Wlk2.process(5, 200)*4300);
-        //cutoff = 4700 + (Jmp.process(30000)*4300);
         if (cutstyle) {
             cutoff = 4700 + (glide.process(1, 30000)*4300);
         }
+        //cutoff = 4700 + (Wlk2.process(5, 200)*4300);
+        //cutoff = 4700 + (Jmp.process(30000)*4300);
         //cutoff = 4700 + (takeoff.process(0.2, 30000)*4300);
 
 
@@ -274,110 +285,94 @@ function printWaveform(seconds) {
         }*/
 
 
+        // INVERT DISTORTION //
         /*if (i<(l/2)) {
             totalL = filterInvert(totalL, 0.5);
             totalR = filterInvert(totalR, 0.5);
         }*/
 
-        //voice2.frequency = 80 + (glide.process(1, 30000));
-        /*voice2.frequency = (80*2) + (Lfo.process(1.2)*10);
-        waveArc3(voice2, amp, i);
-        //waveSawtooth(voice2, amp);
-        totalL *= 0.1;
-        totalR *= 0.1;
 
-        totalL += ((voice2.amplitude * voice2.gain) * (1 + (-voice2.panning)));
-        totalR += ((voice2.amplitude * voice2.gain) * (1 + voice2.panning));*/
-
-
+        // ERODE DISTORTION //
         /*totalL = filterErode(totalL,3000,i);
         totalR = filterErode(totalR,3000,i);*/
 
+
+        // FLIPPER DISTORTION //
         /*var flp = 25 + (glide.process(0.5,20000)*10);
         totalL = flipper.process(totalL,flp);
         totalR = flipper.process(totalR,flp);*/
 
-        // BRICKWALL //
-        //totalL = valueInRange(totalL,-1,1);
-        //totalR = valueInRange(totalR,-1,1);
 
+        // FOLDBACK DISTORTION //
         //totalL = filterFoldBack(totalL,1);
         //totalR = filterFoldBack(totalR,1);
 
 
+        // WRITE VALUES //
         if (channels[0][i]) {
-            channels[0][i] += totalL;
+            channels[0][i] += signal[0];
         } else {
-            channels[0][i] = totalL;
+            channels[0][i] = signal[0];
         }
         if (channels[1][i]) {
-            channels[1][i] += totalR;
+            channels[1][i] += signal[1];
         } else {
-            channels[1][i] = totalR;
+            channels[1][i] = signal[1];
         }
+
 
         // PEAK //
+        // update highest peak from both channels //
         var ttl = channels[0][i];
-        if (ttl<0) {
-            ttl = -ttl;
-        }
+        if (ttl<0) { ttl = -ttl; }
         var ttr = channels[1][i];
-        if (ttr<0) {
-            ttr = -ttr;
-        }
+        if (ttr<0) { ttr = -ttr; }
 
-        if (ttl > peak) {
-            peak = ttl;
-        }
-        if (ttr > peak) {
-            peak = ttr;
-        }
-
-
-
+        if (ttl > peak) { peak = ttl; }
+        if (ttr > peak) { peak = ttr; }
     }
 
 
     // PASS 2 //
     var mult = 1/peak;
+    var lw = units*0.75;
 
-    // LOOP THROUGH SAMPLES //
     for (i=0; i<l; i++) {
 
-        totalL = channels[0][i];
-        totalR = channels[1][i];
+        // GET VALUES //
+        signal[0] = channels[0][i];
+        signal[1] = channels[1][i];
 
         // NORMALISE //
-        totalL *= mult;
-        totalR *= mult;
+        signal[0] *= mult;
+        signal[1] *= mult;
 
         // FADES //
         var f = 1;
         var fade = 2500;
-        if (i<fade) {
-            f = i / fade;
-        }
-        if (i>((l-1)-fade)) {
-            f = ((l-1)-i) / fade;
-        }
+        if (i<fade) { f = i / fade; }
+        if (i>((l-1)-fade)) { f = ((l-1)-i) / fade; }
 
+        // WRITE VALUES //
+        channels[0][i] = signal[0] * f;
+        channels[1][i] = signal[1] * f;
 
-        channels[0][i] = totalL * f;
-        channels[1][i] = totalR * f;
-
-
-        // draw //
+        // DRAW //
         if (i % 400 == 0) {
-            if (totalL<0) {totalL = -totalL;}
-            if (totalR<0) {totalR = -totalR;}
-
-            cxa.fillRect(cx + (sx*i),cy - (he*1.3) - (totalL * he),units*0.75,(totalL * he)*2);
-            cxa.fillRect(cx + (sx*i),cy + (he*1.3) - (totalR * he),units*0.75,(totalR * he)*2);
+            if (signal[0]<0) {signal[0] = -signal[0];}
+            if (signal[1]<0) {signal[1] = -signal[1];}
+            cxa.fillRect(cx + (sx*i),cy - (he*1.3) - (signal[0] * he),lw,(signal[0] * he)*2);
+            cxa.fillRect(cx + (sx*i),cy + (he*1.3) - (signal[1] * he),lw,(signal[1] * he)*2);
         }
     }
 
-    console.log(peak);
 
+    // STEREO VECTORSCOPE //
+    //drawVectorScopeChart(channels);
+
+
+    // TIME SPECTRUM //
+    //drawTimeSpectrumChart(generateTimeSpectrum(30,200));
 
     // SETUP AND PLAY AUDIO //
     var noiseBuffer = Tone.context.createBuffer(2, l, sampleRate);
@@ -387,550 +382,16 @@ function printWaveform(seconds) {
     noiseSource.buffer = noiseBuffer;
     noiseSource.toMaster();
     noiseSource.start();
+
+    // EXECUTION TIME //
+    var endPerf = performance.now();
+    console.log("Generated in: "+Math.round(endPerf - startPerf)+"ms");
 }
 
 
 
 
-function Voice(frequency) {
-    this.frequency = frequency || 440;
-    this.detune = 0;
-    this.gain = 0.5;
-    this.panning = 0;
-    this.amplitude = 0;
-    this.polarity = -1;
-}
 
-
-
-// PINK NOISE //
-function VoicePink() {
-    this.gain = 0.5;
-    this.panning = 0;
-    this.amplitude = 0;
-    this.b0 = this.b1 = this.b2 = this.b3 = this.b4 = this.b5 = this.b6 = 0.0;
-}
-
-VoicePink.prototype.process = function() {
-    var white = Math.random() * 2 - 1;
-    this.b0 = 0.99886 * this.b0 + white * 0.0555179;
-    this.b1 = 0.99332 * this.b1 + white * 0.0750759;
-    this.b2 = 0.96900 * this.b2 + white * 0.1538520;
-    this.b3 = 0.86650 * this.b3 + white * 0.3104856;
-    this.b4 = 0.55000 * this.b4 + white * 0.5329522;
-    this.b5 = -0.7616 * this.b5 - white * 0.0168980;
-    var total = this.b0 + this.b1 + this.b2 + this.b3 + this.b4 + this.b5 + this.b6 + white * 0.5362;
-    this.b6 = white * 0.115926;
-    total *= 0.2; // gain comp
-    return total * this.gain;
-};
-
-
-
-// BROWN NOISE //
-function VoiceBrown() {
-    this.gain = 0.5;
-    this.panning = 0;
-    this.amplitude = 0;
-}
-
-VoiceBrown.prototype.process = function() {
-    var white = Math.random() * 2 - 1;
-    var total = (this.amplitude + (0.02 * white)) / 1.02;
-    this.amplitude = total;
-    total *= 3.5; // gain comp
-    return total * this.gain;
-};
-
-
-
-// WHITE NOISE //
-function VoiceWhite() {
-    this.gain = 0.5;
-    this.panning = 0;
-    this.amplitude = 0;
-}
-
-VoiceWhite.prototype.process = function() {
-    var white = (Math.random() * 2 - 1);
-    return white * this.gain;
-};
-
-
-
-// ROAR NOISE //
-function VoiceRoar(threshold) {
-    this.gain = 0.5;
-    this.panning = 0;
-    this.amplitude = 0;
-    this.threshold = threshold || 0.8;
-}
-
-VoiceRoar.prototype.process = function() {
-    var white = (Math.random() * 2 - 1);
-    if (white>(-this.threshold) && white<this.threshold) {
-        white = this.amplitude;
-    }
-    this.amplitude = white;
-    return white * this.gain;
-};
-
-
-
-// CRACKLE NOISE //
-function VoiceCrackle(threshold) {
-    this.gain = 0.5;
-    this.panning = 0;
-    this.amplitude = 0;
-    this.threshold = threshold || 0.1;
-}
-
-VoiceCrackle.prototype.process = function() {
-    var white = (Math.random() * 2 - 1);
-    if (white<(-this.threshold) || white>this.threshold) {
-        white = this.amplitude;
-    }
-    this.amplitude = white;
-    return white * this.gain;
-};
-
-
-
-// CRACKLE PEAK NOISE //
-function VoiceCracklePeak(threshold) {
-    this.gain = 0.5;
-    this.panning = 0;
-    this.amplitude = 0;
-    this.threshold = threshold || 0.001;
-}
-
-VoiceCracklePeak.prototype.process = function() {
-    var white = (Math.random() * 2 - 1);
-    if (white<(-this.threshold) || white>this.threshold) {
-        white = this.amplitude;
-    } else {
-        this.amplitude = white;
-        white *= (1/this.threshold);
-    }
-    return white * this.gain;
-};
-
-
-//-------------------------------------------------------------------------------------------
-//  WAVE SHAPE ALGORITHMS
-//-------------------------------------------------------------------------------------------
-
-
-function waveShape(shape, voice, amp) {
-    switch (shape) {
-        case 'triangle' :
-            this.waveTriangle(voice, amp);
-            break;
-        case 'sawtooth' :
-            this.waveSawtooth(voice, amp);
-            break;
-        default :
-            break;
-    }
-}
-
-function waveTriangle(voice, amp) {
-
-    // update voice value //
-    var step = ((voice.frequency + voice.detune) * (4/sampleRate));
-    voice.amplitude += (step * voice.polarity);
-
-    // stay within amplitude bounds //
-    var spill = 0;
-    if (voice.amplitude > amp) {
-        spill = voice.amplitude - amp;
-        voice.amplitude = amp - spill;
-        voice.polarity = - voice.polarity;
-    }
-    if (voice.amplitude < -amp) {
-        spill = (voice.amplitude - (-amp));
-        voice.amplitude = (-amp) - spill;
-        voice.polarity = - voice.polarity;
-    }
-}
-
-function waveSawtooth(voice, amp) {
-
-    voice.polarity = -1;
-    // update voice value //
-    var step = ((voice.frequency + voice.detune) * (2/sampleRate));
-    voice.amplitude += (step * voice.polarity);
-
-    // stay within amplitude bounds //
-    var spill = 0;
-    if (voice.amplitude < -amp) {
-        spill = voice.amplitude - (-amp);
-        voice.amplitude = (amp - spill);
-    }
-}
-
-function waveArc(voice, amp, i) {
-    var x = (sampleRate/voice.frequency);
-    var a = x * Math.floor((i/sampleRate)*voice.frequency);
-    voice.amplitude = (1 - ( Math.sqrt(Math.pow(x,2) - Math.pow(i-a,2)) / (x/2) )) * amp;
-}
-
-// has a frequency leak
-function waveArc2(voice, amp, i) {
-    var x = (sampleRate/(voice.frequency));
-    var m = Math.floor(i/x+1);
-    var a = ((x) * m);
-    if (m%2==0) {
-        voice.amplitude = (-1 + ( Math.sqrt(Math.pow(x,2) - Math.pow(i-a,2)) / Math.round(x/2) )) * amp;
-    } else {
-        voice.amplitude = (1 - ( Math.sqrt(Math.pow(x,2) - Math.pow(i-a,2)) / Math.round(x/2) )) * amp;
-    }
-
-}
-
-// has an frequency leak
-function waveArc3(voice, amp, i) {
-    var t = i;
-    var d = Math.floor((sampleRate)/(voice.frequency));
-    var m = Math.floor(i/(d));
-    var b = -1; // start
-    var c = 2; // change
-    if (m%2==0) {
-        b = 1;
-        c = -2;
-    }
-    t -= ((m * (d)));
-    t /= (d);
-    voice.amplitude =  (c*t*t*t*t + b) * amp;
-
-}
-
-//-------------------------------------------------------------------------------------------
-//  FILTERS
-//-------------------------------------------------------------------------------------------
-
-
-// INLINE FILTERS //
-////////////////////
-
-
-function filterNoise(level) {
-    return (tombola.range(-level,level)/100);
-}
-
-
-// FEEDBACK //
-function filterFeedback(level,delay,channel,index) {
-    delay = Math.round(delay);
-    if (index<delay) {
-        return 0;
-    }
-    return (channel[index-delay]*level);
-}
-
-
-// FEEDBACK 2//
-function filterFeedback2(input,level,delay,channel,index,l) {
-    delay = Math.round(delay);
-    if ((index + delay) < l) {
-        channel[index+delay] = input*level;
-    }
-}
-
-
-// REVERB //
-function filterReverb(level,delay,size,channel,index) {
-    var primes = [0, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101];
-    var out = 0;
-    var r = 1/(size*1.3);
-    for (var j=0; j<size; j++) {
-        out += filterFeedback(((level) - (r*j))*0.15,delay + (primes[j]*60),channel,index);
-    }
-    return out;
-}
-
-
-// REVERB 2 // NOT YET WORKING
-function filterReverb2(level,delay,size,channel,index) {
-    var primes = [0, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101];
-    var out = 0;
-    var scale = 1;
-    var r = 1/(size*1.3);
-    for (var j=0; j<size; j++) {
-        out += filterFeedback(((level) - (r*j))*0.15, delay + ((primes[size-1]*scale)-(primes[size-j]*scale)),channel,index);
-        //out += filterFeedback(((level) - (r*(size-j)))*0.15,delay + ((primes[size-1]*scale)-(primes[j]*scale)),channel,index);
-    }
-    return out;
-}
-
-
-// FOLDBACK //
-function filterFoldBack(input,threshold) {
-    if (input>threshold || input<-threshold) {
-    input = Math.abs(Math.abs(this.fmod(input - threshold, threshold*4)) - threshold*2) - threshold;
-    }
-    return input;
-}
-
-
-// FOLDBACK2 //
-function filterFoldBack2(input,threshold, power) {
-    if (input>threshold) {
-        input = threshold - ((input-threshold)*power);
-    }
-    if (input<-threshold) {
-        input = -threshold - ((input-(-threshold))*power);
-    }
-    return valueInRange(input,-threshold,threshold);
-}
-
-
-// CLIPPING //
-function filterClipper(input, threshold, output) {
-    return (valueInRange(input, -threshold, threshold) * (1/threshold)) * output;
-}
-
-
-// CLIPPING2 //
-function filterClipping2(input,threshold, power) {
-    if (input>threshold) {
-        input = threshold + ((input-threshold)*power);
-    }
-    if (input<-threshold) {
-        input = -threshold + ((input-(-threshold))*power);
-    }
-    return input;
-}
-
-
-// INVERT WAVEFORM //
-function filterInvert(input,threshold) {
-    var a = input;
-    if (input>0) {
-        a = threshold - (input*threshold);
-        if (a<0) a=0;
-    }
-    if (input<0) {
-        a = -threshold - (input*threshold);
-        if (a>0) a=0;
-    }
-    return a;
-}
-
-
-// ERODE ? //
-function filterErode (input,width,index) {
-    if (index % tombola.range(1,width)===0) {
-        //input *= tombola.rangeFloat(0.85,0.95);
-        input = -input;
-    }
-    return input;
-}
-
-// PERSISTENT FILTERS //
-////////////////////////
-
-
-// FLIPPER //
-function FilterFlipper() {
-    this.c = 0;
-    this.p = 1;
-}
-
-FilterFlipper.prototype.process = function(input,rate) {
-    this.c += tombola.range(1,20);
-
-    //if (input<0) input = -input;
-
-    if (this.c>=(sampleRate/rate)) {
-        this.c = 0;
-        this.p = -this.p;
-    }
-    return input * this.p;
-};
-
-
-// CHOPPER //
-function FilterChopper() {
-    this.c = 0;
-    this.p = 1;
-    this.test = false;
-}
-
-FilterChopper.prototype.process = function(rate,depth) {
-    this.c++;
-    if (this.c>=rate) {
-        this.c = 0;
-        if (this.p===1) {
-            this.p = depth;
-        } else {
-            this.p = 1;
-        }
-        this.test = true;
-    }
-    return this.p;
-};
-
-
-// DOWN SAMPLE //
-function FilterDownSample() {
-    this.memory = 0;
-    this.c = -2;
-}
-
-FilterDownSample.prototype.process = function(size,input) {
-    this.c ++;
-    if (this.c>=size || this.c<0) {
-        this.memory = input;
-        this.c = 0;
-    }
-    return this.memory;
-};
-
-
-// LOW PASS //
-function FilterLowPass() {
-    this.b1 = this.a0 = this.temp = 0;
-}
-
-FilterLowPass.prototype.process = function(cutoff,input) {
-
-    var x = Math.exp(-2.0*Math.PI*cutoff/sampleRate);
-    this.a0 = 1.0-x;
-    this.b1 = -x;
-
-    var out = this.a0*input - this.b1*this.temp;
-    this.temp = out;
-
-    return out;
-};
-
-
-// LOW PASS 2 //
-function FilterLowPass2() {
-    this.a1 = this.a2 = this.a3 = this.b1 = this.b2 = this.in1 = this.in2 = this.out1 = this.out2 = 0;
-}
-
-FilterLowPass2.prototype.process = function(cutoff,res,input) {
-
-    res = valueInRange(res,0.6,1.4);
-    var c = 1.0 / Math.tan(Math.PI * cutoff / sampleRate);
-
-    this.a1 = 1.0 / ( 1.0 + res * c + c * c);
-    this.a2 = 2* this.a1;
-    this.a3 = this.a1;
-    this.b1 = 2.0 * ( 1.0 - c*c) * this.a1;
-    this.b2 = ( 1.0 - res * c + c * c) * this.a1;
-
-    var out = (this.a1 * input) + (this.a2 * this.in1) + (this.a3 * this.in2) - (this.b1 * this.out1) - (this.b2 * this.out2);
-
-    this.in2 = this.in1;
-    this.in1 = input;
-    this.out2 = this.out1;
-    this.out1 = out;
-
-    return out;
-};
-
-
-//-------------------------------------------------------------------------------------------
-//  CONTROLLERS
-//-------------------------------------------------------------------------------------------
-
-
-
-// LFO //
-function LFO() {
-    this.p = 0;
-}
-LFO.prototype.process = function(r) {
-    r = r/sampleRate;
-    this.p += r;
-    if(this.p > 2) this.p -= 4;
-    return  this.p*(2-Math.abs(this.p));
-};
-
-
-// WALK //
-function Walk() {
-    this.p = tombola.rangeFloat(0,2);
-    this.v = 0;
-}
-Walk.prototype.process = function(r,c) {
-    this.p += this.v;
-    if (this.p<0 || this.p>2) this.v = -this.v;
-    if (tombola.chance(1,c)) this.v += (tombola.rangeFloat(-r,r)/sampleRate);
-    return this.p-1;
-};
-
-
-// SMOOTH WALK //
-function WalkSmooth() {
-    this.p = tombola.rangeFloat(-1,1);
-    this.v = 0;
-    this.v2 = 0;
-    this.b = sampleRate*0.5;
-}
-WalkSmooth.prototype.process = function(r,c) {
-    this.v += this.v2;
-    this.p += (this.v/sampleRate);
-    var b = sampleRate/r;
-    if (tombola.chance(1,c)) this.v2 = tombola.rangeFloat(-(r/b),(r/b));
-    if (this.p<-0.5 && this.v<0) this.v2 = (r/b);
-    if (this.p>0.5 && this.v>0) this.v2 = -(r/b);
-    this.v = valueInRange(this.v,-r,r);
-
-    return this.p;
-};
-
-
-// JUMP //
-function Jump() {
-    this.p = tombola.rangeFloat(-1,1);
-}
-Jump.prototype.process = function(c) {
-    if (tombola.chance(1,c)) this.p = tombola.rangeFloat(-1,1);
-    return this.p;
-};
-
-
-// GLIDE //
-function Glide() {
-    this.p = tombola.rangeFloat(-1,1);
-    this.v = tombola.rangeFloat(-1,1)/sampleRate;
-}
-Glide.prototype.process = function(r,c,d) {
-    this.p += this.v;
-    if (this.p<-1 || this.p>1 || tombola.chance(1,c) || (d && d>0 && this.v<0) || (d && d<0 && this.v>0)) {
-        var mn = -r;
-        var mx = r;
-        if (d && d>0) mn = 0;
-        if (d && d<0) mx = 0;
-        this.p = tombola.rangeFloat(-1,1);
-        this.v = tombola.rangeFloat(mn,mx)/sampleRate;
-    }
-    return valueInRange(this.p,-1,1);
-};
-
-// TAKEOFF //
-// needs work
-function Takeoff() {
-    this.p = tombola.rangeFloat(-1,1);
-    this.v = tombola.rangeFloat(-1,1)/sampleRate;
-}
-Takeoff.prototype.process = function(r,c,d) {
-    this.v += (this.v*(0.0005*r));
-    this.p += this.v;
-    if (this.p<-1 || this.p>1 || tombola.chance(1,c) || (d && d>0 && this.v<0) || (d && d<0 && this.v>0)) {
-        var mn = -r;
-        var mx = r;
-        if (d && d>0) mn = 0;
-        if (d && d<0) mx = 0;
-        this.p = tombola.rangeFloat(-1,1);
-        this.v = (tombola.rangeFloat(mn,mx)/sampleRate)/1000;
-    }
-    return valueInRange(this.p,-1,1);
-};
 
 //-------------------------------------------------------------------------------------------
 //  MATHS
@@ -951,3 +412,564 @@ function fmod(a,b) {
     return a % b;
 }
 
+function logValue(minpos,maxpos,minval,maxval,position) {
+    var minlval = Math.log(minval);
+    var maxlval = Math.log(maxval);
+    var scale = (maxlval - minlval) / (maxpos - minpos);
+    //console.log("" +minval + " | " +maxval + " | " +position);
+    return Math.exp((position - minpos) * scale + minlval);
+}
+
+function logPosition(minpos,maxpos,minval,maxval,value) {
+    var minlval = Math.log(minval);
+    var maxlval = Math.log(maxval);
+    var scale = (maxlval - minlval) / (maxpos - minpos);
+    //console.log("" +minval + " | " +maxval + " | " +value);
+    return minpos + (Math.log(value) - minlval) / scale;
+}
+
+function linValue(minpos,maxpos,minval,maxval,position) {
+    var scale = (maxval - minval) / (maxpos - minpos);
+    //console.log("" +minval + " | " +maxval + " | " +position);
+    return (position - minpos) * scale + minval;
+}
+
+function linPosition(minpos,maxpos,minval,maxval,value) {
+    var scale = (maxval - minval) / (maxpos - minpos);
+    //console.log("" +minval + " | " +maxval + " | " +value);
+    return minpos + (value - minval) / scale;
+}
+
+function lissajous(signal,scale,t,d) {
+    return [
+        scale * Math.sin(((signal[0]*0.2)*(t+d))),
+        scale * Math.sin(((signal[1]*0.2)*t))
+    ];
+}
+
+function vectorScope(signal,scale) {
+    var a = signal[0];
+    var b = signal[1];
+    var arat = 1;
+    var brat = 1;
+    if (a<0) a = -a;
+    if (b<0) b = -b;
+
+    var peak = a;
+    if (b>a) {
+        peak = b;
+        arat = a/b;
+    } else {
+        brat = b/a;
+    }
+    var c = (-arat + brat)*0.5;
+
+
+    // ANGLE
+    var angle = (1.5 + c) * Math.PI;
+    var x = Math.cos(angle);
+    var y = Math.sin(angle);
+
+    return [
+        (x * peak) * scale,
+        (y * peak) * scale
+    ];
+}
+
+function vectorScope2(signal,scale) {
+    var a = signal[0];
+    var b = signal[1];
+    var arat = 1;
+    var brat = 1;
+    if (a<0) a = -a;
+    if (b<0) b = -b;
+
+    var peak = a;
+    if (b>a) {
+        peak = b;
+        arat = a/b;
+    } else {
+        brat = b/a;
+    }
+
+    var c = (-arat + brat);
+    return [
+        c * scale,
+        -peak * scale
+    ];
+}
+
+function vectorScope3(signal,scale) {
+    var a = signal[0];
+    var b = signal[1];
+    if (a<0) a = -a;
+    if (b<0) b = -b;
+
+    var peak = a;
+    if (b>a) peak = b;
+
+    return [
+        signal[1] * scale,
+        -peak * scale
+    ];
+}
+
+function vectorScope4(signal,scale) {
+    var a = signal[0];
+    var b = signal[1];
+    var ba = a;
+    var bb = b;
+    var arat = 1;
+    var brat = 1;
+
+    if (ba<0) ba = -ba;
+    if (bb<0) bb = -bb;
+    if (bb>ba) {
+        arat = ba/bb;
+    } else {
+        brat = bb/ba;
+    }
+    var c = (-ba + bb);
+
+
+
+    var peak = b;
+    if (c>0) {
+        peak = a;
+    }
+    /*if (peak>0 && b>peak) peak = b;
+    if (peak<0 && b<peak) peak = b;*/
+
+    return [
+        c * scale,
+        -peak * scale
+    ];
+}
+
+function vectorScope5(signal,scale) {
+    var a = signal[0];
+    var b = signal[1];
+    var ba = a;
+    var bb = b;
+    var arat = 1;
+    var brat = 1;
+    if (a<0) a = -a;
+    if (b<0) b = -b;
+
+
+    var peak = ba;
+    if (peak>0 && bb>peak) peak = bb;
+    if (peak<0 && bb<peak) peak = bb;
+
+    if (b>a) {
+        arat = a/b;
+    } else {
+        brat = b/a;
+    }
+    var c = (-arat + brat)*0.5;
+    if (peak<0) c = -c;
+
+    var cp = peak;
+    if (cp<0) cp = -cp;
+    setRGBA((255 * cp),(255 * cp),(255 * cp),1);
+
+    // ANGLE
+    var angle = (1.5 + c) * Math.PI;
+    var x = Math.cos(angle);
+    var y = Math.sin(angle);
+
+    return [
+        (x * peak) * scale,
+        (y * peak) * scale
+    ];
+}
+
+function vectorScope6(signal,scale,n) {
+    var a = signal[0];
+    var b = signal[1];
+    var ba = a;
+    var bb = b;
+    var arat = 1;
+    var brat = 1;
+
+    if (ba<0) ba = -ba;
+    if (bb<0) bb = -bb;
+    if (bb>ba) {
+        arat = ba/bb;
+    } else {
+        brat = bb/ba;
+    }
+    var c = (-ba + bb);
+
+
+
+    var peak = b;
+    if (c>0) {
+        peak = a;
+    }
+    /*if (peak>0 && b>peak) peak = b;
+     if (peak<0 && b<peak) peak = b;*/
+
+    return [
+        c * scale,
+        signal[n] * scale
+    ];
+}
+
+function generateTimeSpectrum(layers,length) {
+
+    // INIT //
+    noise.seed(Math.random());
+    var jScale = tombola.rangeFloat(length*0.25,length*0.4);
+    var iScale = tombola.rangeFloat(layers*0.4,(layers*0.9));
+    var data = [];
+    var i, j, k;
+
+
+    // peaks setup //
+    var peaks = [];
+    var peakNo = 0;
+    var cluster = [];
+    var clusterI = [];
+    var peakLargeLayers = tombola.range(layers*0.1,layers*0.4);
+
+    var peaksLarge = tombola.percent(70);
+    if (tombola.percent(60)) {
+        peakNo = tombola.range(2,10);
+        cluster = tombola.clusterFudge(peakNo,0,length,18,1);
+
+        if (tombola.percent(4)) {
+            peakNo = tombola.range(15,30);
+            peaksLarge = false;
+        } else {
+            if (peaksLarge) {
+                clusterI = tombola.clusterFudge(peakNo,5,layers-5,10,1);
+                cluster = tombola.clusterFudge(peakNo,10,length-10,20,3);
+
+                if (tombola.percent(40)) {
+                    var pn = tombola.range(3,10);
+                    peakNo += pn;
+                    clusterI = clusterI.concat(tombola.clusterFudge(pn,5,layers-5,10,1));
+                    cluster = cluster.concat(tombola.clusterFudge(pn,10,length-10,20,3));
+                }
+            }
+        }
+    }
+
+    var drop = 1;
+    var dropPeaks = false;
+
+    if (peakNo>0 && tombola.percent(30)) {
+        drop = tombola.rangeFloat(0.5,0.7);
+        dropPeaks = tombola.percent(33);
+    }
+
+    // peaks push //
+    for (i=0; i<peakNo; i++) {
+        if (peaksLarge) {
+            peaks.push([cluster[i], tombola.rangeFloat(0.3,0.6), clusterI[i]]);
+        } else {
+            peaks.push([cluster[i], tombola.rangeFloat(0,1)]);
+        }
+    }
+
+    // bands //
+    var bands = [];
+    var bandsNo = 0;
+    var bandsMod = tombola.percent(80);
+    if (tombola.percent(40)) {
+        bandsNo = tombola.range(1,6);
+        for (i=0; i<bandsNo; i++) {
+            bands.push( [tombola.range(0,length), tombola.range(1,30), tombola.rangeFloat(-0.28,0.28)] );
+        }
+    }
+
+    //spike patch //
+    var spikes = [];
+    var spikeNo = 0;
+    if (tombola.percent(40)) {
+        console.log('spikes');
+        spikeNo = tombola.range(20,200);
+        var spikeX = tombola.clusterFudge(spikeNo,0,layers,tombola.range(3,layers+0.5),1);
+        var spikeY = tombola.clusterFudge(spikeNo,0,length,tombola.range(4,35),1);
+
+        for (i=0; i<spikeNo; i++) {
+            spikes.push( [spikeX[i], spikeY[i], tombola.rangeFloat(0,0.7)] );
+        }
+    }
+
+    // scream //
+    var scream = null;
+    if (tombola.percent(35)) {
+        scream = [tombola.range(0,length), tombola.rangeFloat(0.01,0.5)];
+    }
+
+    // low pass //
+    var cutoffLevel = 0;
+    var cutoff = tombola.percent(60);
+    var cutoffFreq = length;
+    if (cutoff) {
+        cutoffLevel = tombola.rangeFloat(0.1,0.5);
+        cutoffFreq = Math.round(tombola.range(length*0.6,length*0.9));
+    }
+
+    // variance //
+    var noisy = tombola.percent(25);
+    var very = tombola.percent(25);
+    var fluct = tombola.percent(28);
+    var perlin2 = tombola.percent(22);
+
+
+
+
+
+
+
+    // LOOP LAYERS //
+    var fade = tombola.range(25,40);
+    for (i=0; i<layers; i++) {
+
+        var signals = [];
+        fade += tombola.fudge(3,1);
+        var s = tombola.rangeFloat(0,0.3);
+        var s2;
+
+        if (cutoff) {
+            cutoffFreq += tombola.fudge(20,2);
+            cutoffFreq = valueInRange(cutoffFreq,Math.round(length*0.3),length);
+        }
+
+
+
+
+        // LOOP FREQUENCIES //
+
+        for (j=0; j<length; j++) {
+
+            // FADES //
+            var f = 1;
+            if (j<fade) { f = j / fade; }
+            if (j>((length-1)-fade)) { f = (((length-1)-j) / fade); }
+
+
+            // cutoff //
+            var c = 1;
+            if (cutoff) {
+                if (j>((cutoffFreq-1) - (fade*0.5))) { c = cutoffLevel + (((1-cutoffLevel) * ((cutoffFreq-1) - j))/(fade*0.5)) ; }
+                if (j>(cutoffFreq-1)) { c = cutoffLevel; }
+            }
+
+
+            // underlying variation //
+            s += tombola.fudgeFloat(5,0.05);
+            s += tombola.rangeFloat(-0.03,0.03);
+            if (tombola.percent(4)) {
+                s = tombola.rangeFloat(0.1,1);
+            }
+
+
+            // perlin noise //
+            s2 = (1 + noise.simplex2(i / iScale, j / jScale )) * 0.5;
+
+            // erode perlin //
+            s2 += tombola.fudgeFloat(4,0.03);
+            if (tombola.percent(2)) { // spikes
+                s2 += tombola.rangeFloat(-0.1,0.4);
+            }
+            if (noisy) {
+                s2 += tombola.rangeFloat(-0.06,0.06);
+                if (very) {
+                    s2 += tombola.rangeFloat(-0.2,0.2);
+                }
+            }
+
+
+            // combine perlin & underlying //
+            s2 += (s*0.15);
+            s2 *= 0.869;
+
+            if (fluct) {
+                s2 += (s*0.05);
+                s2 *= 0.95;
+            }
+
+            if (perlin2) {
+                var perScale = 3;
+                var per = (1 + noise.simplex2( i / (iScale/perScale), j / (jScale/perScale) ) ) * 0.5;
+                s2 += (per * 0.2);
+                s2 *= 0.8333;
+            }
+
+
+            // drop overall level //
+            if (peakNo>0) {
+                s2 *= drop;
+                if (dropPeaks && tombola.percent(7)) {
+                    s2 += tombola.rangeFloat(-0.1,0.7);
+                }
+            }
+
+
+            // small peaks //
+            var p,cap;
+
+            if (!peaksLarge) {
+                for (k=0; k<peaks.length; k++) {
+                    p = peaks[k];
+                    cap = 0.5;
+
+                    // correct slot //
+                    if (j===p[0]) {
+                        s2 += p[1];
+                    }
+
+                    // adjust peak //
+                    p[1] += tombola.fudgeFloat(4,0.05);
+
+                    // move peak //
+                    if (tombola.chance(1,4)) {
+                        p[0] += tombola.fudge(3,1);
+                    }
+
+                    p[1] = valueInRange(p[1],0,cap);
+                    p[0] = valueInRange(p[0],0,length);
+                }
+
+            }
+
+
+            // bands //
+            for (k=0; k<bandsNo; k++) {
+                var b = bands[k];
+
+                var bt = 0;
+                if (j>b[0] && j<(b[0]+b[1]) ) {
+                    bt += b[2];
+                }
+                s2 += bt;
+
+                if (j===0 && bandsMod) {
+                    b[0] += tombola.fudge(3,1);
+                    b[1] += tombola.fudge(3,1);
+                    b[1] = valueInRange(b[1],1,length);
+                }
+            }
+
+
+
+
+
+
+            //cutoff
+            s2 *= c;
+
+
+
+
+            // spikes //
+            var spiked = false;
+            for (k=0; k<spikeNo; k++) {
+                var sp = spikes[k];
+
+                if (i===sp[0] && j===sp[1] && !spiked) {
+                    s2 += sp[2];
+                    spiked = true;
+                }
+            }
+
+
+            // normalise //
+            s2 *= 0.5;
+
+            // scream //
+            var sr = 30;
+
+            if (scream && j===0) {
+                scream[1] += tombola.fudgeFloat(4,0.1);
+                scream[0] += tombola.fudge(20,2);
+                scream[1] = valueInRange(scream[1],0.1,0.6);
+                scream[0] = valueInRange(scream[0],0,length);
+            }
+
+            if (scream && j> (scream[0]-sr) && j<(scream[0]+sr)) {
+
+                // left //
+                if (j<scream[0] && j>(scream[0]-sr)) {
+                    s2 += (scream[1] * ((1/(scream[0]-j)) * scream[1]));
+                }
+
+                // right //
+                if (j>scream[0] && j<(scream[0]+sr)) {
+                    s2 += (scream[1] * ((1/(j-scream[0])) * scream[1]));
+                }
+
+                if (j===scream[0]) {
+                    if (!spiked) {
+                        s2 += (scream[1]);
+                    }
+                }
+            }
+
+            // large peaks //
+            if (peaksLarge) {
+                for (k=0; k<peaks.length; k++) {
+                    p = peaks[k];
+
+                    cap = 1;
+                    // correct layer //
+                    var r = 30;
+                    var r2 = peakLargeLayers;
+                    var lm = 0;
+
+                    // in layer range //
+                    if (i> (p[2]-r2) && i<(p[2]+r2)) {
+
+                        // peak this layer //
+                        if (i===p[2]) {
+                            lm = 1;
+                        }
+                        // peak after //
+                        if (i>p[2] && i<(p[2]+r2)) {
+                            lm = ((1 / (i - p[2])) * p[1]);
+                        }
+                        // peak before //
+                        if (i<p[2] && i>(p[2]-r2)) {
+                            lm = ((1 / (p[2] - i)) * p[1]);
+                        }
+
+
+                        // sample //
+                        if (j===p[0]) {
+                            s2 += (p[1] * lm);
+                        }
+                        if (j<p[0] && j>(p[0]-r)) {
+                            s2 += ((p[1] * ((1/(p[0]-j)) * p[1])) * lm);
+                        }
+                        if (j>p[0] && j<(p[0]+r)) {
+                            s2 += ((p[1] * ((1/(j-p[0])) * p[1])) * lm);
+                        }
+
+                    }
+
+                    p[1] = valueInRange(p[1],0,cap);
+                    p[0] = valueInRange(p[0],0,length);
+                }
+            }
+
+
+
+            s2 = valueInRange(s2,0,1);
+
+
+            signals.push(s2 * f);
+
+        }
+        data.push(signals);
+    }
+    return data;
+}
+
+function generateSpectrumSeconds() {
+    var sec = tombola.range(3,17);
+    return [sec, sec+2, sec+4, sec+6, sec+8];
+}

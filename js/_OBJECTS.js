@@ -28,7 +28,7 @@ function Size( w, h ) {
     this.h = h || 0;
 }
 
-function RGBA( r, g, b, a ) {
+/*function RGBA( r, g, b, a ) {
     this.R = r;
     this.G = g;
     this.B = b;
@@ -41,7 +41,7 @@ function RGBA( r, g, b, a ) {
     this.clone = function () {
         return new RGBA(this.R, this.G, this.B, this.A);
     };
-}
+}*/
 
 function Alpha(a) {
     this.A = a;

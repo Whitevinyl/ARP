@@ -42,10 +42,10 @@ function TweetTalk() {
     var multiple = tombola.percent(20);
 
     if (preframe) {
-        string += tombola.fromArray(LexTalk.frame) + " ";
+        string += tombola.item(LexTalk.frame) + " ";
     }
     if (me) {
-        string += tombola.fromArray(LexTalk.me) + " ";
+        string += tombola.item(LexTalk.me) + " ";
     } else {
         var people = new tombola.deck(['michael', 'sara']);
         string += LexTalk.who[people.draw()][style] + " ";
@@ -56,33 +56,33 @@ function TweetTalk() {
             } else {
                 string += "and myself ";
             }
-            string += tombola.fromArray(LexTalk.multiple) + " ";
+            string += tombola.item(LexTalk.multiple) + " ";
         } else {
-            string += tombola.fromArray(LexTalk.single) + " ";
+            string += tombola.item(LexTalk.single) + " ";
         }
     }
 
-    string += tombola.fromArray(LexTalk.doing) + " ";
-    string += tombola.fromArray(LexTalk.talk) + " ";
+    string += tombola.item(LexTalk.doing) + " ";
+    string += tombola.item(LexTalk.talk) + " ";
 
     if (order) {
-        string += "at " + tombola.fromArray(LexTalk.at) + " ";
+        string += "at " + tombola.item(LexTalk.at) + " ";
     }
 
     string += "on ";
     if (tombola.percent(30) || !specify) {
-        string += tombola.fromArray(LexTalk.our) + " ";
+        string += tombola.item(LexTalk.our) + " ";
     }
     if (specify) {
-        string += tombola.fromArray(LexTalk.on.a) + " ";
+        string += tombola.item(LexTalk.on.a) + " ";
     }
-    string += tombola.fromArray(LexTalk.on.b);
+    string += tombola.item(LexTalk.on.b);
 
     if (!order) {
-        string += " at " + tombola.fromArray(LexTalk.at);
+        string += " at " + tombola.item(LexTalk.at);
     }
     if (!preframe) {
-        string += " " + tombola.fromArray(LexTalk.frame);
+        string += " " + tombola.item(LexTalk.frame);
     }
 
     conclude(string);
@@ -127,42 +127,42 @@ function MessageLight() {
 
     if (order) {
         if (style) {
-            string += tombola.fromArray(['this', 'the']) + " ";
-            string += tombola.fromArray(LexObservation.light[time].type) + " ";
-            string += tombola.fromArray(LexObservation.light[time].light) + " makes ";
+            string += tombola.item(['this', 'the']) + " ";
+            string += tombola.item(LexObservation.light[time].type) + " ";
+            string += tombola.item(LexObservation.light[time].light) + " makes ";
         } else {
-            string += tombola.fromArray(['in this', 'in the']) + " ";
-            string += tombola.fromArray(LexObservation.light[time].type) + " ";
-            string += tombola.fromArray(LexObservation.light[time].light) + ", ";
+            string += tombola.item(['in this', 'in the']) + " ";
+            string += tombola.item(LexObservation.light[time].type) + " ";
+            string += tombola.item(LexObservation.light[time].light) + ", ";
         }
     }
-    string += tombola.fromArray(LexObservation.light[plural].thing) + " ";
+    string += tombola.item(LexObservation.light[plural].thing) + " ";
     if (style && order) {
-        string += tombola.fromArray(LexObservation.light.plural.looks) + " ";
+        string += tombola.item(LexObservation.light.plural.looks) + " ";
     } else {
-        string += tombola.fromArray(LexObservation.light[plural].looks) + " ";
+        string += tombola.item(LexObservation.light[plural].looks) + " ";
     }
 
     if (pre || !and) {
-        string += tombola.fromArray(LexObservation.light.pre) + " ";
+        string += tombola.item(LexObservation.light.pre) + " ";
     }
 
     if (and) {
         if (tombola.percent(75) || !pre) {
-            string += tombola.fromArray(LexObservation.light.property) + " ";
+            string += tombola.item(LexObservation.light.property) + " ";
         }
-        string += "and " + tombola.fromArray(LexObservation.light.and);
+        string += "and " + tombola.item(LexObservation.light.and);
     } else {
-        string += tombola.fromArray(LexObservation.light.property);
+        string += tombola.item(LexObservation.light.property);
         if (order && tombola.percent(35)) {
             string += " in color";
         }
     }
 
     if (!order) {
-        string += " " + tombola.fromArray(['in this', 'in the']) + " ";
-        string += tombola.fromArray(LexObservation.light[time].type) + " ";
-        string += tombola.fromArray(LexObservation.light[time].light);
+        string += " " + tombola.item(['in this', 'in the']) + " ";
+        string += tombola.item(LexObservation.light[time].type) + " ";
+        string += tombola.item(LexObservation.light[time].light);
     }
 
     conclude(string);
@@ -176,21 +176,21 @@ function MessageSighting() {
 
     // Just saw first //
     if (just) {
-        string += tombola.fromArray(LexObservation.sighting.just) + " ";
+        string += tombola.item(LexObservation.sighting.just) + " ";
     } else {
         // Time frame first //
         if (order) {
-            string += tombola.fromArray(LexObservation.sighting.frame) + " ";
+            string += tombola.item(LexObservation.sighting.frame) + " ";
         }
-        string += tombola.fromArray(LexObservation.sighting.saw) + " ";
+        string += tombola.item(LexObservation.sighting.saw) + " ";
     }
-    string += tombola.fromArray(LexObservation.sighting.thing[thing].thing) + " ";
-    string += tombola.fromArray(LexObservation.sighting.thing[thing].action) + " ";
-    string += tombola.fromArray(LexObservation.sighting.place);
+    string += tombola.item(LexObservation.sighting.thing[thing].thing) + " ";
+    string += tombola.item(LexObservation.sighting.thing[thing].action) + " ";
+    string += tombola.item(LexObservation.sighting.place);
 
     // Time frame last //
     if (!order && !just) {
-        string += " " + tombola.fromArray(LexObservation.sighting.frame);
+        string += " " + tombola.item(LexObservation.sighting.frame);
     }
 
     conclude(string);
@@ -204,21 +204,21 @@ function MessageSky() {
 
     // sky first //
     if (order) {
-        if (tombola.percent(40)) { string += tombola.fromArray(LexObservation.sky.pre) + " "; }
-        string += tombola.fromArray(LexObservation.sky.looking) + " the ";
-        string += tombola.fromArray(LexObservation.sky.type) + " ";
-        string += tombola.fromArray(LexObservation.sky.sky) + ", ";
+        if (tombola.percent(40)) { string += tombola.item(LexObservation.sky.pre) + " "; }
+        string += tombola.item(LexObservation.sky.looking) + " the ";
+        string += tombola.item(LexObservation.sky.type) + " ";
+        string += tombola.item(LexObservation.sky.sky) + ", ";
     }
-    string += tombola.fromArray(LexObservation.sky[plural].object) + " ";
-    string += tombola.fromArray(LexObservation.sky[plural].seems) + " ";
-    string += tombola.fromArray(LexObservation.sky.appears);
+    string += tombola.item(LexObservation.sky[plural].object) + " ";
+    string += tombola.item(LexObservation.sky[plural].seems) + " ";
+    string += tombola.item(LexObservation.sky.appears);
 
     // sky last //
     if (!order) {
-        string += " " + tombola.fromArray(LexObservation.sky.pre) + " ";
-        string += tombola.fromArray(LexObservation.sky.looking) + " the ";
-        string += tombola.fromArray(LexObservation.sky.type) + " ";
-        string += tombola.fromArray(LexObservation.sky.sky);
+        string += " " + tombola.item(LexObservation.sky.pre) + " ";
+        string += tombola.item(LexObservation.sky.looking) + " the ";
+        string += tombola.item(LexObservation.sky.type) + " ";
+        string += tombola.item(LexObservation.sky.sky);
     }
 
     conclude(string);
@@ -244,13 +244,13 @@ function MessageUpdate() {
     }
 
     if (tombola.percent(70)) {
-        string += "update" + tombola.fromArray([': ',' - ']);
+        string += "update" + tombola.item([': ',' - ']);
     }
-    string += tombola.fromArray(LexMessages.update.in) + " ";
-    string += tombola.fromArray(LexMessages.update.frame) + " we've received ";
+    string += tombola.item(LexMessages.update.in) + " ";
+    string += tombola.item(LexMessages.update.frame) + " we've received ";
     string += LexMessages.update.number[complete-1] + " ";
-    string += tombola.fromArray(LexMessages.update.confirmed) + " ";
-    string += tombola.fromArray(LexMessages.update.messages);
+    string += tombola.item(LexMessages.update.confirmed) + " ";
+    string += tombola.item(LexMessages.update.messages);
     if (complete>1) {
         string += "s";
     }
@@ -263,7 +263,7 @@ function MessageUpdate() {
     }
     if (broken) {
         string += LexMessages.update.number[broken-1] + " ";
-        string += tombola.fromArray(LexMessages.update.truncated);
+        string += tombola.item(LexMessages.update.truncated);
         if (broken>1) {
             string += "s";
         }
@@ -276,7 +276,7 @@ function MessageUpdate() {
         if (tombola.percent(50)) {
             string += "more ";
         }
-        string += tombola.fromArray(LexMessages.update.unconfirmed);
+        string += tombola.item(LexMessages.update.unconfirmed);
     }
 
     conclude(string);
@@ -289,28 +289,28 @@ function MessageVoices() {
 
     // Time frame first //
     if (preframe) {
-        string += tombola.fromArray(LexMessages.voices.frame) + " ";
+        string += tombola.item(LexMessages.voices.frame) + " ";
     }
     // Studying first/second //
     if (prestudy) {
-        string += tombola.fromArray(LexMessages.voices.study) + ", ";
+        string += tombola.item(LexMessages.voices.study) + ", ";
     }
     // Time frame second //
     if (!preframe) {
-        string += tombola.fromArray(LexMessages.voices.frame) + " ";
+        string += tombola.item(LexMessages.voices.frame) + " ";
     }
-    string += tombola.fromArray(LexMessages.voices.think) + " ";
-    string += tombola.fromArray(LexMessages.voices.hear) + " ";
-    string += tombola.fromArray(LexMessages.voices.type) + " ";
-    string += tombola.fromArray(LexMessages.voices.sound);
+    string += tombola.item(LexMessages.voices.think) + " ";
+    string += tombola.item(LexMessages.voices.hear) + " ";
+    string += tombola.item(LexMessages.voices.type) + " ";
+    string += tombola.item(LexMessages.voices.sound);
 
     // additional context //
     if (tombola.percent(10)) {
-        string += " " + tombola.fromArray(LexMessages.voices.noise);
+        string += " " + tombola.item(LexMessages.voices.noise);
     }
     // Time frame last //
     if (!prestudy) {
-        string += " " + tombola.fromArray(LexMessages.voices.study);
+        string += " " + tombola.item(LexMessages.voices.study);
     }
 
     conclude(string);
@@ -322,12 +322,12 @@ function MessagePeaks() {
 
     // optional intro //
     if (tombola.percent(35)) {
-        string += tombola.fromArray(LexMessages.peaks.intro) + " ";
+        string += tombola.item(LexMessages.peaks.intro) + " ";
     }
 
-    string += tombola.fromArray(LexMessages.peaks.type) + " ";
-    string += tombola.fromArray(LexMessages.peaks.messages) + " ";
-    string += tombola.fromArray(LexMessages.peaks.display) + " ";
+    string += tombola.item(LexMessages.peaks.type) + " ";
+    string += tombola.item(LexMessages.peaks.messages) + " ";
+    string += tombola.item(LexMessages.peaks.display) + " ";
 
     // if freq peaks //
     if (tombola.percent(55)) {
@@ -335,30 +335,30 @@ function MessagePeaks() {
 
         // additional description //
         if (tombola.percent(70)) {
-            string += tombola.fromArray(LexMessages.peaks.display2) + " "
+            string += tombola.item(LexMessages.peaks.display2) + " "
         }
 
         // 1 freq //
-        string += tombola.fromArray(LexMessages.peaks.frequency) + tombola.fromArray([' at ',' at around ']) + (htz[0]/100) + tombola.fromArray(['Hz','kHz']);
+        string += tombola.item(LexMessages.peaks.frequency) + tombola.item([' at ',' at around ']) + (htz[0]/100) + tombola.item(['Hz','kHz']);
 
         // more than 1 freq //
         if (tombola.percent(50)) {
 
             // 3 freqs //
             if (tombola.percent(40)) {
-                string += ", " + (htz[1]/100) + tombola.fromArray(['Hz','kHz']);
-                string += " and " + (htz[2]/100) + tombola.fromArray(['Hz','kHz']);
+                string += ", " + (htz[1]/100) + tombola.item(['Hz','kHz']);
+                string += " and " + (htz[2]/100) + tombola.item(['Hz','kHz']);
             }
             // 2 freqs //
             else {
-                string += " and " + (htz[1]/100) + tombola.fromArray(['Hz','kHz']);
+                string += " and " + (htz[1]/100) + tombola.item(['Hz','kHz']);
             }
         }
     }
     // or some property other than peaks //
     else {
-        string += tombola.fromArray(LexMessages.peaks.bridge) + " ";
-        string += tombola.fromArray(LexMessages.peaks.property);
+        string += tombola.item(LexMessages.peaks.bridge) + " ";
+        string += tombola.item(LexMessages.peaks.property);
     }
 
     conclude(string);
@@ -375,50 +375,50 @@ function MessageQuality() {
 
         // optional intro //
         if (intro) {
-            string += tombola.fromArray(LexMessages.quality.intro) + " ";
+            string += tombola.item(LexMessages.quality.intro) + " ";
         }
 
         // message //
-        string += tombola.fromArray(LexMessages.quality.quantity) + " of ";
+        string += tombola.item(LexMessages.quality.quantity) + " of ";
         if (preframe) {
-            string += tombola.fromArray(LexMessages.quality.preframe) + " ";
+            string += tombola.item(LexMessages.quality.preframe) + " ";
         } else {
             string += "the ";
         }
-        string += tombola.fromArray(LexMessages.quality.messages) + " ";
+        string += tombola.item(LexMessages.quality.messages) + " ";
         if (!preframe) {
-            string += tombola.fromArray(LexMessages.quality.postframe) + " ";
+            string += tombola.item(LexMessages.quality.postframe) + " ";
         }
 
         // displays //
-        string += tombola.fromArray(LexMessages.quality.display.a) + " ";
+        string += tombola.item(LexMessages.quality.display.a) + " ";
 
         // Michael's descriptions... //
         if (!intro && tombola.percent(45)) {
-            string += tombola.fromArray(LexMessages.quality.michael.a) + ' "';
-            string += tombola.fromArray(LexMessages.quality.michael.b) + " ";
-            string += tombola.fromArray(LexMessages.quality.michael.c) + '"';
+            string += tombola.item(LexMessages.quality.michael.a) + ' "';
+            string += tombola.item(LexMessages.quality.michael.b) + " ";
+            string += tombola.item(LexMessages.quality.michael.c) + '"';
         }
         else {
-            string += tombola.fromArray(LexMessages.quality.display.b) + " ";
-            string += tombola.fromArray(LexMessages.quality.display.c);
+            string += tombola.item(LexMessages.quality.display.b) + " ";
+            string += tombola.item(LexMessages.quality.display.c);
         }
 
 
     } else {
 
-        string += tombola.fromArray(LexMessages.quality.display.d) + " ";
-        string += tombola.fromArray(LexMessages.quality.display.b) + " ";
-        string += tombola.fromArray(LexMessages.quality.display.c) + " in ";
-        string += tombola.fromArray(LexMessages.quality.quantity) + " of ";
+        string += tombola.item(LexMessages.quality.display.d) + " ";
+        string += tombola.item(LexMessages.quality.display.b) + " ";
+        string += tombola.item(LexMessages.quality.display.c) + " in ";
+        string += tombola.item(LexMessages.quality.quantity) + " of ";
         if (preframe) {
-            string += tombola.fromArray(LexMessages.quality.preframe) + " ";
+            string += tombola.item(LexMessages.quality.preframe) + " ";
         } else {
             string += "the ";
         }
-        string += tombola.fromArray(LexMessages.quality.messages);
+        string += tombola.item(LexMessages.quality.messages);
         if (!preframe) {
-            string += " " + tombola.fromArray(LexMessages.quality.postframe);
+            string += " " + tombola.item(LexMessages.quality.postframe);
         }
     }
 
@@ -445,24 +445,24 @@ function TweetToday() {
 
 
     if (time && timePos===1) {
-        string += "" +   tombola.fromArray(LexToday.time) + " ";
+        string += "" +   tombola.item(LexToday.time) + " ";
     }
-    var obs = tombola.fromArray(LexToday.observation);
+    var obs = tombola.item(LexToday.observation);
     string += "" +  obs  + " ";
     if (time && timePos===2) {
-        string += "" +   tombola.fromArray(LexToday.time) + " ";
+        string += "" +   tombola.item(LexToday.time) + " ";
     }
-    string += "" +   tombola.fromArray(LexToday.method) + " ";
-    string += "" +   tombola.fromArray(LexToday.description[DECK.draw()]);
+    string += "" +   tombola.item(LexToday.method) + " ";
+    string += "" +   tombola.item(LexToday.description[DECK.draw()]);
 
     // second description //
     if (!subComment && tombola.percent(25) && obs.length<19) {
         string += tombola.weightedItem([' and ', ' & ', '/', ', and also ', ', ', ', but also ', ', and I guess '], [1,1,0.5,1,0.5,1,1] ) ;
-        string += "" + tombola.fromArray(LexToday.description[DECK.draw()]);
+        string += "" + tombola.item(LexToday.description[DECK.draw()]);
     }
 
     if (time && timePos===3) {
-        string += " " +   tombola.fromArray(LexToday.time);
+        string += " " +   tombola.item(LexToday.time);
     }
 
     if (comment) {
@@ -471,14 +471,14 @@ function TweetToday() {
 
         if (subComment && LexToday.comment[commentType].pre) {
             // sub comment //
-            string += tombola.fromArray(LexToday.comment[commentType].pre.a) + " ";
-            string += tombola.fromArray(LexToday.comment[commentType].pre.b) + " ";
-            string += tombola.fromArray(LexToday.comment[commentType].pre.c) + ". ";
+            string += tombola.item(LexToday.comment[commentType].pre.a) + " ";
+            string += tombola.item(LexToday.comment[commentType].pre.b) + " ";
+            string += tombola.item(LexToday.comment[commentType].pre.c) + ". ";
         }
 
         // comment //
-        string += tombola.fromArray(LexToday.comment[commentType].a) + " ";
-        string += tombola.fromArray(LexToday.comment[commentType].b);
+        string += tombola.item(LexToday.comment[commentType].a) + " ";
+        string += tombola.item(LexToday.comment[commentType].b);
     }
 
     conclude(string);
@@ -502,7 +502,7 @@ function TweetJourney() {
 
     // pre context //
     if (order===1 && context) {
-        string += "" + tombola.fromArray(LexTravel.travel[tense].context) + " " + LexTravel.travel[tense].reference +" ";
+        string += "" + tombola.item(LexTravel.travel[tense].context) + " " + LexTravel.travel[tense].reference +" ";
     } else {
         if (tombola.percent(60)) {
             string += "" + LexTravel.travel[tense].reference +" ";
@@ -510,14 +510,14 @@ function TweetJourney() {
     }
 
     // travel //
-    string += "" + tombola.fromArray(LexTravel.travel[tense].travel) + " ";
+    string += "" + tombola.item(LexTravel.travel[tense].travel) + " ";
 
     // place //
-    string += "" + tombola.fromArray(LexTravel.places[destination]);
+    string += "" + tombola.item(LexTravel.places[destination]);
 
     // post context //
     if (order===2 && context) {
-        string += " " + tombola.fromArray(LexTravel.travel[tense].context);
+        string += " " + tombola.item(LexTravel.travel[tense].context);
     }
 
     if (comment || !context) {
@@ -525,8 +525,8 @@ function TweetJourney() {
         string += tombola.weightedItem(['. ',', ',' - '],[5,3,1]);
 
         // comment //
-        string += tombola.fromArray(LexTravel.comment[commentType].a) + " ";
-        string += tombola.fromArray(LexTravel.comment[commentType].b);
+        string += tombola.item(LexTravel.comment[commentType].a) + " ";
+        string += tombola.item(LexTravel.comment[commentType].b);
     }
 
     conclude(string);

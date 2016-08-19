@@ -39,7 +39,8 @@ var mouseIsDown = false;
 
 
 // COLORS //
-var bgCols = [new RGBA(5,10,20,1),new RGBA(255,236,88,1)];
+var bgCols = [new RGBA(10,15,22,1), new RGBA(255,236,88,1), new RGBA(30,34,37,1), new RGBA(120,122,124,1)];
+var graphCols = [new RGBA(196,64,245,1), new RGBA(64,204,245,1), new RGBA(75,254,170,1), new RGBA(172,26,240,1), new RGBA(245,243,233,1), new RGBA(10,10,10,1), new RGBA(61,21,71,1), new RGBA(174,0,232,1), new RGBA(156,0,235,1), new RGBA(0,46,196,1), new RGBA(88,28,237,1), new RGBA(162,0,255,1), new RGBA(0,166,255,1), new RGBA(255,0,89,1), new RGBA(195,0,145,1), new RGBA(104,0,156,1), new RGBA(42,23,61,1), new RGBA(237,21,86,1), new RGBA(41,37,48,1), new RGBA(149,129,148,1), new RGBA(6,209,91,1), new RGBA(50,240,220,1), new RGBA(115,90,120,1)];
 var masterCol = new RGBA(0,0,0,0);
 var highPass = new RGBA(0,0,0,0);
 var lowPass = new RGBA(0,0,0,0);
@@ -93,6 +94,7 @@ function init() {
     metrics();
 
     // DONE //
+    Tone.Master.volume.value = -12;
     scene = 1;
     draw();
 

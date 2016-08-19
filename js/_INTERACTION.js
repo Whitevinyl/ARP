@@ -13,16 +13,24 @@ function mousePress() {
     mouseIsDown = true;
     rolloverCheck();
 
-    //generateTweet();
+    generateTweet();
     if (noiseSource) {
         noiseSource.stop();
     }
 
-    drawGen();
-    setTimeout(function() {
-        generateWaveform();
-        //drawWave();
-    },20);
+    //if (tombola.chance(2,3)) {
+        drawTimeSpectrumChart(generateTimeSpectrum(30,175),generateSpectrumSeconds());
+    //} else {
+        /*drawGen();
+        setTimeout(function() {
+            //genTest(mouseX);
+            generateWaveform();
+            //drawWave();
+
+        },20);*/
+    //}
+
+
 
 }
 

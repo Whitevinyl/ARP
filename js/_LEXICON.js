@@ -41,7 +41,7 @@ var LexTravel = {
     comment : {
         witness : {
             a : ['Saw', 'I saw', 'I watched', 'I photographed', 'I sketched', 'I made some drawings of', 'I spotted', 'Was lucky to see', 'I snapped some pics of', 'I got to see', 'Encountered', 'I crossed paths with', 'Came across', 'Spied'],
-            b : ['Andean flamingos nearby', 'Chilean flamingos nearby', 'flamingos flying overhead', 'flamingos on the way', 'some flamingos nearby', 'a fox close by', 'another fox there', 'a fox with cubs', 'a hunting fox', 'some playful foxes', 'an Andean fox', 'a Culpeo fox', 'a grey fox', 'llama herds on the way', 'llama being herded', 'llama in the foothills', 'geese flying overhead', 'geese nearby', 'an eagle overhead', 'soaring eagles', 'a gliding buzzard', 'some distant birds of prey', 'a distant puma', 'a burrowing owl', 'a pair of burrowing owls', 'a family of mouse opossums', 'a mouse opossum nearby', 'a nearby "lava lizard"']
+            b : ['Andean flamingos nearby', 'Chilean flamingos nearby', 'flamingos flying overhead', 'flamingos on the way', 'some flamingos nearby', 'a fox close by', 'another fox there', 'a fox with cubs', 'a hunting fox', 'some playful foxes', 'an Andean fox', 'a Culpeo fox', 'a grey fox', 'llama herds on the way', 'llama being herded', 'some vicuña nearby', 'geese flying overhead', 'geese nearby', 'an eagle overhead', 'soaring eagles', 'a gliding buzzard', 'some distant birds of prey', 'a distant puma', 'a burrowing owl', 'a pair of burrowing owls', 'a family of mouse opossums', 'a mouse opossum nearby', 'a nearby "lava lizard"']
         },
         observation : {
             a : ['The rock formations are', 'The tephra layers are', 'The rock shapes here are', 'The scattered rocks are', 'The stone layers are', 'The salt deposits are', 'The surrounding hills are', 'The plateaus are', 'The clouds here are', 'Even the sand here is', 'The volcanic scars are', 'The lava deposits are', 'The craters are', 'The pyroclasmic channels are', 'The salt crusts are', 'The mineral deposits are'],
@@ -148,9 +148,9 @@ var LexMessages = {
         messages : ['messages', 'message-bursts', 'message recordings', 'audio messages', 'recordings', 'sound recordings', 'audio-bursts', 'audio recordings', 'fractured recordings', 'fractured messages', 'truncated recordings', 'audio-data sets', 'data-collections'],
         postframe : ['recently', 'lately', 'from this morning', 'from last night', 'from yesterday', 'from the last few days', 'from the past week', 'tested yesterday', 'tested last week', 'analysed last month', 'analysed last week', 'selected for recent analysis', 'selected for recent study', 'sent to ALMA', 'sent to MIT', 'sent to RLT', 'selected for SETI', 'sent to Hat Creek', 'sent to NASA Langley', 'sent to Berkely', 'sent to Aricebo', 'sent to Green Bank and Parkes', 'sent to Indiana University', 'sent to Stanford', 'sent to Salford', 'sent to Hertfordshire University'],
         display : {
-            a : ['show', 'are showing', 'have been showing', 'keep showing', 'have shown', 'display', 'are displaying', 'have diplayed', 'are presenting', 'have presented', 'contain', 'have contained', 'include', 'have'],
+            a : ['show', 'are showing', 'have been showing', 'have shown', 'display', 'are displaying', 'have diplayed', 'are presenting', 'have presented', 'contain', 'have contained', 'include', 'have'],
             b : ['interesting', 'repeating', 'fluctuating', 'jittering', 'sporadic', 'intermittent', 'cyclic', 'sections of', 'periods of', 'moments of', 'periodic', 'continuous', 'reappearing', 'modulating', 'sliding', 'erratic', 'chaotic', 'busy', 'complex', 'complicated', 'subtle', 'fluttering', 'layered', 'noticeable', 'recognisable', 'unexpected', 'familiar', 'clear', 'strong', 'ramped', 'discreet', 'almost-undetectable', 'variable', 'echoing', 'delayed', 'terminal', 'low-level', 'high-level', 'sequential', 'sequences of', 'logical', 'deliberate', 'sweeping', 'percussive', 'punctuating', 'stuttering', 'recursive', 'algorithmic', 'machine-generated'],
-            c : ['patterns', 'forms', 'motifs', 'frequency shifts', 'noise pulses', 'dips', 'peaks', 'sustained tones', 'carrier waves', 'pink noise', 'pink noise patterns','brown noise', 'perlin noise', 'signal drops', 'bass frequencies', 'phase inversions', 'phase drift', 'pulsing', 'sine-wave droning', 'sine pulses', 'triangle-wave pulses', 'pitch structures', 'pitch interval patterns', 'harmonics', 'inharmonics', 'partials', 'choppiness', 'clipping patterns', 'clicks', 'distortion', 'compression swells', 'frequency swells', 'frequency drift', 'phase oscillation', 'howling', 'low-frequency oscillations', 'infrasound', 'ultrasound', 'permutations'],
+            c : ['patterns', 'forms', 'motifs', 'frequency shifts', 'noise pulses', 'dips', 'peaks', 'sustained tones', 'carrier waves', 'pink noise', 'pink noise patterns','brown noise', 'perlin noise', 'signal drops', 'bass frequencies', 'phase inversions', 'phase drift', 'pulsing', 'sine-wave droning', 'sine pulses', 'triangle-wave pulses', 'pitch structures', 'pitch interval patterns', 'rumbling', 'harmonics', 'inharmonics', 'partials', 'down-sampling', 'choppiness', 'clipping patterns', 'clicks', 'distortion', 'compression swells', 'frequency swells', 'frequency drift', 'phase oscillation', 'howling', 'low-frequency oscillations', 'infrasound', 'ultrasound', 'permutations'],
             d : ["we've found", "we've seen", "we've noticed", "there's", "we've been finding", "we've been seeing", 'Michael found', 'I found']
         },
         michael : {
@@ -167,7 +167,7 @@ var LexMessages = {
         display2 : ['consistent', 'the same', 'repeating', 'identical'],
         frequency : ['peaks', 'frequency peaks', 'dips', 'frequency dips', 'missing frequencies', 'boosted frequencies', 'dips or peaks', 'pre-existing clipping', 'wave-folding'],
         bridge : ['the same', 'identical', 'near-identical', 'very similar', 'similar', 'mirrored', 'inverted', 'continuous','connected'],
-        property : ['patterns', 'sequences', 'frequency intervals', 'frequency spectra', 'noise distribution', 'gain quotas', 'pitch-spacing', 'formats', 'structures', 'configurations', 'peaks', 'base frequency', 'phase', 'sections', 'starting points', 'gaps', 'spaces']
+        property : ['patterns', 'sequences', 'frequency intervals', 'frequency spectra', 'noise distribution', 'gain quotas', 'pitch-spacing', 'formats', 'structures', 'configurations', 'peaks', 'phase', 'sections', 'starting points', 'gaps', 'spaces']
     },
     voices : {
         frame : ['sometimes', 'now and then', 'occasionally', 'some nights', 'at night, sometimes', 'every now and then', 'sometimes, late at night'],
@@ -207,11 +207,11 @@ var LexObservation = {
             object : ['the stars', 'distant stars', 'star-clusters', 'the planets', 'other planets', 'other galaxies', 'the galaxies', 'other star-systems', 'distant star-systems', 'the constellations', 'other worlds', 'distant worlds', 'our cosmic neighbors', 'our galactic neighbors'],
             seems : ['seem', 'can seem', 'can really seem', 'feel', 'can feel', 'can really feel', 'look', 'appear']
         },
-        appears : ['bright', 'so bright', 'shining-bright', 'close', 'so close', 'near to me', 'so near', 'within reach', 'painted-on', 'ghostly', 'within touching-distance', 'like a friend', 'like a guide', 'like a guardian', 'like an opportunity', 'like a watcher', 'like a home', 'like a mirror', 'like a clue', 'like a puzzle', 'like a trick', 'like a painting', 'like a fantasy', 'like an illusion', 'like an apparition', 'like a dream', 'like family', 'dream-like', 'beckoning', 'beacon-like', 'guide-like', 'inspiring', 'within spitting-distance', "within a stone's throw", 'within grasp', 'burning', 'reachable', 'attainable', 'incredible']
+        appears : ['bright', 'so bright', 'shining-bright', 'close', 'so close', 'near to me', 'so near', 'within reach', 'painted-on', 'ghostly', 'within touching-distance', 'like a friend', 'like a guide', 'like a guardian', 'like an opportunity', 'like a watcher', 'like a home', 'like a mirror', 'like a puzzle', 'like a trick', 'like a painting', 'like a fantasy', 'like an illusion', 'like an apparition', 'like a dream', 'like family', 'dream-like', 'beckoning', 'beacon-like', 'guide-like', 'inspiring', 'within spitting-distance', "within a stone's throw", 'within grasp', 'burning', 'reachable', 'attainable', 'incredible']
     },
     sighting : {
         just : ['just saw', 'I just saw', 'just noticed', 'just spotted', 'I just spotted', 'just watched', 'I just watched'],
-        frame : ['earlier', 'a little while earlier', 'earlier today', 'about an hour ago', 'a couple of hours ago', 'a few hours ago', 'when I got up this morning', 'this morning', 'early this morning', 'at dawn this morning', 'early in the morning', 'just now', 'a few minutes ago', 'about ten minutes ago', 'about half an hour ago', 'late last night', 'last night', 'yesterday', 'yesterday evening', 'late evening yesterday', 'early evening yesterday', 'during a break', 'while I was walking', 'while out walking', 'on my break earlier', 'on a coffee break'],
+        frame : ['earlier', 'earlier today', 'about an hour ago', 'a couple of hours ago', 'a few hours ago', 'when I got up this morning', 'this morning', 'early this morning', 'at dawn this morning', 'early in the morning', 'just now', 'a few minutes ago', 'about ten minutes ago', 'about half an hour ago', 'late last night', 'last night', 'yesterday', 'yesterday evening', 'late evening yesterday', 'early evening yesterday', 'during a break', 'while I was walking', 'while out walking', 'on my break earlier', 'on a coffee break'],
         saw : ['I saw', 'I noticed', 'I spotted', 'I managed to see', 'I managed to spot', 'I watched', 'I was watching', 'I filmed', 'I was able to spot', 'I was able to see', 'I was able to watch'],
         thing : {
             eagle : {
@@ -239,7 +239,7 @@ var LexObservation = {
                 action : ['hopping about', 'kicking up dust', 'drinking from a small pool']
             },
             lizard : {
-                thing : ['a "lava lizard'],
+                thing : ['a "lava lizard"'],
                 action : ['basking', 'scurrying']
             },
             chinchilla : {
