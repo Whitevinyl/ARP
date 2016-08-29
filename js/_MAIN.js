@@ -45,7 +45,8 @@ var masterCol = new RGBA(0,0,0,0);
 var highPass = new RGBA(0,0,0,0);
 var lowPass = new RGBA(0,0,0,0);
 
-
+var res = new Point(30,175);
+res = new Point(25,120);
 
 //-------------------------------------------------------------------------------------------
 //  INITIALISE

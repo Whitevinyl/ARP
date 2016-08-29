@@ -3,6 +3,7 @@
  */
 
 
+
 //-------------------------------------------------------------------------------------------
 //  BG
 //-------------------------------------------------------------------------------------------
@@ -15,7 +16,6 @@ function drawBG() {
     setColor(bgCols[0]);
     cxa.fillRect(0,0,fullX,fullY);
 }
-
 
 
 
@@ -125,16 +125,16 @@ function drawTimeSpectrumChart(data,seconds) {
     c1 = 21; //17
     c2 = 22; // 18
 
+    c1 = 17;
+    c2 = 18;
 
     drawLogo(halfX -((w+margin)*0.5) + (20*units), halfY - (margin*0.8), 20*units,new RGBA(70,255,240,1),new RGBA(255,255,255,1));
-    cxa.textAlign = "left";
-    cxa.font = "400 " + bodyType + "px Cabin";
-    cxa.fillText("ARP Observatory",halfX - ((w+margin)*0.5) + ((20*units)*2.5), halfY - (margin*0.8) + ((20*units)*1.5));
+
 
     // frequency markers //
     //setRGBA(255,255,255,1);
-    color.fillRGBA(cxa,90,90,90,1);
-    color.strokeRGBA(cxa,90,90,90,1);
+    color.fillRGBA(cxa,255,255,255,1);
+    color.strokeRGBA(cxa,255,255,255,1);
     var markY = halfY + (margin * 0.5);
     var markH = (20*units);
     var xPos, yPos;
@@ -173,8 +173,26 @@ function drawTimeSpectrumChart(data,seconds) {
         cxa.stroke();
     }
 
+    // back markers //
+    cxa.lineWidth = units*2;
+    color.strokeRGBA(cxa,255,255,255,1);
+    cxa.beginPath();
+    // L
+    cxa.moveTo(x, y - h + step + (10*units));
+    cxa.lineTo(x, y - h + step);
+    cxa.lineTo(x + (10*units), y - h + step);
+
+    cxa.moveTo(x + w, y - h + step + (10*units));
+    cxa.lineTo(x + w, y - h + step);
+    cxa.lineTo(x + w - (10*units), y - h + step);
+    cxa.stroke();
+    cxa.lineWidth = units;
+
+
     // graph base //
+    cxa.globalAlpha = 0.55;
     color.fill(cxa,graphCols[c2]);
+    //color.fill(cxa,bgCols[2]);
     cxa.beginPath();
     cxa.moveTo(x + 1, y - 1);
     cxa.lineTo(x + w + 1, y - 1);
@@ -191,7 +209,7 @@ function drawTimeSpectrumChart(data,seconds) {
         grad.addColorStop(1,color.string(graphCols[c2]));
         cxa.fillStyle=grad;
 
-        drawTimeSpectrum(data[i],x,y,w,h);
+        drawTimeSpectrum(data[i],x,y,w,h,grad);
         x -= step;
         y += step;
     }
@@ -200,8 +218,12 @@ function drawTimeSpectrumChart(data,seconds) {
 }
 
 
-function drawTimeSpectrum(signal,x,y,w,h) {
+function drawTimeSpectrum(signal,x,y,w,h,fill) {
 
+    cxa.globalAlpha = 0.6;
+    cxa.fillStyle=fill;
+    //color.fill(cxa,graphCols[18]);
+    //color.fill(cxa,bgCols[2]);
     cxa.beginPath();
     cxa.moveTo(x,y);
     var l = signal.length;
@@ -211,45 +233,61 @@ function drawTimeSpectrum(signal,x,y,w,h) {
     cxa.lineTo(x + w, y);
     cxa.closePath();
     cxa.fill();
+
+    cxa.globalAlpha = 1;
+    color.fillRGBA(cxa,230,230,230,1);
+    color.strokeRGBA(cxa,230,230,230,1);
+    cxa.strokeStyle=fill;
+    cxa.beginPath();
+    var dot = units*0.1;
+    cxa.lineWidth = units;
+    for( j=0; j<l; j++) {
+        if (j===0) {
+            cxa.moveTo(x + ((w/(l-1))*j),y - (signal[j]*h));
+        } else {
+            cxa.lineTo(x + ((w/(l-1))*j),y - (signal[j]*h));
+        }
+        //cxa.fillRect(x + ((w/(l-1))*j) - (dot*0.5),y - (signal[j]*h) - (dot*0.5),dot,dot);
+    }
+    cxa.stroke();
 }
 
 
-function drawVectorScopeChart(channels) {
-    masterCol = new RGBA(3,-5,4,0);
+function drawVectorScopeChart(data) {
+    color.master = new RGBA(3,-5,4,0);
     // bg //
-    setColor(bgCols[2]);
-    //setColor(graphCols[4]);
+    color.fill(cxa,bgCols[2]);
     cxa.fillRect(0,0,fullX,fullY);
 
 
-
-
     var ls = 150*units;
-    //setColor(graphCols[13]);
-    //setColor(graphCols[5]);
-
-    /*var grad=cxa.createLinearGradient(0,halfY - ls,0,halfY + ls);
-     grad.addColorStop(0,"rgba("+graphCols[14].R+","+graphCols[14].G+","+graphCols[14].B+",1)");
-     grad.addColorStop(1,"rgba("+graphCols[13].R+","+graphCols[13].G+","+graphCols[13].B+",1)");
-     cxa.fillStyle=grad;
-     cxa.strokeStyle=grad;*/
 
 
 
-    lowPass = new RGBA(230,30,50,0);
-    //lowPass = new RGBA(80,82,82,0);
+    color.lowPass = new RGBA(230,30,50,0);
+    //color.lowPass = graphCols[21];
+    //color.lowPass = bgCols[2];
 
-    setRGBA(230,230,230,1);
+    drawLogo(halfX -(ls*2.2) + (20*units), halfY - (ls), 20*units,new RGBA(70,255,240,1),new RGBA(255,255,255,1));
 
-    drawVectorScope(channels, 9000, 2, vectorScope5, ls, units*0.85, halfX - (ls +(10*units)), halfY);
-    //setColor(graphCols[13]);
-    drawVectorScope(channels, 9000, 2, vectorScope5, ls, units*0.85, halfX + (ls +(10*units)), halfY);
+    color.fillRGBA(cxa,230,230,230,1);
+    color.strokeRGBA(cxa,230,230,230,1);
 
-    lowPass = new RGBA(0,0,0,0);
+    scopeStyle = 2;
+    cxa.globalAlpha = 0.05;
+    drawVectorScope(data[0], scopeStyle, scopeMode, ls, units*0.85, halfX - (ls +(10*units)), halfY);
+    drawVectorScope(data[1], scopeStyle, scopeMode, ls, units*0.85, halfX + (ls +(10*units)), halfY);
+
+    scopeStyle = 0;
+    cxa.globalAlpha = 1;
+    drawVectorScope(data[0], scopeStyle, scopeMode, ls, units*0.85, halfX - (ls +(10*units)), halfY);
+    drawVectorScope(data[1], scopeStyle, scopeMode, ls, units*0.85, halfX + (ls +(10*units)), halfY);
+
+    color.lowPass = new RGBA(0,0,0,0);
 
     // GRAPH LINES (move to draw) //
-    setRGBA(255,255,255,1);
-    //setColor(graphCols[5]);
+    color.fillRGBA(cxa,255,255,255,1);
+    color.strokeRGBA(cxa,255,255,255,1);
 
     cxa.textAlign = 'center';
     cxa.font = '400 '+bodyType+'px Cabin';
@@ -258,7 +296,7 @@ function drawVectorScopeChart(channels) {
     cxa.fillText('R', halfX + ((ls*1.5) + (10*units)), halfY - ls + (5*units));
     cxa.fillText('L', halfX + ((ls*0.5) + (10*units)), halfY - ls + (5*units));
 
-    cxa.lineWidth = units;
+    cxa.lineWidth = units*2;
     cxa.beginPath();
     // L
     cxa.moveTo(halfX - (ls +(10*units)),halfY - (5*units) + ls);
@@ -296,6 +334,10 @@ function drawVectorScopeChart(channels) {
     cxa.moveTo(halfX + (ls +(10*units)),halfY - (10*units));
     cxa.lineTo(halfX + (ls +(10*units)),halfY + (10*units));
 
+    cxa.stroke();
+    cxa.lineWidth = units;
+    cxa.beginPath();
+
     // +
     cxa.moveTo(halfX + ((ls +(10*units))*2),halfY - (60*units));
     cxa.lineTo(halfX + ((ls +(10*units))*2),halfY - (40*units));
@@ -320,39 +362,41 @@ function drawVectorScopeChart(channels) {
     cxa.stroke();
 
 
-    var colW = (((ls*4)-(20*units))/3);
+    /*var colW = (((ls*4)-(20*units))/3);
     var keyGrad=cxa.createLinearGradient(halfX + (colW*0.5) + (20*units),0,halfX + (colW) + (20*units),0);
-    keyGrad.addColorStop(0,"rgba(235,30,55,1)");
-    keyGrad.addColorStop(1,"rgba(255,255,255,1)");
+    keyGrad.addColorStop(0,color.string(new RGBA(235,30,55,1)));
+    keyGrad.addColorStop(1,color.string(new RGBA(255,255,255,1)));
     cxa.fillStyle=keyGrad;
-    cxa.fillRect(halfX + (colW*0.5) + (20*units), halfY + (ls +(40*units)), colW*0.5, 10*units);
+    cxa.fillRect(halfX + (colW*0.5) + (20*units), halfY + (ls +(40*units)), colW*0.5, 10*units);*/
 
-    masterCol = new RGBA(0,0,0,0);
+    color.master = new RGBA(0,0,0,0);
 }
 
 
-function drawVectorScope(channels,sampleSize,style,func,scale,line,x,y) {
+function drawVectorScope(channels,style,func,scale,line,x,y) {
     var i;
     var m = 0;
+    var l = channels[0].length;
     var sx = 0;
     cxa.lineWidth = line;
 
     // CHOOSE SAMPLE //
-    var sample = tombola.range(1000,channels[0].length-sampleSize - 1000);
-
+    /*var sample = tombola.range(1000,channels[0].length-sampleSize - 1000);
+     */
 
     // NORMALISE SAMPLE //
-    for (i=sample; i<(sample+sampleSize); i++) {
+    for (i=0; i<l; i++) {
         if (channels[0][i]>m) m = channels[0][i];
         if (channels[1][i]>m) m = channels[1][i];
         if (-channels[0][i]>m) m = -channels[0][i];
         if (-channels[1][i]>m) m = -channels[1][i];
     }
 
+
     if (style==1) { cxa.beginPath(); }
     // CALCULATE & DRAW //
-    for (i=sample; i<(sample+sampleSize); i++) {
-        var signal = [ (channels[0][i] * (1/m)) , (channels[1][i] * (1/m)) ] ;
+    for (i=0; i<l; i+=2) {
+        var signal = [ (channels[0][i] * (1/m)), (channels[1][i] * (1/m)) ] ;
 
         var pos = func(signal,scale);
         switch (style) {
@@ -360,7 +404,7 @@ function drawVectorScope(channels,sampleSize,style,func,scale,line,x,y) {
                 cxa.fillRect(x + pos[0],y + pos[1],line,line);
                 break;
             case 1:
-                if (i===sample) { cxa.moveTo(x + pos[0],y + pos[1]); }
+                if (i===0) { cxa.moveTo(x + pos[0],y + pos[1]); }
                 else { cxa.lineTo(x + pos[0],y + pos[1]); }
                 break;
             case 2:
@@ -399,6 +443,13 @@ function drawLogo(x,y,s,c1,c2) {
 
     cxa.fillRect(x - (s*0.6), y + (s * 1.18), s*1.2, s*0.28);
 
+    cxa.textAlign = "center";
+    var f = Math.round(s*0.38);
+    var fs = f*1.1;
+    cxa.font = "400 " + f + "px Cabin";
+    cxa.fillText("A",x - (s*1.5), y - (s*1.5) + (fs*1.5));
+    cxa.fillText("R",x - (s*1.5), y - (s*1.5) + (fs*2.5));
+    cxa.fillText("P",x - (s*1.5), y - (s*1.5) + (fs*3.5));
 }
 
 

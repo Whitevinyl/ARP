@@ -241,7 +241,7 @@ FilterWrapper.prototype.process = function(signal,index) {
 
 
 function filterNoise(level) {
-    return (tombola.range(-level,level)/100);
+    return tombola.rangeFloat(-level,level);
 }
 
 
@@ -271,6 +271,11 @@ function filterFeedback2(input,level,delay,channel,index,l) {
     }
 }
 
+function filterStereoFeedback2X(signal,level,delay,channel,index,l) {
+    filterFeedback2(signal[0],level,delay,channel[1],index,l);
+    filterFeedback2(signal[1],level,delay,channel[0],index,l);
+}
+
 
 // REVERB //
 function filterReverb(level,delay,size,channel,index) {
@@ -281,6 +286,13 @@ function filterReverb(level,delay,size,channel,index) {
         out += filterFeedback(((level) - (r*j))*0.15,delay + (primes[j]*60),channel,index);
     }
     return out;
+}
+
+function filterStereoReverb(signal,level,delay,size,channel,index) {
+    return [
+        signal[0] += filterReverb(level,delay,size,channel[1],index),
+        signal[1] += filterReverb(level,delay,size,channel[0],index)
+    ];
 }
 
 
@@ -306,6 +318,13 @@ function filterFoldBack(input,threshold) {
     return input;
 }
 
+function filterStereoFoldBack(signal,threshold) {
+    return [
+        filterFoldBack(signal[0],threshold),
+        filterFoldBack(signal[1],threshold)
+    ];
+}
+
 
 // FOLDBACK2 //
 function filterFoldBack2(input,threshold, power) {
@@ -318,10 +337,24 @@ function filterFoldBack2(input,threshold, power) {
     return valueInRange(input,-threshold,threshold);
 }
 
+function filterStereoFoldBack2(signal,threshold,power) {
+    return [
+        filterFoldBack2(signal[0],threshold,power),
+        filterFoldBack2(signal[1],threshold,power)
+    ];
+}
+
 
 // CLIPPING //
 function filterClipper(input, threshold, output) {
     return (valueInRange(input, -threshold, threshold) * (1/threshold)) * output;
+}
+
+function filterStereoClipping(signal,threshold,output) {
+    return [
+        filterClipper(signal[0],threshold,output),
+        filterClipper(signal[1],threshold,output)
+    ];
 }
 
 
@@ -334,6 +367,13 @@ function filterClipping2(input,threshold, power) {
         input = -threshold + ((input-(-threshold))*power);
     }
     return input;
+}
+
+function filterStereoClipping2(signal,threshold,power) {
+    return [
+        filterClipping2(signal[0],threshold,power),
+        filterClipping2(signal[1],threshold,power)
+    ];
 }
 
 
@@ -351,9 +391,16 @@ function filterInvert(input,threshold) {
     return a;
 }
 
+function filterStereoInvert(signal,threshold) {
+    return [
+        filterInvert(signal[0],threshold),
+        filterInvert(signal[1],threshold)
+    ];
+}
+
 
 // ERODE ? //
-function filterErode (input,width,index) {
+function filterErode(input,width,index) {
     if (index % tombola.range(1,width)===0) {
         //input *= tombola.rangeFloat(0.85,0.95);
         input = -input;
@@ -361,10 +408,165 @@ function filterErode (input,width,index) {
     return input;
 }
 
+function filterStereoErode(signal,width,index) {
+    return [
+        filterErode(signal[0],width,index),
+        filterErode(signal[1],width,index)
+    ];
+}
+
+
+// PANNER //
+function filterStereoPanner(signal,panning) {
+    if (panning<0) {
+        signal = [
+            (signal[0] * (1+panning)) + (signal[1] * (-panning)),
+            signal[1] * (1+panning)
+        ];
+    } else {
+        signal = [
+            signal[0] * (1-panning),
+            (signal[1] * (1-panning)) + (signal[0] * (panning))
+        ];
+    }
+    return signal;
+}
 
 
 // PERSISTENT FILTERS //
 ////////////////////////
+
+
+// RESAMPLER //
+function FilterResampler() {
+    this.s = 0;
+    this.c = 0;
+    this.i = -1;
+    this.r = 0;
+    this.sp = 3;
+    this.l = 5000;
+}
+FilterResampler.prototype.process = function(input,mode,chance,channel,index) {
+    if (mode===0) {
+        if (this.i<0 && tombola.chance(1,chance)) {
+            // get sample //
+            if (this.s===0) this.s = tombola.range(1,index);
+            this.i = 0;
+            this.sp = tombola.rangeFloat(-0.6,1.5);
+            this.r = tombola.rangeFloat(0.01,2);
+            this.l = tombola.range(5000,40000);
+        }
+
+        if (this.i>=0) {
+            input =  [
+                channel[0][this.s + Math.round(this.i)],
+                channel[1][this.s + Math.round(this.i)]
+            ];
+
+            if (this.i<this.l) {
+                this.r += (this.sp/sampleRate);
+                this.i += this.r;
+            } else {
+                this.i =-1;
+            }
+        }
+    }
+    if (mode===1) {
+        if (this.i<0 && tombola.chance(1,chance)) {
+            // get sample //
+            this.s = tombola.range(1,index);
+            this.i = 0;
+            this.sp = tombola.rangeFloat(-0.5,0.6);
+            this.r = tombola.rangeFloat(0.7,2);
+            this.l = tombola.range(700,7000);
+            this.c = tombola.range(3,11);
+        }
+
+
+        if (this.i>=0) {
+            input =  [
+                channel[0][this.s + Math.round(this.i)],
+                channel[1][this.s + Math.round(this.i)]
+            ];
+
+
+            if (this.i<this.l) {
+                this.r += (this.sp/sampleRate);
+                this.i += this.r;
+            } else {
+                this.i = -1;
+            }
+
+            if (this.c>0 && this.i<0) {
+                this.c -= 1;
+                this.i = 0;
+                this.r += (this.sp/sampleRate);
+                this.r += tombola.fudgeFloat(4,0.05);
+                this.i += this.r;
+
+                //this.r = tombola.rangeFloat(0.8,2);
+
+                if (this.r<0) {
+                    this.c = 0;
+                    this.i = -1;
+                }
+            }
+        }
+
+
+    }
+
+    return input;
+};
+
+
+// PULSE //
+function FilterPulse() {
+    this.t = 0;
+    this.f = 50;
+    this.a = 1;
+    this.i = -1;
+    this.l = tombola.range(2000,10000);
+}
+FilterPulse.prototype.process = function(input,ducking) {
+    ducking = ducking || 0;
+
+    if (this.i<=0) {
+        this.i = 0;
+        this.f = tombola.range(20,40);
+        this.a = 1;
+        this.t = 0;
+        this.l += 1000;
+        if (tombola.chance(1,5)) {
+            this.l = tombola.range(500,20000);
+        }
+    }
+
+    if (this.i>=0 && this.i<this.l) {
+
+        this.i++;
+        this.f -= (18/this.l);
+        this.a -= (1/this.l);
+
+        this.t += (this.f * (4/sampleRate));
+        if (this.t>3) this.t = (this.t - 4);
+        var t = this.t;
+        if (t>1) t = (1-this.t);
+
+
+
+        input = [
+            ((input[0]*0.95) * (1-(this.a * ducking))) + ((t + tombola.fudgeFloat(2,0.1)) *this.a),
+            ((input[1]*0.95) * (1-(this.a * ducking))) + ((t + tombola.fudgeFloat(2,0.1)) *this.a)
+        ];
+
+        if (this.i>=this.l) {
+            this.i = -1;
+        }
+    }
+
+    return input;
+};
 
 
 // FLIPPER //
@@ -476,6 +678,20 @@ LFO.prototype.process = function(r) {
     this.p += r;
     if(this.p > 2) this.p -= 4;
     return  this.p*(2-Math.abs(this.p));
+};
+
+function Square() {
+    this.p = -1;
+    this.c = 0;
+}
+Square.prototype.process = function(r) {
+    r = sampleRate/r;
+    this.c ++;
+    if(this.c > r) {
+        this.p = -this.p;
+        this.c = 0;
+    }
+    return  this.p;
 };
 
 

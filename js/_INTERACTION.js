@@ -19,19 +19,17 @@ function mousePress() {
     }
 
     //if (tombola.chance(2,3)) {
-        drawTimeSpectrumChart(generateTimeSpectrum(30,175),generateSpectrumSeconds());
+        //drawTimeSpectrumChart(generateTimeSpectrum(res.x,res.y),generateSpectrumSeconds());
+        //drawVectorScopeChart(generateScopeData(8000));
     //} else {
-        /*drawGen();
+        drawGen();
         setTimeout(function() {
             //genTest(mouseX);
             generateWaveform();
             //drawWave();
 
-        },20);*/
+        },20);
     //}
-
-
-
 }
 
 function mouseRelease() {
