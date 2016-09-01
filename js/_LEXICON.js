@@ -44,7 +44,7 @@ var LexTravel = {
             b : ['Andean flamingos nearby', 'Chilean flamingos nearby', 'flamingos flying overhead', 'flamingos on the way', 'some flamingos nearby', 'a fox close by', 'another fox there', 'a fox with cubs', 'a hunting fox', 'some playful foxes', 'an Andean fox', 'a Culpeo fox', 'a grey fox', 'llama herds on the way', 'llama being herded', 'some vicuña nearby', 'geese flying overhead', 'geese nearby', 'an eagle overhead', 'soaring eagles', 'a gliding buzzard', 'some distant birds of prey', 'a distant puma', 'a burrowing owl', 'a pair of burrowing owls', 'a family of mouse opossums', 'a mouse opossum nearby', 'a nearby "lava lizard"']
         },
         observation : {
-            a : ['The rock formations are', 'The tephra layers are', 'The rock shapes here are', 'The scattered rocks are', 'The stone layers are', 'The salt deposits are', 'The surrounding hills are', 'The plateaus are', 'The clouds here are', 'Even the sand here is', 'The volcanic scars are', 'The lava deposits are', 'The craters are', 'The pyroclasmic channels are', 'The salt crusts are', 'The mineral deposits are'],
+            a : ['The rock formations are', 'The tephra layers are', 'The rock shapes here are', 'The scattered rocks are', 'The stone layers are', 'The salt deposits are', 'The surrounding hills are', 'The plateaus are', 'The clouds here are', 'Even the sand here is', 'The volcanic scars are', 'The lava deposits are', 'The craters are', 'The pyroclasmic channels are', 'The salt crusts are', 'The mineral deposits are', 'The surrounding area is'],
             b : ['striking', 'special', 'pretty special', 'beautiful', 'very unique', 'something to be seen', 'really worth seeing', 'worth witnessing', 'worth checking out', 'very beautiful', 'colorful', 'very colorful', 'otherworldly', 'almost alien', 'really something', 'very photogenic', 'really unique', 'fascinating', 'something else', 'unearthly', 'pretty interesting', 'definitely interesting']
         },
         area : {
@@ -142,7 +142,7 @@ var LexToday = {
 
 var LexMessages = {
     quality: {
-        intro : ["it's seeming like", 'seems like', 'looks like', 'looks as if', 'seems as if', 'it looks like', "it's looking like", 'seems', "we've found that", "we've noticed that", "we've found", "we've noticed", "we're finding", "we're noticing", "one of the contractors spotted that", "one of the contractors noticed that", "Michael noticed that", "Michael pointed out that", "Michael found that", 'I found that', 'I noticed'],
+        intro : ["it seems like", 'seems like', 'looks like', 'looks as if', 'seems as if', 'it looks like', "it's looking like", 'seems', "we've found that", "we've noticed that", "we've found", "we've noticed", "we're finding", "we're noticing", "one of the contractors spotted that", "one of the contractors noticed that", "Michael noticed that", "Michael pointed out that", "Michael found that", 'I found that', 'I noticed'],
         quantity : ['1 or 2', 'one or two', 'a couple', 'a few', 'several', 'some', 'quite a few', 'a number', 'a handful', 'roughly a third', 'roughly a quarter', 'almost half', 'around half', 'a third', 'a quarter', 'half', 'many', 'most', 'the majority', 'almost all', 'all'],
         preframe : ["last month's", "last week's", "yesterday's", "last night's", "this morning's", 'the latest', 'the recent', 'the newest', 'the newer', 'the more recent'],
         messages : ['messages', 'message-bursts', 'message recordings', 'audio messages', 'recordings', 'sound recordings', 'audio-bursts', 'audio recordings', 'fractured recordings', 'fractured messages', 'truncated recordings', 'audio-data sets', 'data-collections'],
@@ -196,7 +196,7 @@ var LexObservation = {
         pre : ['while', "when I'm", 'when I find myself'],
         looking : ['watching across', 'studying', 'looking at', 'looking up at', 'looking into', 'looking across', 'staring out at', 'staring up at', 'staring into', 'staring across', 'gazing into', 'gazing up at', 'gazing out at', 'gazing across'],
         way : ['the', 'this'],
-        type : ['clear', 'eternal', 'endless', 'crystalline', 'barrelling', 'rolling', 'ever-changing', 'Atacaman', 'Andean', "desert's", 'Chilean', 'uninterrupted', 'pollution-free', 'slow-moving', 'turning', 'spinning', 'churning', 'cloudless', "plateau's", 'vast', 'open', 'expansive', 'stretching'],
+        type : ['clear', 'eternal', 'endless', 'crystalline', 'barrelling', 'rolling', 'ever-changing', 'Atacaman', 'Andean', "desert's", 'Chilean', 'uninterrupted', 'slow-moving', 'turning', 'spinning', 'churning', 'cloudless', "plateau's", 'vast', 'open', 'expansive', 'stretching'],
         sky : ['sky', 'skies', 'night', 'night sky', 'night-sky', 'heavens', 'celestial sphere'],
 
         single : {
@@ -259,7 +259,7 @@ var LexObservation = {
                 action : ['travelling', 'grazing']
             }
         },
-        place : ['outside', 'close by', 'really close', 'nearby', 'a short distance away', 'by the salt flat', 'close to the observatory', 'close to the operations site', 'at the ridge', 'near the plateau edge', 'toward the lagoons', 'just a little way away', 'in the distance', 'out in the hills', 'towards the volcanoes', 'near the main road', 'over toward Caichinque', 'towards the reserve'],
+        place : ['outside', 'close by', 'really close', 'nearby', 'a short distance away', 'by the salt flat', 'close to the observatory', 'close to the operations site', 'at the ridge', 'near the plateau edge', 'toward the lagoons', 'a little way away', 'in the distance', 'out in the hills', 'towards the volcanoes', 'near the main road', 'over toward Caichinque', 'towards the reserve'],
         remark : []
     },
     light : {

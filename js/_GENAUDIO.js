@@ -16,47 +16,8 @@ var sampleRate = 44100;
 var noiseSource;
 
 
-function generateAudio() {
 
-}
-
-function genTest(x) {
-    var startPerf = performance.now();
-    var l = sampleRate*20;
-    var i,j;
-    var c = 40;
-
-    if (x<halfX) {
-
-        for (i=0; i<l; i++) {
-            var signal = [0,0];
-            for (j=0; j<c; j++) {
-                signal[0] = tombola.range(1,10000);
-                signal[1] = tombola.range(1,10000);
-            }
-        }
-
-    } else {
-
-        for (i=0; i<l; i++) {
-            var signal0 = 0;
-            var signal1 = 0;
-            for (j=0; j<c; j++) {
-                signal0 = tombola.range(1,10000);
-                signal1 = tombola.range(1,10000);
-            }
-        }
-
-    }
-
-
-    // EXECUTION TIME //
-    var endPerf = performance.now();
-    console.log("Generated in: "+Math.round(endPerf - startPerf)+"ms");
-}
-
-
-function generateWaveform(seed) {
+function generateWaveform() {
 
     // AUDIO LENGTH //
     var seconds = tombola.range(19,28);
@@ -91,7 +52,7 @@ function printWaveform(seconds) {
 
     var noise = [];
     noise.push(new VoiceCracklePeak());
-    noise.push(tombola.item([new VoiceRoar(), new VoiceCrackle()]));
+    noise.push(new VoiceCrackle());
 
 
     var LPL = new FilterLowPass2();
@@ -104,16 +65,34 @@ function printWaveform(seconds) {
     var cutstyle = tombola.chance(1,5);
     var delay = 10;
     var modRoot = tombola.range(1500,7000);
+    modRoot = 1500;
     var modLevel = tombola.rangeFloat(0.05,0.6);
     var hold = 50;
+    var holdMod = tombola.fudge(2,1);
     var foldback = tombola.rangeFloat(0.2,1);
     var clipping = 0.9;
     if (tombola.percent(20)) {
-        clipping = tombola.rangeFloat(0.4,0.9);
+        clipping = tombola.rangeFloat(0.5,0.9);
     }
+
+    var noiseShift = tombola.percent(50);
+    console.log('noiseShift: '+noiseShift);
     var reverb = tombola.percent(40);
+    console.log('reverb: '+reverb);
     var fold = tombola.chance(1,3);
+    console.log('fold: '+fold);
     var rumble = tombola.percent(30);
+    console.log('rumble: '+rumble);
+    var pulsing = tombola.percent(30);
+    console.log('pulsing: '+pulsing);
+    var phaseWander = tombola.percent(30);
+    console.log('phaseWander: '+phaseWander);
+    var phaseLFO = tombola.percent(30);
+    if (phaseWander) {
+        phaseLFO = false;
+    }
+    console.log('phaseLFO: '+phaseLFO);
+    var sampleMode = tombola.item([1,3]);
 
     var Lfo = new LFO();
     var Lfo2 = new LFO();
@@ -133,6 +112,13 @@ function printWaveform(seconds) {
 
     var resampler = new FilterResampler();
     var pulse = new FilterPulse();
+    var siren = new FilterSiren();
+    var subSwell = new FilterSubSwell();
+    var wail = new FilterWail();
+    var growl = new FilterGrowl();
+    var phaseSine = new PhaseSine();
+    var phaseLfo = new LFO();
+    var phaseLfo2 = new LFO();
 
     // LOOP THROUGH SAMPLES //
     for (var i=0; i<l; i++) {
@@ -166,7 +152,7 @@ function printWaveform(seconds) {
 
         // RUMBLE //
         if (rumble) {
-            var wv = walkVoice.process(650,10) * 0.5;
+            var wv = walkVoice.process(650,10) * 0.3;  ////
             signal[0] += (wv);
             signal[1] += (wv);
         }
@@ -175,20 +161,27 @@ function printWaveform(seconds) {
         // BIT CRUSH //
         signal[0] = holdL.process(hold,signal[0]);
         signal[1] = holdR.process(hold,signal[1]);
-        if (tombola.chance(1,5000)) {
-            hold += tombola.fudge(3, 2);
+        /*if (tombola.chance(1,5000)) {
+            hold += tombola.fudge(3, 1);
+        }*/
+        if (tombola.chance(1,40000)) {
+            holdMod = tombola.fudgeFloat(8,0.0001);
         }
-        hold = valueInRange(hold, 10, 150);
-
+        hold += holdMod;
+        //hold = valueInRange(hold, 10, 150);
+        if (hold<10) {
+            holdMod = 0.0001;
+        }
+        if (hold>150) {
+            holdMod = -0.0001;
+        }
 
         // NOISE CHANGE //
-        /*if (tombola.chance(1,20000)) {
-            var g = noise[1].gain;
+        if (noiseShift && tombola.chance(1,20000)) {
             var p = noise[1].panning;
             noise[1] = tombola.item([new VoiceWhite(), new VoiceBrown(), new VoiceRoar(), new VoiceCracklePeak(), new VoiceCrackle()]);
-            //noise[1].gain = g;
             noise[1].panning = p;
-        }*/
+        }
 
 
         // NOISE LOOP //
@@ -219,21 +212,46 @@ function printWaveform(seconds) {
 
 
         // PULSE //
-        signal = pulse.process(signal,1);
-
-        // RESAMPLER //
-        //signal = resampler.process(signal,1,200000,channels,i);
-
-        // FEEDBACK FILTER //
-        if (tombola.chance(1,500)) {
-            delay += (tombola.fudge(3, 2)*0.5);
+        if (pulsing) {
+            signal = pulse.process(signal,1,false);
         }
-        delay = valueInRange(delay, 5, 5000);
-        signal = filterStereoFeedbackX(signal,0.6,delay,channels,i);
+
+        // SIREN //
+        signal = siren.process(signal,0.5,100000);
+
+        // SUB //
+        signal = subSwell.process(signal,0.6,200000);
+
+        // WAIL //
+        signal = wail.process(signal,0.6,200000);
+
+        // GROWL //
+        signal = growl.process(signal,0.6,200000);
+
+        // PHASE SINE //
+        /*var ps = phaseSine.process(200, 2 + (phaseLfo.process(0.6)*1), 80 + (phaseLfo2.process(0.35)*50));
+        signal[0] += (ps*0.1);
+        signal[1] += (ps*0.1);*/
 
         // FEEDBACK FILTER //
-        var dt = modRoot + (Lfo.process(1.2)*1500);
-        signal = filterStereoFeedbackX(signal,modLevel,dt,channels,i);
+        if (phaseWander) {
+            if (tombola.chance(1,500)) {
+                delay += (tombola.fudge(3, 2)*0.5);
+            }
+            delay = valueInRange(delay, 10, 5000);
+            signal = filterStereoFeedbackX(signal,0.5,delay,channels,i); ////
+        }
+
+
+        //signal = filterStereoFeedbackX(signal,0.4,310,channels,i);
+        //signal = filterStereoFeedbackX(signal,0.1,900,channels,i);
+
+        // FEEDBACK FILTER //
+        if (phaseLFO) {
+            var dt = 10 + modRoot + (Lfo.process(1.2)*1500);
+            signal = filterStereoFeedbackX(signal,modLevel,dt,channels,i); ////
+        }
+
 
 
         // FOLDBACK DISTORTION //
@@ -242,7 +260,7 @@ function printWaveform(seconds) {
                 foldback += (tombola.fudge(1, 1)*0.02);
             }
             foldback = valueInRange(foldback, 0.05, 1);
-            signal = filterStereoFoldBack(signal,foldback);
+            signal = filterStereoFoldBack(signal,foldback);  /////
         }
 
 
@@ -259,30 +277,21 @@ function printWaveform(seconds) {
 
         // REVERB //
         if (reverb) {
-            signal = filterStereoReverb(signal,0.5,20,11,channels,i);
+            signal = filterStereoReverb(signal,0.5,20,11,channels,i); /////
         }
 
 
-        // CLIPPER //
-        //totalL = filterClipper(totalL, clipping, 1);
-        //totalR = filterClipper(totalR, clipping, 1);
-
-
         // FOLDBACK 2 DISTORTION //
-        //totalL = filterFoldBack2(totalL, 0.2, 2);
-        //totalR = filterFoldBack2(totalR, 0.2, 2);
+        //signal = filterStereoFoldBack2(signal,0.6, 1.4); // crisp, low-end color
 
 
         // CLIPPING 2 DISTORTION //
-        signal = filterStereoClipping2(signal,clipping,0.2);
-
-
+        signal = filterStereoClipping2(signal,clipping,0.2);  /////
 
 
         // RESAMPLER //
-        signal = resampler.process(signal,1,200000,channels,i);
-
-        //signal = pulse.process(signal);
+        signal = resampler.process(signal,sampleMode,200000,channels,i);
+        //signal = resampler.process(signal,4,200000,channels,i);
 
 
         // LOW PASS FILTER //
@@ -306,15 +315,10 @@ function printWaveform(seconds) {
 
 
         // INVERT DISTORTION //
-        /*if (i<(l/2)) {
-            totalL = filterInvert(totalL, 0.5);
-            totalR = filterInvert(totalR, 0.5);
-        }*/
-
+        //signal = filterStereoInvert(signal, 0.5); // horrible :)
 
         // ERODE DISTORTION //
-        /*totalL = filterErode(totalL,3000,i);
-        totalR = filterErode(totalR,3000,i);*/
+        //signal = filterStereoErode(signal,3000,i); // crackles
 
 
         // FLIPPER DISTORTION //
@@ -323,17 +327,10 @@ function printWaveform(seconds) {
         totalR = flipper.process(totalR,flp);*/
 
 
-        // FOLDBACK DISTORTION //
-        //totalL = filterFoldBack(totalL,1);
-        //totalR = filterFoldBack(totalR,1);
-
-
         // PANNER //
+        /*var panRate = 20 + (Wlk4.process(0.5,26000)*19.8);
+        signal = filterStereoPanner(signal,Lfo2.process(panRate));*/
 
-        /*if (i>(sampleRate*8)) {
-            var panRate = 20 + (Wlk4.process(0.5,26000)*19.8);
-            signal = filterStereoPanner(signal,Lfo2.process(panRate));
-        }*/
 
 
         // WRITE VALUES //
@@ -350,7 +347,6 @@ function printWaveform(seconds) {
 
 
         // PEAK //
-        // update highest peak from both channels //
         var ttl = channels[0][i];
         if (ttl<0) { ttl = -ttl; }
         var ttr = channels[1][i];
@@ -394,13 +390,6 @@ function printWaveform(seconds) {
         }
     }
 
-
-    // STEREO VECTORSCOPE //
-    //drawVectorScopeChart(channels);
-
-
-    // TIME SPECTRUM //
-    //drawTimeSpectrumChart(generateTimeSpectrum(30,200));
 
     // SETUP AND PLAY AUDIO //
     var noiseBuffer = Tone.context.createBuffer(2, l, sampleRate);
