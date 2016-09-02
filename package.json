@@ -1,0 +1,31 @@
+{
+  "name": "arp_observatory",
+  "version": "0.0.1",
+  "description": "creative twitter and soundcloud bot",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Whitevinyl/ARP.git"
+  },
+  "keywords": [
+    "space",
+    "astronomy",
+    "audio",
+    "visual",
+    "bot",
+    "procedural"
+  ],
+  "author": "Luke Twyman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Whitevinyl/ARP/issues"
+  },
+  "homepage": "https://github.com/Whitevinyl/ARP",
+  "dependencies": {
+    "twit": "~2.2.4"
+  }
+}
