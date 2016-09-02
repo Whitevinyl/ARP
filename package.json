@@ -26,6 +26,8 @@
   },
   "homepage": "https://github.com/Whitevinyl/ARP",
   "dependencies": {
-    "twit": "~2.2.4"
+    "twit": "~2.2.4",
+    "tombola": "~1.0.0",
+    "suncalc": "~1.7.0"
   }
 }
