@@ -26,8 +26,19 @@
   },
   "homepage": "https://github.com/Whitevinyl/ARP",
   "dependencies": {
+    "canvas": "^1.4.0",
+    "colorflex": "0.0.1",
+    "form-data": "^1.0.1",
+    "node-fetch": "^1.6.0",
+    "node-soundcloud": "0.0.5",
+    "node-wav": "0.0.2",
+    "perlin-simplex": "0.0.2",
+    "perspectivejs": "^1.0.0",
+    "soundcloud-nodejs-api-wrapper": "~0.3.2",
+    "soundcloudnodejs": "~2.0.4",
+    "suncalc": "~1.7.0",
+    "tombola": "0.0.1",
     "twit": "~2.2.4",
-    "tombola": "~1.0.0",
-    "suncalc": "~1.7.0"
+    "wav-encoder": "^1.1.0"
   }
 }

@@ -38,7 +38,7 @@ function Lexicon() {
             hills: ['the Altiplano', 'the upper plateau', 'Callejon de Barrales', 'Cordillera de la Sal', 'the Miscanti foothills', 'the Miñiques foothills', 'the Chiliques foothills', 'the Caichinque foothills', "Lascar's foothills"],
             geyser: ['Pozon Rustico', 'Guatin thermal springs', 'Puritama hot springs', 'El Tatio geysers', 'Tatio geysers', 'the local geysers', 'the San Pedro geysers'],
             lava: ['some of the lava flows', 'the lava domes', 'the lava flows', 'the lava fields', 'the tephra fields', 'the lava channels'],
-            life: ['Valle de Jere', 'Tilomonte oasis', 'Los Flamencos', 'the national reserve', 'the tamarugo forests'],
+            life: ['Valle de Jere', 'Tilomonte oasis', 'Los Flamencos', 'the national reserve'],
             abandoned: ['Placilla de Caracoles cemetary', 'the abandoned sulfur mines'],
             mines: ['the lithium mines', 'the Atacama lithium fields', 'the copper mines'],
             observatory: ['the ALMA array site', 'the APEX telescope site', 'the NANTEN telescope site', 'the ASTE telescope site']
@@ -146,7 +146,7 @@ function Lexicon() {
             messages: ['messages', 'message-bursts', 'message recordings', 'audio messages', 'recordings', 'sound recordings', 'audio-bursts', 'audio recordings', 'fractured recordings', 'fractured messages', 'truncated recordings', 'audio-data sets', 'data-collections'],
             display: ['share', 'display', 'show', 'have', 'contain'],
             display2: ['consistent', 'the same', 'repeating', 'identical'],
-            frequency: ['peaks', 'frequency peaks', 'dips', 'frequency dips', 'missing frequencies', 'boosted frequencies', 'dips or peaks', 'pre-existing clipping', 'wave-folding'],
+            frequency: ['peaks', 'frequency peaks', 'dips', 'frequency dips', 'missing frequencies', 'boosted frequencies', 'sustained tones', 'droning', 'dips or peaks', 'pre-existing clipping', 'wave-folding'],
             bridge: ['the same', 'identical', 'near-identical', 'very similar', 'similar', 'mirrored', 'inverted', 'continuous', 'connected'],
             property: ['patterns', 'sequences', 'frequency intervals', 'frequency spectra', 'noise distribution', 'gain quotas', 'pitch-spacing', 'formats', 'structures', 'configurations', 'peaks', 'phase', 'sections', 'starting points', 'gaps', 'spaces']
         },
@@ -192,7 +192,7 @@ function Lexicon() {
         },
         sighting: {
             just: ['just saw', 'I just saw', 'just noticed', 'just spotted', 'I just spotted', 'just watched', 'I just watched'],
-            frame: ['earlier', 'earlier today', 'about an hour ago', 'a couple of hours ago', 'a few hours ago', 'when I got up this morning', 'this morning', 'early this morning', 'at dawn this morning', 'early in the morning', 'just now', 'a few minutes ago', 'about ten minutes ago', 'about half an hour ago', 'late last night', 'last night', 'yesterday', 'yesterday evening', 'late evening yesterday', 'early evening yesterday', 'during a break', 'while I was walking', 'while out walking', 'on my break earlier', 'on a coffee break'],
+            frame: ['earlier', 'earlier today', 'about an hour ago', 'a couple of hours ago', 'a few hours ago', 'when I got up this morning', 'this morning', 'early this morning', 'at dawn', 'just now', 'a few minutes ago', 'about ten minutes ago', 'about half an hour ago', 'late last night', 'last night', 'yesterday', 'yesterday evening', 'late evening yesterday', 'during a break', 'while I was walking', 'while out walking', 'on my break earlier', 'on a coffee break'],
             saw: ['I saw', 'I noticed', 'I spotted', 'I managed to see', 'I managed to spot', 'I watched', 'I was watching', 'I filmed', 'I was able to spot', 'I was able to see', 'I was able to watch'],
             thing: {
                 eagle: {
@@ -221,7 +221,7 @@ function Lexicon() {
                 },
                 lizard: {
                     thing: ['a "lava lizard"'],
-                    action: ['basking', 'scurrying']
+                    action: ['basking', 'scurrying', 'hopping about', 'looking for insects', 'cooling off']
                 },
                 chinchilla: {
                     thing: ['a rare chinchilla', 'a southern vizcacha', 'a pair of vizcacha'],
@@ -232,15 +232,15 @@ function Lexicon() {
                     action: ['jogging', 'travelling cautiously', 'prowling between rocks']
                 },
                 dust: {
-                    thing: ['a dust plume', 'a small dust devil', 'a dust devil', 'a larger dust devil', 'two small dust devils', 'several dust devils', 'three dust devils', 'four small dust devils'],
-                    action: ['travelling straight', 'slowly moving', 'scattering sand', 'almost stationary', 'travelling', 'catching the light', 'swirling', 'moving erratically', 'dancing']
+                    thing: ['a dust plume', 'a small dust devil', 'a dust devil', 'a large dust devil', 'two small dust devils', 'several dust devils', 'three dust devils', 'four small dust devils'],
+                    action: ['moving around', 'slowly moving', 'scattering sand', 'almost stationary', 'travelling', 'catching the light', 'swirling', 'moving erratically', 'dancing']
                 },
                 donkey: {
                     thing: ['a pair of wild donkeys', 'a young wild donkey'],
                     action: ['travelling', 'grazing']
                 }
             },
-            place: ['outside', 'close by', 'really close', 'nearby', 'a short distance away', 'by the salt flat', 'close to the observatory', 'close to the operations site', 'at the ridge', 'near the plateau edge', 'toward the lagoons', 'a little way away', 'in the distance', 'out in the hills', 'towards the volcanoes', 'near the main road', 'over toward Caichinque', 'towards the reserve'],
+            place: ['outside', 'close by', 'very close by', 'nearby', 'a short distance away', 'by the salt flat', 'close to the observatory', 'close to the operations site', 'at the ridge', 'near the plateau edge', 'toward the lagoons', 'a little way away', 'in the distance', 'out in the hills', 'towards the volcanoes', 'near the main road', 'over toward Caichinque', 'towards the reserve'],
             remark: []
         },
         light: {
