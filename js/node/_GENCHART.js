@@ -1257,11 +1257,12 @@ Chart.prototype.generateTime = function() {
     if (h<10) h = '0'+h;
     if (m<10) m = '0'+m;
     if (s<10) s = '0'+s;
+    var z = ' UTC';
 
     return {
-        string: 'Time: ' + h + ':' + m + ':' + s,
-        strict: '' + h + ':' + m + ':' + s,
-        short: '' + h + ':' + m
+        string: 'Time: ' + h + ':' + m + ':' + s + z,
+        strict: '' + h + ':' + m + ':' + s + z,
+        short: '' + h + ':' + m + z
     };
 
 };
@@ -1287,12 +1288,26 @@ Chart.prototype.generateCat = function() {
 
 Chart.prototype.generateFrequency = function() {
     return {
-        string: 'centimetre band, 4.46233627 GHz',
-        strict: '4.46233627 GHz'
+        string: 'centimetre band, 8.92467255 GHz',
+        strict: '8.92467255 GHz'
     };
 };
 
+Chart.prototype.generateBandWidth = function() {
+    var bw = tombola.range(50000,120000)/100;
+    return '' + bw + ' Hz';
+};
 
+Chart.prototype.generateLevel = function(bad) {
+    var l;
+    if (bad) {
+        l = tombola.range(-12000,-10000)/100;
+    } else {
+        l = tombola.range(-2500,-500)/100;
+    }
+
+    return '' + l + ' dB';
+};
 
 
 module.exports = Chart;

@@ -402,7 +402,9 @@ function printWaveform(seconds) {
         cat: genChart.generateCat(),
         date: genChart.generateDate(),
         time: genChart.generateTime(),
-        frequency: genChart.generateFrequency()
+        frequency: genChart.generateFrequency(),
+        bandwidth: genChart.generateBandWidth(),
+        level: genChart.generateLevel()
     };
 }
 

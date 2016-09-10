@@ -29,6 +29,7 @@
     "canvas": "^1.4.0",
     "colorflex": "0.0.1",
     "form-data": "^1.0.1",
+    "jsonfile": "^2.3.1",
     "node-fetch": "^1.6.0",
     "node-soundcloud": "0.0.5",
     "node-wav": "0.0.2",

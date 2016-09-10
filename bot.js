@@ -8,13 +8,17 @@ var wavEncoder = require('wav-encoder');
 
 var utils = require('./js/node/utils');
 var RGBA = require('./js/node/RGBA');
-var Tombola = require('tombola');
 var Colorflex = require('colorflex');
 var config = require('./atacama');
 var atacama2 = require('./atacama2');
 var SunCalc = require('suncalc');
-var Lexicon = require('./js/_LEXICON');
+var Lexicon = require('./js/web/_LEXICON');
+var Tombola = require('tombola');
+var tombola = new Tombola();
 
+
+var Scheduler = require('./js/node/_SCHEDULER');
+var scheduler = new Scheduler();
 var GenTweet = require('./js/node/_GENTWEET');
 var genTweet = new GenTweet();
 var GenChart = require('./js/node/_GENCHART');
@@ -33,7 +37,7 @@ var soundCloud = new SoundCloud();
 var T = new Twit(config);
 
 
-var tombola = new Tombola();
+
 global.color = new Colorflex();
 global.lexicon = new Lexicon();
 
@@ -46,18 +50,11 @@ var tweetText = '';
 
 
 //chart3();
-//twitterHello();
-//pickChart();
-//setInterval(pickChart,1000*60*0.75);
-//chart4();
-//starGen();
-//genTweet.generateTweet();
 soundCloud.init(atacama2,scReady);
 
 
 function scReady() {
-    console.log('callback');
-    generateAudio();
+    //generateAudio();
 }
 
 
@@ -82,9 +79,9 @@ function generateAudio() {
                 // upload file to soundcloud //
                 var options = {
                     title: '#' + data.id.strict + '-' + data.cat.strict,
-                    description: 'Audio received by ARP Observatory on ' + data.date.strict + ' | time: '+data.time.short + ' | length: '+data.seconds + ' seconds | ' + data.frequency.string,
+                    description: 'Audio received by ARP Observatory on ' + data.date.strict + ' | time: '+data.time.short + ' | length: '+data.seconds + ' seconds | ' + data.frequency.string + ' | BW: ' + data.bandwidth + ' | ' + data.level,
                     genre: 'astronomy',
-                    sharing: 'public',
+                    sharing: 'private',
                     tag_list: 'astronomy space science radio',
                     oauth_token: soundCloud.clientToken,
                     asset_data: 'output.wav'
@@ -268,20 +265,6 @@ function chart4() {
 //-------------------------------------------------------------------------------------------
 
 
-
-function twitterHello() {
-
-    var tweet = {
-        status: '' + processTweet()
-    };
-
-    /*T.post('statuses/update', tweet, function(err, data, response) {
-        console.log(data)
-    });*/
-
-}
-
-
 function twitterPost(tweet) {
 
     // upload media //
@@ -314,10 +297,12 @@ function twitterPost(tweet) {
 
 }
 
+
 // generic tweet callback //
 function tweeted(err, data, response) {
     tweetError(err);
 }
+
 
 // generic tweet error handle //
 function tweetError(err) {
@@ -330,9 +315,6 @@ function tweetError(err) {
 }
 
 
-function processTweet() {
-    return '';
-}
 
 
 
