@@ -10,3 +10,4 @@ On August 1 the signal was confirmed to be carrying audio, and there is as-yet, 
 ARP is a fictitious radio telescope observatory, it's a Twitter & SoundCloud bot which procedurally generates audio, data-visualisations, and the tweets (and occasionally long-exposure photography) of Robert Muir, a scientist who works at ARP, who is obsessive over the audio messages, and who runs the observatory's Twitter account.
 
 
+Links coming shortly...

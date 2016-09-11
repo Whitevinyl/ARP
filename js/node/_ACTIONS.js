@@ -282,10 +282,12 @@ proto.tweet = function(type) {
     var data = genTweet.generateTweet(type);
 
     // tweet //
-    var tw = {
-        status: data
-    };
-    twitter.post(tw);
+    if (data && data.length>0) {
+        var tw = {
+            status: data
+        };
+        twitter.post(tw);
+    }
 };
 
 module.exports = Action;

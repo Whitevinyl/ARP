@@ -241,7 +241,9 @@ function actionHandler(event) {
             action.starTrails();
             break;
 
-        default: break;
+        default:
+            action.tweet(event);
+            break;
     }
 }
 

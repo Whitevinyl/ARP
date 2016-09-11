@@ -45,9 +45,50 @@ function timeInit() {
 
 GenTweet.prototype.generateTweet = function(type) {
 
-    tombola.weightedFunction([TweetMessages, TweetJourney, TweetObservation, TweetToday, TweetTalk], [3, 2, 1.5, 1.5, 0.5]);
+    switch (type) {
+        case 'tweetJourney':
+            return TweetJourney();
+            break;
 
-    return tweetText;
+        case 'tweetToday':
+            return TweetToday();
+            break;
+
+        case 'tweetTalk':
+            return TweetTalk();
+            break;
+
+        case 'tweetSighting':
+            return TweetSighting();
+            break;
+
+        case 'tweetSky':
+            return TweetSky();
+            break;
+
+        case 'tweetLight':
+            return TweetLight();
+            break;
+
+        case 'tweetQuality':
+            return MessageQuality();
+            break;
+
+        case 'tweetVoices':
+            return MessageVoices();
+            break;
+
+        case 'tweetPeaks':
+            return MessagePeaks();
+            break;
+
+        case 'tweetUpdate':
+            return MessageUpdate();
+            break;
+
+
+        default: return '';
+    }
 };
 
 
@@ -111,7 +152,7 @@ function TweetTalk() {
         string += " " + tombola.item(lexicon.LexTalk.frame);
     }
 
-    conclude(string);
+    return conclude(string);
 }
 
 
@@ -121,17 +162,17 @@ function TweetTalk() {
 
 function TweetObservation() {
     console.log('observation');
-    var functions = [MessageSighting];
+    var functions = [TweetSighting];
     var weights = [1];
 
     timeInit();
 
     if (nightTime) {
-        functions.push(MessageSky);
+        functions.push(TweetSky);
         weights.push(0.5);
     }
     if (morningLight || eveningLight) {
-        functions.push(MessageLight);
+        functions.push(TweetLight);
         weights.push(0.5);
     }
 
@@ -139,7 +180,7 @@ function TweetObservation() {
 }
 
 
-function MessageLight() {
+function TweetLight() {
     var string = "";
     var plural = tombola.weightedItem(['single', 'plural'], [1, 0.8]);
     var and = tombola.percent(35);
@@ -148,6 +189,7 @@ function MessageLight() {
     var pre = tombola.percent(50);
     var time;
 
+    timeInit();
     if (morningLight) {
         time = 'early';
     } else {
@@ -194,14 +236,14 @@ function MessageLight() {
         string += tombola.item(lexicon.LexObservation.light[time].light);
     }
 
-    conclude(string);
+    return conclude(string);
 }
 
 
-function MessageSighting() {
+function TweetSighting() {
     var string = "";
     var just = tombola.percent(40);
-    var thing = tombola.weightedItem(['eagle', 'fox', 'llama', 'flamingo', 'geese', 'owl', 'lizard', 'chinchilla', 'puma', 'dust'], [1, 1, 1, 1, 0.7, 0.8, 0.07, 0.05, 0.05, 1]);
+    var thing = tombola.weightedItem(['eagle', 'fox', 'llama', 'flamingo', 'geese', 'owl', 'lizard', 'chinchilla', 'puma', 'dust'], [1, 1, 1, 1, 0.7, 0.8, 0.07, 0.05, 0.05, 0.8]);
     var order = tombola.percent(55);
 
     // Just saw first //
@@ -223,11 +265,11 @@ function MessageSighting() {
         string += " " + tombola.item(lexicon.LexObservation.sighting.frame);
     }
 
-    conclude(string);
+    return conclude(string);
 }
 
 
-function MessageSky() {
+function TweetSky() {
     var string = "";
     var plural = tombola.weightedItem(['single', 'plural'], [1, 1]);
     var order = tombola.percent(55);
@@ -253,7 +295,7 @@ function MessageSky() {
         string += tombola.item(lexicon.LexObservation.sky.sky);
     }
 
-    conclude(string);
+    return conclude(string);
 }
 
 
@@ -313,7 +355,7 @@ function MessageUpdate() {
         string += tombola.item(lexicon.LexMessages.update.unconfirmed);
     }
 
-    conclude(string);
+    return conclude(string);
 }
 
 
@@ -348,7 +390,7 @@ function MessageVoices() {
         string += " " + tombola.item(lexicon.LexMessages.voices.study);
     }
 
-    conclude(string);
+    return conclude(string);
 }
 
 
@@ -396,7 +438,7 @@ function MessagePeaks() {
         string += tombola.item(lexicon.LexMessages.peaks.property);
     }
 
-    conclude(string);
+    return conclude(string);
 }
 
 
@@ -429,7 +471,7 @@ function MessageQuality() {
         string += tombola.item(lexicon.LexMessages.quality.display.a) + " ";
 
         // Michael's descriptions... //
-        if (!intro && tombola.percent(45)) {
+        if (!intro && tombola.percent(35)) {
             string += tombola.item(lexicon.LexMessages.quality.michael.a) + ' "';
             string += tombola.item(lexicon.LexMessages.quality.michael.b) + " ";
             string += tombola.item(lexicon.LexMessages.quality.michael.c) + '"';
@@ -457,7 +499,7 @@ function MessageQuality() {
         }
     }
 
-    conclude(string);
+    return conclude(string);
 }
 
 
@@ -515,7 +557,7 @@ function TweetToday() {
         string += tombola.item(lexicon.LexToday.comment[commentType].b);
     }
 
-    conclude(string);
+    return conclude(string);
 }
 
 
@@ -563,7 +605,7 @@ function TweetJourney() {
         string += tombola.item(lexicon.LexTravel.comment[commentType].b);
     }
 
-    conclude(string);
+    return conclude(string);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -572,7 +614,7 @@ function TweetJourney() {
 
 function conclude(string) {
     string += ".";
-    tweetText = capitalize(string);
+    return capitalize(string);
     //console.log(tweetText);
 }
 
