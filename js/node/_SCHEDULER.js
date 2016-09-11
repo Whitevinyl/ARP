@@ -1,9 +1,10 @@
+var fs = require('fs');
 var jsonfile = require('jsonfile');
 var file = './schedule.json';
 var Tombola = require('tombola');
 var tombola = new Tombola();
-
-var d = new Date();
+var Action = require('./_ACTIONS');
+var action = new Action();
 
 var checkTime = 1000 * 60 * 20; // polling frequency: 20 minutes
 var windowTime = 1000 * 60 * 60 * 48; // schedule window 48 hours
@@ -15,9 +16,11 @@ var windowTime = 1000 * 60 * 60 * 48; // schedule window 48 hours
 // world unto itself. It also means we can add in rare wildcard events to extend the time
 // frame further.
 
-var testSchedule;
+
+var d = new Date();
+var defaultSchedule;
 function writeSchedule(d) {
-    testSchedule = {
+    defaultSchedule = {
         reschedule: d.getTime() + windowTime,
         events: [
             {
@@ -41,31 +44,44 @@ function writeSchedule(d) {
 }
 writeSchedule(d);
 
+
 //-------------------------------------------------------------------------------------------
 //  INIT
 //-------------------------------------------------------------------------------------------
 
-
 function Scheduler() {
     this.checkInterval = null;
-
-    var that = this;
-    jsonfile.writeFile("schedule.json", testSchedule, function(err) {
-        if (err) {
-            console.log("failed to write schedule");
-        } else {
-            console.log("written schedule");
-
-            // START CHECK CLOCK //
-            that.check();
-        }
-    });
 }
+
+Scheduler.prototype.init = function() {
+    var scheduleExists = fs.existsSync(file);
+    if (!scheduleExists) {
+        var that = this;
+        jsonfile.writeFile(file, defaultSchedule, function(err) {
+            if (err) {
+                console.log("failed to write schedule");
+            } else {
+                console.log("written schedule");
+
+                // START CHECK CLOCK //
+                that.check();
+            }
+        });
+    } else {
+        console.log("schedule exists");
+        this.check();
+    }
+};
 
 
 //-------------------------------------------------------------------------------------------
 //  MAIN SCHEDULING CLOCK
 //-------------------------------------------------------------------------------------------
+
+// this setInterval runs regularly (default every 20 mins) and checks the schedule to see if
+// any events are past due. If an event is due it's removed from the schedule and sent to the
+// actionHandler.
+// It also checks to see when we need a new schedule written by the actionDealer.
 
 Scheduler.prototype.check = function() {
     checkSchedule();
@@ -151,12 +167,32 @@ function checkSchedule() {
 //  ACTION DEALER
 //-------------------------------------------------------------------------------------------
 
+// This is the part that gets called every 48 hours and divvies out the actions.
+
 function actionDealer() {
 
     // DEAL OUT EVENTS AND SCHEDULE THEM //
+    var events = [];
+    var days = 2;
+    var deck = [];
+
+    // for each day //
+    for (var h=0; h<days; h++) {
+        var tweetNo = tombola.range(6,9);
+
+        // pick each action //
+        for (var i=0; i<tweetNo; i++) {
+
+        }
+
+    }
+
+
+
+
     var time = new Date();
     writeSchedule(time);
-    jsonfile.writeFile("schedule.json", testSchedule, function(err) {
+    jsonfile.writeFile("schedule.json", defaultSchedule, function(err) {
         if (err) {
             console.log("failed to write new schedule window");
         } else {
@@ -167,14 +203,46 @@ function actionDealer() {
 }
 
 
+
 //-------------------------------------------------------------------------------------------
 //  ACTION HANDLER
 //-------------------------------------------------------------------------------------------
 
-function actionHandler(action) {
+// When an action in the schedule is due, it gets interpreted here. In future I'd like to
+// find a nicer way of passing these actions than using a big switch statement.
+
+function actionHandler(event) {
 
     // HANDLE A DUE EVENT //
-    console.log(action);
+    console.log(event);
+    switch (event) {
+
+        case 'audio':
+            action.audio();
+            break;
+
+        case 'chartSpectrum':
+            action.chartSpectrum();
+            break;
+
+        case 'chartPhase':
+            action.chartPhase();
+            break;
+
+        case 'chartPeriodic':
+            action.chartPeriodic();
+            break;
+
+        case 'chartWaveform':
+            action.chartWaveform();
+            break;
+
+        case 'starTrails':
+            action.starTrails();
+            break;
+
+        default: break;
+    }
 }
 
 

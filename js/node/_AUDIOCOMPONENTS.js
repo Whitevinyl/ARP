@@ -1,11 +1,12 @@
 
-
+var utils = require('./utils');
 var Tombola = require('tombola');
 var tombola = new Tombola();
 
-function fmod(a,b) {
-    return a % b;
-}
+// These are javascript components used for generating/filtering audio signals. Multiple
+// techniques are used, subtractive & additive synthesis, wavetables, granular self-sampling,
+// IIR & FIR filtering.
+// Needs a tidy up (and a couple decommissioning) but they are roughly categorised.
 
 //-------------------------------------------------------------------------------------------
 //  VOICE OBJECT
@@ -49,7 +50,6 @@ VoicePink.prototype.process = function() {
 };
 
 
-
 // BROWN NOISE //
 function VoiceBrown() {
     this.gain = 0.5;
@@ -65,7 +65,6 @@ VoiceBrown.prototype.process = function() {
 };
 
 
-
 // WHITE NOISE //
 function VoiceWhite() {
     this.gain = 0.5;
@@ -76,7 +75,6 @@ VoiceWhite.prototype.process = function() {
     var white = (Math.random() * 2 - 1);
     return white * this.gain;
 };
-
 
 
 // ROAR NOISE //
@@ -96,7 +94,6 @@ VoiceRoar.prototype.process = function() {
 };
 
 
-
 // CRACKLE NOISE //
 function VoiceCrackle(threshold) {
     this.gain = 0.5;
@@ -112,7 +109,6 @@ VoiceCrackle.prototype.process = function() {
     this.amplitude = white;
     return white * this.gain;
 };
-
 
 
 // CRACKLE PEAK NOISE //
@@ -282,8 +278,10 @@ FilterWrapper.prototype.process = function(signal,index) {
 
 
 
-// INLINE FILTERS //
-////////////////////
+//-------------------------------------------------------------------------------------------
+//  INLINE FILTERS
+//-------------------------------------------------------------------------------------------
+
 
 
 function filterNoise(level) {
@@ -359,7 +357,7 @@ function filterReverb2(level,delay,size,channel,index) {
 // FOLDBACK //
 function filterFoldBack(input,threshold) {
     if (input>threshold || input<-threshold) {
-        input = Math.abs(Math.abs(fmod(input - threshold, threshold*4)) - threshold*2) - threshold;
+        input = Math.abs(Math.abs(utils.fmod(input - threshold, threshold*4)) - threshold*2) - threshold;
     }
     return input;
 }
@@ -479,9 +477,12 @@ function filterStereoPanner(signal,panning) {
 }
 
 
-// PERSISTENT FILTERS //
-////////////////////////
+//-------------------------------------------------------------------------------------------
+//  PERSISTENT FILTERS
+//-------------------------------------------------------------------------------------------
 
+
+// PHASE SINE //
 function PhaseSine() {
     this.f = 200;
     this.v = 0;
@@ -519,6 +520,7 @@ PhaseSine.prototype.process = function(f,mf1,mf2) {
 };
 
 
+// WAIL //
 function FilterWail() {
     this.voices = [];
     this.f = [];
@@ -555,7 +557,6 @@ FilterWail.prototype.process = function(input,ducking,chance) {
             this.voices.push(new WavePlayer(new voiceType()));
         }
     }
-
 
     if (this.i>=0 && this.i<this.l) {
 
@@ -610,8 +611,6 @@ FilterWail.prototype.process = function(input,ducking,chance) {
     }
     return input;
 };
-
-
 
 
 // RESAMPLER //
@@ -763,8 +762,6 @@ FilterResampler.prototype.process = function(input,mode,chance,channel,index) {
                 this.c = 0;
                 this.i = -1;
             }
-
-
         }
     }
     return input;
@@ -937,7 +934,6 @@ FilterGrowl.prototype.process = function(input,ducking,chance) {
             (input[1] * (1-((this.a * this.ma) * ducking))) + (signal[1] * (this.a * this.ma))
         ];
     }
-
     return input;
 };
 
@@ -1015,14 +1011,12 @@ FilterSubSwell.prototype.process = function(input,ducking,chance) {
             this.i = -1;
         }
     }
-
     return input;
 };
 
 
 
 // SIREN //
-
 function SirenVoice(f) {
     this.f = f;
     this.v = 0;
@@ -1102,9 +1096,9 @@ FilterSiren.prototype.process = function(input,ducking,chance) {
             this.i = -1;
         }
     }
-
     return input;
 };
+
 
 // FLIPPER //
 function FilterFlipper() {
@@ -1173,6 +1167,7 @@ FilterLowPass.prototype.process = function(cutoff,input) {
     return out;
 };
 
+
 // LOW PASS //
 function FilterStereoLowPass() {
     this.b1 = this.a0 = this.temp = 0;
@@ -1236,6 +1231,8 @@ LFO.prototype.process = function(r) {
     return  this.p*(2-Math.abs(this.p));
 };
 
+
+// SQUARE //
 function Square() {
     this.p = -1;
     this.c = 0;

@@ -2,16 +2,28 @@
 var SunCalc = require('suncalc');
 var Tombola = require('tombola');
 var tombola = new Tombola();
+var Lexicon = require('../_LEXICON');
+var lexicon = new Lexicon();
 
 var timeNow, atacamaTime;
 var morningLight, eveningLight, nightTime;
+var tweetText = '';
+
+// Here text tweets are generated. Different types of tweets have different algorithms, making
+// heavy use of tombola.js to randomise everything. Words & short phrases are categorised in
+// the Lexicon (_LEXICON.js).
+// Some tweets are time specific - e.g nighttime tweets happen when it really is nighttime in
+// Chile, same with sunrise/sunset. This is calculated using the suncalc library, and is handled
+// in the actionDealer in _SCHEDULER.js
+
+
+//-------------------------------------------------------------------------------------------
+//  INIT
+//-------------------------------------------------------------------------------------------
 
 
 function GenTweet() {
 
-    this.nightTime = null;
-    this.morningLight = null;
-    this.eveningLight = null;
 }
 
 
@@ -31,10 +43,11 @@ function timeInit() {
 
 
 
-GenTweet.prototype.generateTweet = function() {
-    console.log('generating');
+GenTweet.prototype.generateTweet = function(type) {
+
     tombola.weightedFunction([TweetMessages, TweetJourney, TweetObservation, TweetToday, TweetTalk], [3, 2, 1.5, 1.5, 0.5]);
 
+    return tweetText;
 };
 
 
@@ -135,7 +148,7 @@ function MessageLight() {
     var pre = tombola.percent(50);
     var time;
 
-    if (this.morningLight) {
+    if (morningLight) {
         time = 'early';
     } else {
         time = 'late';
@@ -559,10 +572,8 @@ function TweetJourney() {
 
 function conclude(string) {
     string += ".";
-    string = capitalize(string);
-    console.log(string);
-    //console.log(string.length);
-
+    tweetText = capitalize(string);
+    //console.log(tweetText);
 }
 
 function capitalize(string) {

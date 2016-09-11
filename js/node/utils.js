@@ -30,11 +30,16 @@ function stripUriMeta(uri) {
     return uri.split(',')[1];
 }
 
+function fmod(a,b) {
+    return a % b;
+}
+
 module.exports = {
     Point: Point,
     Vector: Vector,
 
     logPosition: logPosition,
     valueInRange: valueInRange,
-    stripUriMeta: stripUriMeta
+    stripUriMeta: stripUriMeta,
+    fmod: fmod
 };

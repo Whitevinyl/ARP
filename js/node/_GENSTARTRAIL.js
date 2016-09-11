@@ -1,5 +1,4 @@
 
-
 var utils = require('./utils');
 var RGBA = require('./RGBA');
 var Tombola = require('tombola');
@@ -10,6 +9,16 @@ var drawStars = new DrawStarTrail();
 
 var glowCols = [new RGBA(14,77,213,0.7),new RGBA(123,29,131,0.7),new RGBA(180,140,45,0.7)];
 var tempo = 0.055;
+
+
+// Here we generate the data for the star trail long exposure photos thar Robert sometimes
+// posts.
+
+
+//-------------------------------------------------------------------------------------------
+//  INIT
+//-------------------------------------------------------------------------------------------
+
 
 function StarTrails() {
 
@@ -62,7 +71,6 @@ StarTrails.prototype.generateTrails = function() {
     //} else {
     //    bgCol2 = bgCol;
     //}
-
 
 
     // SETUP STARS //
@@ -150,8 +158,7 @@ StarTrails.prototype.generateTrails = function() {
     stars.sort(compareBrightness);
 
 
-
-    return data = {
+    return {
         stars: stars,
         origin: [CSX,CSY],
         hemisphere: hemisphere,
@@ -165,11 +172,11 @@ StarTrails.prototype.generateTrails = function() {
 //  LOOP
 //-------------------------------------------------------------------------------------------
 
+// gets called multiple times (loop length dependent on shutter time) to rotate the stars.
 
 StarTrails.prototype.update = function(data) {
 
     var length = data.stars.length;
-
     var cutoff = 500;
     var rate = 19;
 
@@ -177,7 +184,6 @@ StarTrails.prototype.update = function(data) {
     for(var i=0;i<length;i++) {
 
         var star = data.stars[i];
-
         star.angle -= ( (((2 * Math.PI) / 360) * tempo) *data.hemisphere);
 
 
@@ -187,6 +193,10 @@ StarTrails.prototype.update = function(data) {
 
 
         // DRAW READY //
+        // an easing curve is used to determine how often each star should be drawn. Stars
+        // close to the center should be drawn less as the aliasing becomes too pixelly because
+        // they are moving smaller distances than those at larger radii from the center.
+
         star.ready -= 1;
         if (star.ready<0) {
             if (star.rad>=cutoff) {

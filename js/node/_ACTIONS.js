@@ -1,5 +1,6 @@
 var fs = require('fs');
 var utils = require('./utils');
+var SunCalc = require('suncalc');
 var wavEncoder = require('wav-encoder');
 var Tombola = require('tombola');
 var tombola = new Tombola();
@@ -24,7 +25,13 @@ var Twitter = require('./_TWITTER');
 var twitter = new Twitter();
 
 
+// All of the main generation actions get initiated here - audio, charts, tweets and star
+// trail photos.
 
+
+//-------------------------------------------------------------------------------------------
+//  INIT
+//-------------------------------------------------------------------------------------------
 
 
 function Action() {
@@ -125,7 +132,6 @@ function uploadAudio(data,attempts) {
 }
 
 
-
 //-------------------------------------------------------------------------------------------
 //  STAR TRAILS
 //-------------------------------------------------------------------------------------------
@@ -156,13 +162,13 @@ proto.starTrails = function() {
 };
 
 
-
 //-------------------------------------------------------------------------------------------
 //  CHARTS
 //-------------------------------------------------------------------------------------------
 
 
-proto.chart1 = function() {
+// SPECTRUM //
+proto.chartSpectrum = function() {
 
     // gen data //
     var data = genChart.generateTimeSpectrum(35,115);
@@ -188,8 +194,8 @@ proto.chart1 = function() {
 };
 
 
-
-proto.chart2 = function() {
+// PHASE //
+proto.chartPhase = function() {
 
     // gen data //
     var data = genChart.generateScopeData(7000);
@@ -215,7 +221,8 @@ proto.chart2 = function() {
 };
 
 
-proto.chart3 = function() {
+// PERIODIC //
+proto.chartPeriodic = function() {
 
     // gen data //
     var data = genChart.generatePeriodicWaves(9);
@@ -237,7 +244,8 @@ proto.chart3 = function() {
 };
 
 
-proto.chart4 = function() {
+// WAVEFORM //
+proto.chartWaveform = function() {
 
     // gen data //
     var data = genChart.generateWaveSection(3.5);
@@ -262,5 +270,22 @@ proto.chart4 = function() {
     twitter.post(tweet);
 };
 
+
+//-------------------------------------------------------------------------------------------
+//  TWEETS
+//-------------------------------------------------------------------------------------------
+
+
+proto.tweet = function(type) {
+
+    // gen data //
+    var data = genTweet.generateTweet(type);
+
+    // tweet //
+    var tw = {
+        status: data
+    };
+    twitter.post(tw);
+};
 
 module.exports = Action;

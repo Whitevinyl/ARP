@@ -6,6 +6,9 @@ var tombola = new Tombola();
 var Perspective = require('./perspective');
 var Canvas = require('canvas');
 
+
+// Here we draw the star trail long exposure photos thar Robert sometimes takes/
+
 //-------------------------------------------------------------------------------------------
 //  SETUP
 //-------------------------------------------------------------------------------------------
@@ -52,13 +55,10 @@ DrawStars.prototype.background = function(data) {
         ctxi[i].clearRect(0,0,fullX,fullY);
     }
 
-    color.master = data.masterCol;
-
-
     // FILL //
+    color.master = data.masterCol;
     color.fill(ctxi[3],bgCol);
     ctxi[3].fillRect(0,0,fullX,fullY);
-
 
     // GRADIENT //
     if (bgCol !== bgCol2) {
@@ -70,22 +70,12 @@ DrawStars.prototype.background = function(data) {
         var grad = renderGrad( {r:c1.R, g:c1.G, b:c1.B}, {r:c2.R, g:c2.G, b:c2.B}, 0, 0, fullX, fullY, image);
         ctxi[3].putImageData(grad,0,0);
     }
-
-    // NOISE //
-    //noiseLayer(0, 0, 200, 200, 0.13, 1, ctxi[5]);
-    //patternLayer(0, 0, fullX, fullY, canvas[5], 200, ctxi[4]);
 };
 
 
-
-
-
-
 //-------------------------------------------------------------------------------------------
-//  FOREGROUND
+//  STARS
 //-------------------------------------------------------------------------------------------
-
-
 
 
 DrawStars.prototype.stars = function(data) {
@@ -122,14 +112,8 @@ DrawStars.prototype.stars = function(data) {
         }
     }
 
-
-    /*// COMPOSITE //
-    ctxi[1].drawImage(canvas[4],0,0);
-    ctxi[1].drawImage(canvas[3],0,0);
-    ctxi[1].drawImage(canvas[2],0,0);*/
-
-
     // draw smooth star movement on top //
+    // todo: is this needed for node canvas?
     sl = smoothStars.length;
     for (h=0; h<sl; h++) {
         star = smoothStars[h];
@@ -150,7 +134,11 @@ DrawStars.prototype.stars = function(data) {
 };
 
 
-// COMPOSITE //
+//-------------------------------------------------------------------------------------------
+//  COMPOSITE LAYERS & FX
+//-------------------------------------------------------------------------------------------
+
+
 DrawStars.prototype.composite = function() {
 
     // merge stars & background //
@@ -180,7 +168,6 @@ DrawStars.prototype.composite = function() {
     // vignetting //
     var c1 = [this.halfX + tombola.rangeFloat(-this.fullX*0.08,this.fullX*0.08), this.halfY + tombola.rangeFloat(-this.fullX*0.08,this.fullX*0.02)];
     var c2 = [this.halfX, this.halfY];
-
     var radM = tombola.rangeFloat(0.79,0.84);
 
     var ctx = this.ctxi[3];
@@ -196,60 +183,46 @@ DrawStars.prototype.composite = function() {
 };
 
 
-
-
 //-------------------------------------------------------------------------------------------
 //  EFFECTS
 //-------------------------------------------------------------------------------------------
 
-
+// NOISE SQUARE //
 function noisePattern(w,h,alpha,size) {
 
     var c = Math.ceil(w/size);
     var r = Math.ceil(h/size);
-
     var canvas = new Canvas(w,h);
     var ctx = canvas.getContext('2d');
-
     var i,j;
 
     for (i=0; i<r; i++) { // for each row
-
         for (j=0; j<c; j++) { // for each col
-
             var n = 60 + Math.floor( Math.random() * 60 );
             ctx.fillStyle = "rgba(" + n + "," + n + "," + n + "," + tombola.rangeFloat(alpha*0.4,alpha) + ")";
             ctx.fillRect((j*size), (i*size), size, size);
-
         }
     }
     return canvas;
 }
 
+// REPEAT FILL OF NOISE SQUARES //
 function drawPattern(x,y,w,h,pattern,size,ctx) {
 
     var c = Math.ceil(w/size);
     var r = Math.ceil(h/size);
-
     var i,j;
 
     for (i=0; i<r; i++) { // for each row
-
         for (j=0; j<c; j++) { // for each col
-
             var n = Math.floor( Math.random() * 90 );
             ctx.drawImage(pattern, 0, 0, size, size, x+(j*size), y+(i*size), size, size);
-
         }
     }
 }
 
-
-
-
-
+// GRADIENT //
 function renderGrad(c1,c2,x,y,w,h,imageData) {
-
     var gradX = tombola.range(w*0.1,w*0.9);
     var gradX2 = gradX + tombola.range(-w*0.9,w*0.9);
     var dgrad = new DitheredLinearGradient(gradX,0,gradX2,h);

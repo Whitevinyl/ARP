@@ -1,12 +1,4 @@
 
-//-------------------------------------------------------------------------------------------
-//  MAIN
-//-------------------------------------------------------------------------------------------
-
-// code here is super raw while I'm experimenting, but this will be tidied into methods &
-// components which procedurally generate audio and create a stereo .WAV without using
-// the web audio API or any other audio processing.
-
 var utils = require('./utils');
 var Tombola = require('tombola');
 var tombola = new Tombola();
@@ -17,25 +9,35 @@ var genChart = new GenChart();
 var audio = require('./_AUDIOCOMPONENTS');
 
 
+// Audio is generated here using javascript components in _AUDIOCOMPONENTS.js. Signals are
+// generated and filtered in sequence and panned between stereo channels. Multiple techniques
+// are used, subtractive & additive synthesis, wavetables, granular self-sampling, IIR & FIR
+// filtering.
 
 
-var sampleRate = 44100;
-//var noiseSource;
+//-------------------------------------------------------------------------------------------
+//  INIT
+//-------------------------------------------------------------------------------------------
 
 
 function GenerateAudio() {
 
 }
 
+//-------------------------------------------------------------------------------------------
+//  MAIN
+//-------------------------------------------------------------------------------------------
+
+
 GenerateAudio.prototype.generate = function() {
 
     // AUDIO LENGTH //
     var seconds = tombola.range(19,29);
-    //seconds = 2;
     console.log('seconds: '+seconds);
 
     return printWaveform(seconds);
 };
+
 
 function printWaveform(seconds) {
 
@@ -359,7 +361,6 @@ function printWaveform(seconds) {
 
     // PASS 2 //
     var mult = 1/peak;
-    //var lw = units*0.75;
 
     for (i=0; i<l; i++) {
 
@@ -380,14 +381,6 @@ function printWaveform(seconds) {
         // WRITE VALUES //
         channels[0][i] = signal[0] * f;
         channels[1][i] = signal[1] * f;
-
-        // DRAW //
-        /*if (i % 400 == 0) {
-            if (signal[0]<0) {signal[0] = -signal[0];}
-            if (signal[1]<0) {signal[1] = -signal[1];}
-            cxa.fillRect(cx + (sx*i),cy - (he*1.3) - (signal[0] * he),lw,(signal[0] * he)*2);
-            cxa.fillRect(cx + (sx*i),cy + (he*1.3) - (signal[1] * he),lw,(signal[1] * he)*2);
-        }*/
     }
 
 

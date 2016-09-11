@@ -1,3 +1,4 @@
+
 var utils = require('./utils');
 var RGBA = require('./RGBA');
 var GenChart = require('./_GENCHART');
@@ -8,19 +9,12 @@ var bgCols = [new RGBA(10,15,22,1), new RGBA(255,236,88,1), new RGBA(30,34,37,1)
 var graphCols = [new RGBA(235,26,76,1), new RGBA(39,37,46,1,1), new RGBA(75,254,170,1), new RGBA(172,26,240,1), new RGBA(245,243,233,1), new RGBA(10,10,10,1), new RGBA(61,21,71,1), new RGBA(174,0,232,1), new RGBA(156,0,235,1), new RGBA(0,46,196,1), new RGBA(88,28,237,1), new RGBA(162,0,255,1), new RGBA(0,166,255,1), new RGBA(255,0,89,1), new RGBA(195,0,145,1), new RGBA(104,0,156,1), new RGBA(42,23,61,1), new RGBA(237,21,86,1), new RGBA(41,37,48,1), new RGBA(149,129,148,1), new RGBA(6,209,91,1), new RGBA(50,240,220,1), new RGBA(115,90,120,1), new RGBA(200,200,200,1), new RGBA(39,40,41,1)];
 
 
+// Here are the drawing functions for all of the charts. In need of a tidy up currently.
 
 
 //-------------------------------------------------------------------------------------------
-//  MAIN
+//  INIT
 //-------------------------------------------------------------------------------------------
-
-/*function RGBA( r, g, b, a ) {
-    this.R = r;
-    this.G = g;
-    this.B = b;
-    this.A = a;
-}*/
-
 
 function Draw() {
 
@@ -41,8 +35,7 @@ function Draw() {
 
 
 
-    var Canvas = require('canvas')
-        , Image = Canvas.Image;
+    var Canvas = require('canvas');
 
     this.canvas = new Canvas(this.fullX, this.fullY);
     this.cxa = this.canvas.getContext('2d');
@@ -91,11 +84,8 @@ Draw.prototype.drawWaveformChart = function(data) {
     cxa.fillText('Recurring Audio Section',this.units*125, this.units*70);
 
 
-
-
     // chart //
     var sx = halfX - ((third * 1.5) + gutter);
-
     this.drawWaveSection(data.map, halfX - (width/2), halfY, width, 150*units);
 
 
@@ -136,9 +126,6 @@ Draw.prototype.drawWaveformChart = function(data) {
     cxa.lineTo(sx + ((third+gutter)*2) + (third*0.15), this.halfY + (175*this.units) + ((this.dataType * 1.5)*3) + bx);
     cxa.closePath();
     cxa.stroke();
-
-
-
 
     cxa.beginPath();
     cxa.moveTo(sx + ((third+gutter)*2) + (third*0.84), this.halfY + (159*this.units) + ((this.dataType * 1.5)*3));
@@ -190,28 +177,21 @@ Draw.prototype.drawWaveSection = function(data, x, y, w, h) {
         //cxa.moveTo(x, y + (h*a));
 
         for (i=0; i<l; i++) {
-
             a = data[j][i];
-
 
             var grad=cxa.createLinearGradient(0,y+(h*a),0,y);
             grad.addColorStop(0,color.string(new RGBA(255,255,255,1)));
             grad.addColorStop(0.1,color.string(new RGBA(255,255,255,1)));
             grad.addColorStop(0.5,color.string(new RGBA(255,255,255,0)));
             cxa.fillStyle = grad;
-
             cxa.fillRect(x + (sw*i),y,sw*2,(h*a));
-
 
             //cxa.lineTo(x + (sw*i), y + (h*a));
         }
 
-
         //cxa.stroke();
-
     }
     cxa.globalAlpha = 1;
-
 };
 
 
@@ -247,8 +227,6 @@ Draw.prototype.drawPeriodicWaveChart = function(data) {
     cxa.fillText('PERIODIC WAVEFORMS',this.units*125, this.units*54);
     cxa.font = "400 " + this.dataType + "px Cabin";
     cxa.fillText('Observed Repeating Waves',this.units*125, this.units*70);
-
-
 
 
     // chart //
@@ -304,8 +282,6 @@ Draw.prototype.drawPeriodicWave = function(data, x, y, w, h) {
 
     cxa.lineWidth = this.units*2;
     color.strokeRGBA(cxa,230,230,230,1);
-    //color.strokeRGBA(cxa,70,255,240,1);
-    //color.strokeRGBA(cxa,255,194,10,1);
     cxa.beginPath();
     var a = data.map[0];
     cxa.moveTo(x, y + (h*a));
@@ -319,7 +295,7 @@ Draw.prototype.drawPeriodicWave = function(data, x, y, w, h) {
 
 
 //-------------------------------------------------------------------------------------------
-//  STEREO IMAGE
+//  PHASE CHART
 //-------------------------------------------------------------------------------------------
 
 Draw.prototype.drawVectorScopeChart = function(data) {
@@ -345,7 +321,7 @@ Draw.prototype.drawVectorScopeChart = function(data) {
     var ss = 15*units;
 
 
-
+    // TT //
     this.drawLogo((75*this.units), (55*this.units), 25*this.units,new RGBA(70,255,240,1),new RGBA(255,255,255,1));
 
 
@@ -395,8 +371,6 @@ Draw.prototype.drawVectorScopeChart = function(data) {
     cxa.stroke();
 
 
-
-
     cxa.beginPath();
     cxa.moveTo(this.halfX - thirdX + (third+gutter) + (third*0.84), this.halfY + (159*this.units) + ((this.dataType * 1.5)*3));
     cxa.lineTo(this.halfX - thirdX + (third+gutter) + (third), this.halfY + (159*this.units) + ((this.dataType * 1.5)*3));
@@ -430,7 +404,6 @@ Draw.prototype.drawVectorScopeChart = function(data) {
     cxa.fillRect( this.halfX - thirdX + ((third+gutter)*2) + (third*0.75), this.halfY + (170*this.units), third/4, 14*this.units );
 
 
-
     // dash line divides //
     cxa.lineWidth = units*0.5;
     cxa.beginPath();
@@ -458,14 +431,9 @@ Draw.prototype.drawVectorScopeChart = function(data) {
     // CHART IMAGES //
     var scopeMode = chart.vectorScope5;
     cxa.globalAlpha = 1;
-    this.drawVectorScope(data.map[0], scopeStyle, scopeMode, ls, units*0.85, halfX - (ls + ss), halfY);
-    this.drawVectorScope(data.map[1], scopeStyle, scopeMode, ls, units*0.85, halfX + (ls + ss), halfY);
+    this.drawVectorScope(data.map[0], chart.scopeStyle, scopeMode, ls, units*0.85, halfX - (ls + ss), halfY);
+    this.drawVectorScope(data.map[1], chart.scopeStyle, scopeMode, ls, units*0.85, halfX + (ls + ss), halfY);
 
-    /*scopeStyle = 0;
-    cxa.globalAlpha = 1;
-    this.drawVectorScope(data.map[0], scopeStyle, scopeMode, ls, units*0.85, halfX - (ls +(10*units)), halfY);
-    this.drawVectorScope(data.map[1], scopeStyle, scopeMode, ls, units*0.85, halfX + (ls +(10*units)), halfY);
-*/
     color.lowPass = new RGBA(0,0,0,0);
 
     // GRAPH LINES (move to draw) //
@@ -525,7 +493,6 @@ Draw.prototype.drawVectorScopeChart = function(data) {
     cxa.stroke();
 
 
-
     cxa.lineWidth = units;
     cxa.beginPath();
 
@@ -555,6 +522,11 @@ Draw.prototype.drawVectorScopeChart = function(data) {
 
     color.master = new RGBA(0,0,0,0);
 };
+
+
+//-------------------------------------------------------------------------------------------
+//  PHASE VECTORSCOPE
+//-------------------------------------------------------------------------------------------
 
 
 Draw.prototype.drawVectorScope = function(channels,style,func,scale,line,x,y) {
@@ -601,7 +573,6 @@ Draw.prototype.drawVectorScope = function(channels,style,func,scale,line,x,y) {
                 cxa.stroke();
                 break;
         }
-
     }
     if (style==1) { cxa.stroke(); }
 };
@@ -609,14 +580,11 @@ Draw.prototype.drawVectorScope = function(channels,style,func,scale,line,x,y) {
 
 
 //-------------------------------------------------------------------------------------------
-//  FREQUENCY SPECTRUM
+//  FREQUENCY SPECTRUM CHART
 //-------------------------------------------------------------------------------------------
 
 
 Draw.prototype.drawTimeSpectrumChart = function(data) {
-
-
-
     var cxa = this.cxa;
 
     // bg //
@@ -646,6 +614,7 @@ Draw.prototype.drawTimeSpectrumChart = function(data) {
     c2 = 24;
     c2 = 1;
 
+    // TT //
     this.drawLogo((75*this.units), (55*this.units), 25*this.units,new RGBA(70,255,240,1),new RGBA(255,255,255,1));
 
 
@@ -694,16 +663,10 @@ Draw.prototype.drawTimeSpectrumChart = function(data) {
     cxa.lineWidth = this.units*2;
     color.strokeRGBA(cxa,255,255,255,1);
     cxa.beginPath();
-    // L
-    /*cxa.moveTo(x, y - h + step + (10*this.units));
-    cxa.lineTo(x, y - h + step);
-    cxa.lineTo(x + (10*this.units), y - h + step);*/
-
     cxa.moveTo(x + w, y - h + step + (10*this.units));
     cxa.lineTo(x + w, y - h + step);
     cxa.lineTo(x + w - (10*this.units), y - h + step);
     cxa.stroke();
-
 
 
     // text //
@@ -715,8 +678,6 @@ Draw.prototype.drawTimeSpectrumChart = function(data) {
     cxa.fillText('AUDIO FREQUENCY RESPONSE',this.units*125, this.units*54);
     cxa.font = "400 " + this.dataType + "px Cabin";
     cxa.fillText('Cascade over Time',this.units*125, this.units*70);
-
-
 
 
     // paragraph //
@@ -751,8 +712,6 @@ Draw.prototype.drawTimeSpectrumChart = function(data) {
     cxa.stroke();
 
 
-
-
     cxa.beginPath();
     cxa.moveTo(this.halfX - thirdX + (third+gutter) + (third*0.84), this.halfY + (159*this.units) + ((this.dataType * 1.5)*3));
     cxa.lineTo(this.halfX - thirdX + (third+gutter) + (third), this.halfY + (159*this.units) + ((this.dataType * 1.5)*3));
@@ -776,7 +735,6 @@ Draw.prototype.drawTimeSpectrumChart = function(data) {
     }
 
     // grad key //
-
     color.fill(cxa, colorBlend( graphCols[c2], graphCols[c1], 10 ) );
     cxa.fillRect( this.halfX - thirdX + ((third+gutter)*2), this.halfY + (170*this.units), third/4, 14*this.units );
     color.fill(cxa, colorBlend( graphCols[c2], graphCols[c1], 75 ) );
@@ -787,12 +745,11 @@ Draw.prototype.drawTimeSpectrumChart = function(data) {
     cxa.fillRect( this.halfX - thirdX + ((third+gutter)*2) + (third*0.75), this.halfY + (170*this.units), third/4, 14*this.units );
 
 
-
+    //// CHART /////
 
     // graph base //
     cxa.globalAlpha = 0.55;
     color.fill(cxa,graphCols[c2]);
-    //color.fill(cxa,bgCols[2]);
     cxa.beginPath();
     cxa.moveTo(x + 1, y - 1);
     cxa.lineTo(x + w + 1, y - 1);
@@ -820,33 +777,26 @@ Draw.prototype.drawTimeSpectrumChart = function(data) {
         grad2.addColorStop(0,color.string(new RGBA(255,255,255,sa)));
         grad2.addColorStop(0.5,color.string(col3));
         grad2.addColorStop(1,color.string(col4));
-
-
-
         cxa.fillStyle=grad;
-
-
-
 
         this.drawTimeSpectrum(data.map[i],x,y,w,h,grad,grad2);
         x -= step;
         y += step;
     }
 
-    //this.noiseLayer(0.02);
-
     color.master = new RGBA(0,0,0,0);
 };
+
+//-------------------------------------------------------------------------------------------
+//  SPECTRUM LAYER
+//-------------------------------------------------------------------------------------------
 
 
 Draw.prototype.drawTimeSpectrum = function(signal,x,y,w,h,fill1,fill2) {
 
     var cxa = this.cxa;
 
-    //cxa.globalAlpha = 0.6;
     cxa.fillStyle=fill1;
-    //color.fill(cxa,graphCols[18]);
-    //color.fill(cxa,bgCols[2]);
     cxa.beginPath();
     cxa.moveTo(x,y);
     var l = signal.length;
@@ -857,7 +807,6 @@ Draw.prototype.drawTimeSpectrum = function(signal,x,y,w,h,fill1,fill2) {
     cxa.closePath();
     cxa.fill();
 
-    //cxa.globalAlpha = 1;
     color.fillRGBA(cxa,230,230,230,1);
     color.strokeRGBA(cxa,230,230,230,1);
     cxa.strokeStyle=fill2;
@@ -874,6 +823,11 @@ Draw.prototype.drawTimeSpectrum = function(signal,x,y,w,h,fill1,fill2) {
     }
     cxa.stroke();
 };
+
+//-------------------------------------------------------------------------------------------
+//  ARP LOGO
+//-------------------------------------------------------------------------------------------
+
 
 Draw.prototype.drawLogo = function(x,y,s,c1,c2) {
 
@@ -909,6 +863,10 @@ Draw.prototype.drawLogo = function(x,y,s,c1,c2) {
     cxa.fillText("P",x - (s*1.5), y - (s*1.5) + (fs*3.5));
 };
 
+
+//-------------------------------------------------------------------------------------------
+//  OTHER STUFF
+//-------------------------------------------------------------------------------------------
 
 
 function wordWrap( context , text, x, y, lineHeight, fitWidth) {

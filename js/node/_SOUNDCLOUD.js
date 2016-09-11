@@ -7,7 +7,7 @@ var SC = require('soundcloud-nodejs-api-wrapper');
 // 'soundcloud-node-api-wrapper', and track upload is adapted from 'soundcloudnodejs'.
 
 //-------------------------------------------------------------------------------------------
-//  SOUNDCLOUD HELLO WORLD
+//  INIT
 //-------------------------------------------------------------------------------------------
 
 
@@ -39,6 +39,9 @@ SoundCloud.prototype.init = function(credentials,callback) {
 };
 
 
+//-------------------------------------------------------------------------------------------
+//  UPLOAD
+//-------------------------------------------------------------------------------------------
 
 
 SoundCloud.prototype.upload = function addTrack(options, callback) {
@@ -122,6 +125,11 @@ SoundCloud.prototype.upload = function addTrack(options, callback) {
 };
 
 
+//-------------------------------------------------------------------------------------------
+//  DELETE
+//-------------------------------------------------------------------------------------------
+
+
 SoundCloud.prototype.delete = function(id,callback) {
 
     this.client.delete("/tracks/"+id,function(err,result) {
@@ -134,6 +142,11 @@ SoundCloud.prototype.delete = function(id,callback) {
     });
 
 };
+
+
+//-------------------------------------------------------------------------------------------
+//  CHECK A TRACK'S STATE
+//-------------------------------------------------------------------------------------------
 
 
 SoundCloud.prototype.status = function(id,callback) {

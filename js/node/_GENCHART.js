@@ -8,9 +8,17 @@ var Simplex = require('perlin-simplex');
 var audio = require('./_AUDIOCOMPONENTS');
 
 
+// Here we generate all the data for the charts, as well as various meta data tags which
+// are used by charts & audio, for tweet text, soundcloud descriptions etc
+
+
+//-------------------------------------------------------------------------------------------
+//  INIT
+//-------------------------------------------------------------------------------------------
+
 
 function Chart() {
-
+    this.scopeStyle = 2;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -487,6 +495,7 @@ Chart.prototype.generatePeriodicWaves = function(n) {
     };
 };
 
+
 //-------------------------------------------------------------------------------------------
 //  VETORSCOPES
 //-------------------------------------------------------------------------------------------
@@ -617,7 +626,7 @@ Chart.prototype.vectorScope5 = function(signal,scale) {
 
     var cp = peak;
     if (cp<0) cp = -cp;
-    if (scopeStyle!==2) cp = 1;
+    if (this.scopeStyle!==2) cp = 1;
     var col = new RGBA(255*cp,255*cp,255*cp,1);
 
     //color.strokeRGBA(cxa,(255 * cp),(255 * cp),(255 * cp),1);
@@ -811,10 +820,7 @@ Chart.prototype.generateScopeData = function(length) {
     }
 
     // map data is drawn, now construct the json //
-
     var seconds = this.generateScopeSeconds();
-    var min = seconds[0];
-    var max = seconds[seconds.length-1];
 
     return {
         map: map,
@@ -832,7 +838,6 @@ Chart.prototype.generateScopeData = function(length) {
 //-------------------------------------------------------------------------------------------
 //  TIME SPECTRUM DATA
 //-------------------------------------------------------------------------------------------
-
 
 
 Chart.prototype.generateTimeSpectrum = function(layers,length) {

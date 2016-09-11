@@ -3,26 +3,37 @@ console.log("hello this is bot.");
 
 var Colorflex = require('colorflex');
 var config = require('./config');
-var SunCalc = require('suncalc');
-var Lexicon = require('./js/web/_LEXICON');
 
 
 var Scheduler = require('./js/node/_SCHEDULER');
-//var scheduler = new Scheduler();
+var scheduler = new Scheduler();
 var Action = require('./js/node/_ACTIONS');
 var action = new Action();
 
 
 global.color = new Colorflex();
-global.lexicon = new Lexicon();
-
 global.sampleRate = 44100;
-global.scopeStyle = 2;
 
+
+// ARP Observatory by Luke Twyman | t: @whitevinyluk
+// @arpobservatory
+// soundcloud.com/arpobservatory
+
+// All actions - tweet/audio/chart generation etc are in _ACTIONS.js
+// Actions are initiated via the Scheduler, which every 48 hours plans out what actions the
+// bot will made over the next 48 hr window.
+
+//-------------------------------------------------------------------------------------------
+//  INIT
+//-------------------------------------------------------------------------------------------
 
 
 // GO //
-action.init(config,soundCloudReady);
+function init() {
+    action.init(config,soundCloudReady);
+    //scheduler.init();
+}
+init();
 
 
 // callback once SoundCloud has initialised //
