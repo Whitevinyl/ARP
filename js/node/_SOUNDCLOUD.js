@@ -1,9 +1,6 @@
 var fs = require('fs');
 var FormData = require('form-data');
 var fetch = require('node-fetch');
-//var Promise = require("bluebird");
-//var request = require('request');
-//Promise.promisifyAll(request, {multiArgs: true});
 var SC = require('soundcloud-nodejs-api-wrapper');
 
 // this makes the best of two different SoundCloud API wrappers for node, auth is handled by
@@ -138,6 +135,7 @@ SoundCloud.prototype.delete = function(id,callback) {
 
 };
 
+
 SoundCloud.prototype.status = function(id,callback) {
 
     this.client.get('/tracks/'+id,function(err,result) {
@@ -151,26 +149,6 @@ SoundCloud.prototype.status = function(id,callback) {
 
 };
 
-
-/*var removeTrack = function removeTrack(options) {
-    return new Promise(function (resolve, reject) {
-        if (!options.oauth_token) {
-            console.log('Error removeTrack oauth_token is required but is null ');
-        } else {
-
-            var uri = 'https://api.soundcloud.com/tracks/' + options.id + '?oauth_token=' + options.oauth_token + '&format=json';
-            request.getAsync(uri, {method: 'DELETE', timeout: 10000}).spread(function (response) {
-                if (response.statusCode == 404) {
-                    console.log('Error 404, track was not found ', response.statusCode);
-                } else if (!response.body || response.body.indexOf(404) !== -1) {
-                    console.log('Error while removeTrack track: ' + response.body);
-                } else {
-                    resolve({result: response.body});
-                }
-            });
-        }
-    });
-};*/
 
 
 module.exports = SoundCloud;

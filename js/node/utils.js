@@ -26,11 +26,15 @@ function valueInRange(value,floor,ceiling) {
     return value;
 }
 
+function stripUriMeta(uri) {
+    return uri.split(',')[1];
+}
 
 module.exports = {
     Point: Point,
     Vector: Vector,
 
     logPosition: logPosition,
-    valueInRange: valueInRange
+    valueInRange: valueInRange,
+    stripUriMeta: stripUriMeta
 };
