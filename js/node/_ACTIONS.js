@@ -1,5 +1,5 @@
 var fs = require('fs');
-var utils = require('./utils');
+var utils = require('./lib/utils');
 var SunCalc = require('suncalc');
 var wavEncoder = require('wav-encoder');
 var Tombola = require('tombola');

@@ -1,6 +1,6 @@
 
-var utils = require('./utils');
-var RGBA = require('./RGBA');
+var utils = require('./lib/utils');
+var RGBA = require('./lib/RGBA');
 var GenChart = require('./_GENCHART');
 var chart = new GenChart();
 

@@ -1,6 +1,6 @@
 
-var utils = require('./utils');
-var RGBA = require('./RGBA');
+var utils = require('./lib/utils');
+var RGBA = require('./lib/RGBA');
 var Tombola = require('tombola');
 var tombola = new Tombola();
 

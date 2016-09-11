@@ -1,9 +1,9 @@
-var utils = require('./utils');
-var RGBA = require('./RGBA');
-var DitheredLinearGradient = require('./DitheredLinearGradientRGB');
+var utils = require('./lib/utils');
+var RGBA = require('./lib/RGBA');
+var DitheredLinearGradient = require('./lib/DitheredLinearGradientRGB');
 var Tombola = require('tombola');
 var tombola = new Tombola();
-var Perspective = require('./perspective');
+var Perspective = require('./lib/perspective');
 var Canvas = require('canvas');
 
 
