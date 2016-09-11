@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/Whitevinyl/ARP",
   "dependencies": {
+    "bluebird": "^3.4.6",
     "canvas": "^1.4.0",
     "colorflex": "0.0.1",
     "form-data": "^1.0.1",
@@ -35,6 +36,7 @@
     "node-wav": "0.0.2",
     "perlin-simplex": "0.0.2",
     "perspectivejs": "^1.0.0",
+    "request": "^2.74.0",
     "soundcloud-nodejs-api-wrapper": "~0.3.2",
     "soundcloudnodejs": "~2.0.4",
     "suncalc": "~1.7.0",

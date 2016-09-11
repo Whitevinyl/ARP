@@ -1,5 +1,4 @@
 
-var utils = require('./utils');
 var SunCalc = require('suncalc');
 var Tombola = require('tombola');
 var tombola = new Tombola();

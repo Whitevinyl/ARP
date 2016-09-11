@@ -30,7 +30,7 @@ function GenerateAudio() {
 GenerateAudio.prototype.generate = function() {
 
     // AUDIO LENGTH //
-    var seconds = tombola.range(19,28);
+    var seconds = tombola.range(19,29);
     //seconds = 2;
     console.log('seconds: '+seconds);
 

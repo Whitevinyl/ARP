@@ -1,9 +1,13 @@
 var fs = require('fs');
 var FormData = require('form-data');
 var fetch = require('node-fetch');
+//var Promise = require("bluebird");
+//var request = require('request');
+//Promise.promisifyAll(request, {multiArgs: true});
 var SC = require('soundcloud-nodejs-api-wrapper');
 
-
+// this makes the best of two different SoundCloud API wrappers for node, auth is handled by
+// 'soundcloud-node-api-wrapper', and track upload is adapted from 'soundcloudnodejs'.
 
 //-------------------------------------------------------------------------------------------
 //  SOUNDCLOUD HELLO WORLD
@@ -61,7 +65,7 @@ SoundCloud.prototype.upload = function addTrack(options, callback) {
     }
 
     var exist_artwork_data = fs.existsSync(options.artwork_data);
-    if (exist_artwork_data) {
+    if (options.artwork_data && exist_artwork_data) {
         form.append('track[artwork_data]', fs.createReadStream(options.artwork_data));
     }
 
@@ -69,7 +73,17 @@ SoundCloud.prototype.upload = function addTrack(options, callback) {
         form.append('track[tag_list]', options.tag_list);
     }
 
-    form.append('track[sharing]', options.sharing);
+    if (options.license) {
+        form.append('track[license]', options.license);
+    }
+
+    if (options.sharing) {
+        form.append('track[sharing]', options.sharing);
+    }
+
+    if (options.downloadable) {
+        form.append('track[downloadable]', options.downloadable);
+    }
 
     if (!options.oauth_token) {
         return callback('Error  while addTrack track oauth_token is required but is null');
@@ -101,10 +115,62 @@ SoundCloud.prototype.upload = function addTrack(options, callback) {
         }).then(function (res) {
             return res.json(); // json?
         }).then(function (json) {
+            if (err) {
+                console.log(err);
+            }
             console.log('soundcloud upload successful');
             callback(null, json);
         });
     });
 };
+
+
+SoundCloud.prototype.delete = function(id,callback) {
+
+    this.client.delete("/tracks/"+id,function(err,result) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(result);
+        }
+        callback(err,result);
+    });
+
+};
+
+SoundCloud.prototype.status = function(id,callback) {
+
+    this.client.get('/tracks/'+id,function(err,result) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(result.state);
+        }
+        callback(err,result.state);
+    });
+
+};
+
+
+/*var removeTrack = function removeTrack(options) {
+    return new Promise(function (resolve, reject) {
+        if (!options.oauth_token) {
+            console.log('Error removeTrack oauth_token is required but is null ');
+        } else {
+
+            var uri = 'https://api.soundcloud.com/tracks/' + options.id + '?oauth_token=' + options.oauth_token + '&format=json';
+            request.getAsync(uri, {method: 'DELETE', timeout: 10000}).spread(function (response) {
+                if (response.statusCode == 404) {
+                    console.log('Error 404, track was not found ', response.statusCode);
+                } else if (!response.body || response.body.indexOf(404) !== -1) {
+                    console.log('Error while removeTrack track: ' + response.body);
+                } else {
+                    resolve({result: response.body});
+                }
+            });
+        }
+    });
+};*/
+
 
 module.exports = SoundCloud;

@@ -18,7 +18,7 @@ var tombola = new Tombola();
 
 
 var Scheduler = require('./js/node/_SCHEDULER');
-var scheduler = new Scheduler();
+//var scheduler = new Scheduler();
 var GenTweet = require('./js/node/_GENTWEET');
 var genTweet = new GenTweet();
 var GenChart = require('./js/node/_GENCHART');
@@ -54,12 +54,12 @@ soundCloud.init(atacama2,scReady);
 
 
 function scReady() {
-    //generateAudio();
+    generateAudio(3);
 }
 
 
 
-function generateAudio() {
+function generateAudio(attempts) {
 
     // generate audio data //
     var data = genAudio.generate();
@@ -77,37 +77,67 @@ function generateAudio() {
                 console.log("succeeded in saving");
 
                 // upload file to soundcloud //
-                var options = {
-                    title: '#' + data.id.strict + '-' + data.cat.strict,
-                    description: 'Audio received by ARP Observatory on ' + data.date.strict + ' | time: '+data.time.short + ' | length: '+data.seconds + ' seconds | ' + data.frequency.string + ' | BW: ' + data.bandwidth + ' | ' + data.level,
-                    genre: 'astronomy',
-                    sharing: 'private',
-                    tag_list: 'astronomy space science radio',
-                    oauth_token: soundCloud.clientToken,
-                    asset_data: 'output.wav'
-                };
-
-                soundCloud.upload(options,function(err,track) {
-                    if (err) {
-                        console.log(err)
-                    }
-                    //console.log(track);
-
-                    // cross post to twitter //
-                    var tweet = {
-                        status: 'Audio: signal received by ARP Observatory on ' + data.date.strict + ': '+ track.permalink_url
-                    };
-
-                    // tweet //
-                    twitterPost(tweet);
-                });
-
+                uploadAudio(data,attempts);
             }
         });
     });
 }
 
 
+function uploadAudio(data,attempts) {
+
+    var options = {
+        title: '#' + data.id.strict + '-' + data.cat.strict,
+        description: 'Audio received by ARP Observatory on ' + data.date.strict + ' | time: '+data.time.short + ' | length: '+data.seconds + ' seconds | ' + data.frequency.string + ' | BW: ' + data.bandwidth + ' | ' + data.level,
+        genre: 'astronomy',
+        //sharing: 'private',
+        //license: 'cc-by-nc',
+        //downloadable: 'true',
+        //tag_list: 'astronomy space science radio',
+        oauth_token: soundCloud.clientToken,
+        asset_data: 'output.wav'
+    };
+
+    console.log('upload attempts: '+attempts);
+    soundCloud.upload(options,function(err,track) {
+        if (err) {
+            console.log(err)
+        }
+        console.log(track);
+
+
+        // after upload wait a bit to see if it processed. Sometimes SC gets stuck in the processing state //
+        setTimeout(function() {
+
+            //check upload status //
+            console.log('track id: '+track.id);
+            soundCloud.status(track.id, function(err,result) {
+
+                // we're good, post it to twitter //
+                if (result==='finished') {
+                    console.log('done processing');
+                    var tweet = {
+                        status: 'Audio: signal received by ARP Observatory on ' + data.date.strict + ': '+ track.permalink_url
+                    };
+                    // tweet //
+                    twitterPost(tweet);
+
+                // we're not good, Delete the track and try again //
+                } else {
+                    console.log('still processing or failed');
+                    soundCloud.delete(track.id, function(err,result) {
+                        // try again?
+                        if (err.statusCode===500 && attempts>0) {
+                            uploadAudio(data,attempts-1);
+                        }
+                    });
+                }
+            });
+
+        },10000,track,data,attempts);
+
+    });
+}
 
 
 

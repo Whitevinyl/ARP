@@ -1,9 +1,3 @@
-/*function lissajous(signal,scale,t,d) {
-    return [
-        scale * Math.sin(((signal[0]*0.2)*(t+d))),
-        scale * Math.sin(((signal[1]*0.2)*t))
-    ];
-}*/
 
 var utils = require('./utils');
 var RGBA = require('./RGBA');
@@ -1191,16 +1185,14 @@ Chart.prototype.generateTimeSpectrum = function(layers,length) {
 };
 
 
+//-------------------------------------------------------------------------------------------
+//  META DATA
+//-------------------------------------------------------------------------------------------
+
 
 Chart.prototype.generateSpectrumSeconds = function() {
     var sec = tombola.range(3,17);
     return [sec, sec+2, sec+4, sec+6, sec+8];
-};
-
-
-Chart.prototype.generateSpectrumParagraph = function(min,max) {
-    var insert = tombola.item(['of ','of an active section of ','of the loudest section of ']);
-    return 'Frequency response map ' + insert + 'audio signal between ' + min + ' and ' + max + ' seconds.';
 };
 
 
@@ -1210,10 +1202,18 @@ Chart.prototype.generateScopeSeconds = function() {
     return [a, a+tombola.range(2,4), b, b+tombola.range(2,4)];
 };
 
+
+Chart.prototype.generateSpectrumParagraph = function(min,max) {
+    var insert = tombola.item(['of ','of an active section of ','of the loudest section of ']);
+    return 'Frequency response map ' + insert + 'audio signal between ' + min + ' and ' + max + ' seconds.';
+};
+
+
 Chart.prototype.generateScopeParagraph = function(seconds) {
     var insert = tombola.item(['sections of ','active sections of ','of the clearest sections of ']);
     return 'Images of stereo phase correlation of two ' + insert + 'audio signal at ' + seconds[0] + ' and ' + seconds[2] + ' seconds.';
 };
+
 
 Chart.prototype.generateWaveformParagraph = function() {
     var secs = '';
@@ -1227,17 +1227,17 @@ Chart.prototype.generateWaveformParagraph = function() {
 
 Chart.prototype.generateDate = function() {
     var time = new Date();
-    time.setDate(time.getDate()-tombola.range(6,30));
+    time.setDate(time.getDate()-tombola.range(4,12));
     var d = time.getDate();
     if (d<10) d = '0'+d;
-    var m = time.getMonth();
+    var m = time.getMonth()+1;
     if (m<10) m = '0'+m;
     var y = time.getFullYear();
 
-    time.setDate(time.getDate()+tombola.range(1,4));
+    time.setDate(time.getDate()+tombola.range(1,3));
     var d2 = time.getDate();
     if (d2<10) d2 = '0'+d2;
-    var m2 = time.getMonth();
+    var m2 = time.getMonth()+1;
     if (m2<10) m2 = '0'+m2;
     var y2 = time.getFullYear();
 
@@ -1293,17 +1293,19 @@ Chart.prototype.generateFrequency = function() {
     };
 };
 
+
 Chart.prototype.generateBandWidth = function() {
-    var bw = tombola.range(50000,120000)/100;
+    var bw = tombola.range(3000,6000)/100;
     return '' + bw + ' Hz';
 };
+
 
 Chart.prototype.generateLevel = function(bad) {
     var l;
     if (bad) {
-        l = tombola.range(-12000,-10000)/100;
+        l = tombola.range(-30000,-20000)/100;
     } else {
-        l = tombola.range(-2500,-500)/100;
+        l = tombola.range(-6500,-2500)/100;
     }
 
     return '' + l + ' dB';
