@@ -33,7 +33,7 @@ function Lexicon() {
             water: ['some of the volcanic lakes', 'San Pedro river', 'Laguna en Salar el Laco', 'Laguna Cejar', 'Laguna Miscanti', 'Laguna Miñiques', 'Laguna Lejía', 'Laguna Verde', 'Laguna Tuyajto', 'Chaxa lagoon', 'the high plain lagoons', 'some Altiplano lagoons', 'the smaller lagoons', 'the surrounding lagoons', 'the salt lakes', 'the surrounding salt lakes'],
             rocky: ['Monturaqui crater', 'Monturaqui meteorite crater', 'Portezuelo del Cajón', 'Paso de Jama', 'Guatin canyon', 'Puritama valley', 'some crater pools in the area', 'some larger craters close-by', 'the Puna slope', 'Quezala canyon', 'the crater pools', 'Valle de la Luna'],
             urban: ['San Pedro', 'Talabre village', 'Toconao', 'Socaire village', 'Pukará de Quitor', 'Tulor', 'Cucuter', 'Coyo', 'Solor', 'Tilomonte camp', 'Machuca village'],
-            hills: ['the Altiplano', 'the upper plateau', 'Callejon de Barrales', 'Cordillera de la Sal', 'the Miscanti foothills', 'the Miñiques foothills', 'the Chiliques foothills', 'the Caichinque foothills', "Lascar's foothills"],
+            hills: ['the Altiplano', 'Callejon de Barrales', 'Cordillera de la Sal', 'the Miscanti foothills', 'the Miñiques foothills', 'the Chiliques foothills', 'the Caichinque foothills', "Lascar's foothills"],
             geyser: ['Pozon Rustico', 'Guatin thermal springs', 'Puritama hot springs', 'El Tatio geysers', 'Tatio geysers', 'the local geysers', 'the San Pedro geysers'],
             lava: ['some of the lava flows', 'the lava domes', 'the lava flows', 'the lava fields', 'the tephra fields', 'the lava channels'],
             life: ['Valle de Jere', 'Tilomonte oasis', 'Los Flamencos', 'the national reserve'],
@@ -51,7 +51,7 @@ function Lexicon() {
                 b: ['striking', 'special', 'pretty special', 'beautiful', 'very unique', 'something to be seen', 'really worth seeing', 'worth witnessing', 'worth checking out', 'very beautiful', 'colorful', 'very colorful', 'otherworldly', 'almost alien', 'really something', 'very photogenic', 'really unique', 'fascinating', 'something else', 'unearthly', 'pretty interesting', 'definitely interesting']
             },
             area: {
-                a: ['This whole area', 'The light here', 'This region', 'This whole region', 'The plateau', 'This Andean stretch', 'This volcanic cluster', 'The mountain backdrop', 'The backdrop', 'The world here', 'The vision', 'The setting', 'This spot', 'This area', 'This place', 'This bit of Earth', 'This country', 'The land', 'The view', 'The sky', 'The journey', 'This formation', 'The landscape', 'The Atacama', 'The desert', 'This cold desert', 'This ancient fault', 'This mountain desert', 'This land of volcanoes', 'The scale of everything'],
+                a: ['This whole area', 'The light here', 'This region', 'This whole region', 'This Andean stretch', 'This volcanic cluster', 'The mountain backdrop', 'The backdrop', 'The world here', 'The vision', 'The setting', 'This spot', 'This area', 'This place', 'This bit of Earth', 'This country', 'The land', 'The view', 'The sky', 'The journey', 'This formation', 'The landscape', 'The Atacama', 'The desert', 'This dry desert', 'This ancient fault', 'This mountain desert', 'This land of volcanoes', 'The scale of everything'],
                 b: ['is very striking', 'is beautiful', 'is breathtaking', 'can be crushing', 'is always amazing', 'is paralysing', 'can be shattering', 'can feel empty', 'is gentle', 'is calming', 'is ever-changing', 'is special', 'is pretty special', 'is dream-like', 'captures me', 'always floors me', 'is powerful', 'is pretty powerful', 'has a power', 'can possess you', 'can be overwhelming', 'is full of pattern', 'can swallow you up', 'is always surprising', 'can really shrink you', 'can dwarf you', 'seems eternal', 'can consume you', 'is sometimes strange', 'can feel bleak sometimes', 'can make you feel very alone', 'blurs between real and fantasy', 'feels ageless', 'can be overpowering', 'can isolate', 'puts time in perspective', 'is something else', 'is often intense', 'has secrets', 'has seen forgotten things']
             },
             feeling: {
@@ -243,7 +243,7 @@ function Lexicon() {
                     action: ['travelling', 'grazing']
                 }
             },
-            place: ['outside', 'close by', 'very close by', 'nearby', 'a short distance away', 'by the salt flat', 'close to the observatory', 'close to the operations site', 'at the ridge', 'near the plateau edge', 'toward the lagoons', 'a little way away', 'in the distance', 'out in the hills', 'towards the volcanoes', 'near the main road', 'over toward Caichinque', 'towards the reserve'],
+            place: ['outside', 'close by', 'very close by', 'nearby', 'a short distance away', 'by the salt flat', 'close to the observatory', 'close to the operations site', 'at the ridge', 'near the ridge', 'toward the lagoons', 'a little way away', 'in the distance', 'out in the hills', 'towards the volcanoes', 'near the main road', 'over toward Caichinque', 'towards the reserve'],
             remark: []
         },
         light: {
@@ -256,7 +256,7 @@ function Lexicon() {
                 light: ['light', 'dusk', 'sunlight', 'sunset', 'evening light']
             },
             single: {
-                thing: ['the Atacama', 'the desert', 'the plateau', 'the plain', 'the Andean range', 'the Altiplano', 'Caichinque', 'Chiliques', 'Colachi', 'Lascar', 'Cerro Miñiques', 'Cerro Miscanti', 'the salt flat', 'the ridge', 'the mountain backdrop', 'the volcano backdrop', 'the lanscape', 'the volcano range', 'the mountain-pass', 'the desert-edge', 'the telescope-site', 'the observatory-site', 'the operations-site'],
+                thing: ['the Atacama', 'the desert', 'the plain', 'the Andean range', 'the Altiplano', 'Caichinque', 'Chiliques', 'Colachi', 'the volcano Lascar', 'Cerro Miñiques', 'Cerro Miscanti', 'the salt flat', 'the ridge', 'the mountain backdrop', 'the volcano backdrop', 'the lanscape', 'the volcano range', 'the mountain-pass', 'the desert-edge', 'the telescope-site', 'the observatory-site', 'the operations-site'],
                 looks: ['looks', 'appears']
             },
             plural: {

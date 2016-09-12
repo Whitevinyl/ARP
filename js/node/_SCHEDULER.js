@@ -1,13 +1,21 @@
 var fs = require('fs');
 var jsonfile = require('jsonfile');
 var file = './schedule.json';
+var SunCalc = require('suncalc');
 var Tombola = require('tombola');
 var tombola = new Tombola();
 var Action = require('./_ACTIONS');
 var action = new Action();
 
+var DEBUG = true;
+
 var checkTime = 1000 * 60 * 20; // polling frequency: 20 minutes
 var windowTime = 1000 * 60 * 60 * 48; // schedule window 48 hours
+
+if (DEBUG) {
+    checkTime = 1000 * 60; // polling frequency: minute
+    windowTime = 1000 * 60 * 60; // schedule window hour
+}
 
 // Rather than generating tweets/audio etc with a regular interval, actions are scheduled
 // in 48 hour blocks. This means actions can be scheduled with irregular timings, we can
@@ -19,30 +27,32 @@ var windowTime = 1000 * 60 * 60 * 48; // schedule window 48 hours
 
 var d = new Date();
 var defaultSchedule;
-function writeSchedule(d) {
-    defaultSchedule = {
+var defaultEvents = [
+    {
+        action: 'one minute',
+        time: d.getTime() + (60 * 1000 * 0.5)
+    },
+    {
+        action: 'one minute b',
+        time: d.getTime() + (60 * 1000)
+    },
+    {
+        action: 'two minutes',
+        time: d.getTime() + (60 * 1000 * 2)
+    },
+    {
+        action: 'three minutes',
+        time: d.getTime() + (60 * 1000 * 3)
+    }
+];
+
+function writeSchedule(d,e) {
+    return {
         reschedule: d.getTime() + windowTime,
-        events: [
-            {
-                action: 'one minute',
-                time: d.getTime() + (60 * 1000 * 0.5)
-            },
-            {
-                action: 'one minute b',
-                time: d.getTime() + (60 * 1000)
-            },
-            {
-                action: 'two minutes',
-                time: d.getTime() + (60 * 1000 * 2)
-            },
-            {
-                action: 'three minutes',
-                time: d.getTime() + (60 * 1000 * 3)
-            }
-        ]
+        events: e
     };
 }
-writeSchedule(d);
+defaultSchedule = writeSchedule(d,defaultEvents);
 
 
 //-------------------------------------------------------------------------------------------
@@ -57,16 +67,13 @@ Scheduler.prototype.init = function() {
     var scheduleExists = fs.existsSync(file);
     if (!scheduleExists) {
         var that = this;
-        jsonfile.writeFile(file, defaultSchedule, function(err) {
-            if (err) {
-                console.log("failed to write schedule");
-            } else {
-                console.log("written schedule");
-
-                // START CHECK CLOCK //
-                that.check();
-            }
-        });
+        console.log("new schedule");
+        actionDealer();
+        setTimeout(function() {
+            // START CHECK CLOCK //
+            that.stop();
+            that.check();
+        },5000);
     } else {
         console.log("schedule exists");
         this.check();
@@ -145,7 +152,7 @@ function checkSchedule() {
 
                         // update schedule //
                         var updatedSchedule = {reschedule: obj.reschedule,events: events};
-                        jsonfile.writeFile("schedule.json", updatedSchedule, function(err) {
+                        jsonfile.writeFile(file, updatedSchedule, function(err) {
                             if (err) {
                                 console.log("failed to update schedule");
                             } else {
@@ -167,39 +174,120 @@ function checkSchedule() {
 //  ACTION DEALER
 //-------------------------------------------------------------------------------------------
 
-// This is the part that gets called every 48 hours and divvies out the actions.
-
+// This is the part that gets called every 48 hours and divvies out the actions. //
 function actionDealer() {
 
-    // DEAL OUT EVENTS AND SCHEDULE THEM //
+    // SETUP ACTIONS //
+    var time = new Date();
+    var dayTime = windowTime/2;
     var events = [];
     var days = 2;
-    var deck = [];
 
+    var chartActions = [
+        'chartSpectrum','chartPhase','chartPeriodic','chartWaveform','starTrails'
+    ];
+    var chartOptions = {
+        weights: [
+            10, 9, 9, 10, 0.5
+        ],
+        instances: [
+            1,1,1,2,1
+        ]
+    };
+
+    var tweetActions = [
+        'tweetJourney','tweetTalk','tweetToday','tweetSighting','tweetSky','tweetLight',
+        'tweetQuality','tweetVoices','tweetPeaks','tweetUpdate', 'tweetMichael'
+    ];
+    var tweetOptions = {
+        weights: [
+            8, 2, 1, 8, 4, 5,
+            10, 1, 3, 2, 0.75
+        ],
+        instances: [
+            1,1,1,1,1,1,
+            2,1,2,1,1
+        ]
+    };
+
+
+    // CHOOSE ACTIONS //
     // for each day //
     for (var h=0; h<days; h++) {
-        var tweetNo = tombola.range(6,9);
+        var chartDeck = tombola.weightedDeck(chartActions,chartOptions);
+        var tweetDeck = tombola.weightedDeck(tweetActions,tweetOptions);
 
-        // pick each action //
-        for (var i=0; i<tweetNo; i++) {
 
+        var audioNo = tombola.range(5,8);
+        var chartNo = tombola.range(2,5);
+        var tweetNo = tombola.range(3,6);
+        if (DEBUG) {
+            audioNo = tombola.range(5,4);
+            chartNo = tombola.range(1,3);
+            tweetNo = tombola.range(1,3);
+        }
+        var i, action, t, ev;
+
+
+        // AUDIO //
+        for (i=0; i<audioNo; i++) {
+            t = timeSlot();
+            ev = {
+                action: 'audio',
+                time: t + (dayTime*h)
+            };
+            events.push(ev);
         }
 
+
+        // CHARTS //
+        for (i=0; i<chartNo; i++) {
+            action = chartDeck.draw();
+            if (action!==null) {
+
+                t = timeSlot();
+                ev = {
+                    action: action,
+                    time: t + (dayTime*h)
+                };
+                events.push(ev);
+            }
+        }
+
+
+        // TWEETS //
+        for (i=0; i<tweetNo; i++) {
+            action = tweetDeck.draw();
+            if (action!==null) {
+
+                if (action==='tweetSky' || action==='tweetVoices') {
+                    t = timeSlot('night');
+                }
+                else if (action==='tweetLight') {
+                    t = timeSlot('golden');
+                }
+                else {
+                    t = timeSlot('day');
+                }
+                ev = {
+                    action: action,
+                    time: t + (dayTime*h)
+                };
+                events.push(ev);
+            }
+        }
     }
 
 
-
-
-    var time = new Date();
-    writeSchedule(time);
-    jsonfile.writeFile("schedule.json", defaultSchedule, function(err) {
+    // WRITE IT //
+    var s = writeSchedule(time,events);
+    jsonfile.writeFile(file, s, function(err) {
         if (err) {
             console.log("failed to write new schedule window");
         } else {
             console.log("written new schedule window");
         }
     });
-
 }
 
 
@@ -208,8 +296,7 @@ function actionDealer() {
 //  ACTION HANDLER
 //-------------------------------------------------------------------------------------------
 
-// When an action in the schedule is due, it gets interpreted here. In future I'd like to
-// find a nicer way of passing these actions than using a big switch statement.
+// When an action in the schedule is due, it gets interpreted here.
 
 function actionHandler(event) {
 
@@ -245,6 +332,50 @@ function actionHandler(event) {
             action.tweet(event);
             break;
     }
+}
+
+
+//-------------------------------------------------------------------------------------------
+//  TIME SLOT FINDER
+//-------------------------------------------------------------------------------------------
+
+
+function timeSlot(slot) {
+
+    var t1 = new Date();
+    var t2 = new Date();
+    t2.setDate(t1.getDate()+1);
+    if (DEBUG) {
+        t2 = new Date();
+        t2.setTime(t1.getTime()+(windowTime/2));
+    }
+    var p1 = SunCalc.getTimes(t1, -23.8, -67.4);
+    var p2 = SunCalc.getTimes(t2, -23.8, -67.4);
+
+    // return a random time within the given slots //
+    var t = tombola.range(t1.getTime(),t2.getTime());
+    var c = 0;
+    if (!DEBUG) {
+        if (slot==='day') {
+            while ( c<100 && !( (t>p1.nauticalDawn.getTime() && t<p1.night.getTime()) || (t>p2.nauticalDawn.getTime() && t<p2.night.getTime()) ) ) {
+                t = tombola.range(t1.getTime(),t2.getTime());
+                c++;
+            }
+        }
+        if (slot==='night') {
+            while ( c<100 && !( t<p1.nauticalDawn.getTime() ||  (t>p1.night.getTime() && t<p2.nauticalDawn.getTime()) || t>p2.night.getTime() ) ) {
+                t = tombola.range(t1.getTime(),t2.getTime());
+                c++;
+            }
+        }
+        if (slot==='golden') {
+            while ( c<100 && !( (t>p1.dawn.getTime() && t<p1.goldenHourEnd.getTime()) || (t>p1.goldenHour.getTime() && t<p1.nauticalDusk.getTime()) || (t>p2.dawn.getTime() && t<p2.goldenHourEnd.getTime()) || (t>p2.goldenHour.getTime() && t<p2.nauticalDusk.getTime()) ) ) {
+                t = tombola.range(t1.getTime(),t2.getTime());
+                c++;
+            }
+        }
+    }
+    return t;
 }
 
 

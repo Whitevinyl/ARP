@@ -86,6 +86,9 @@ GenTweet.prototype.generateTweet = function(type) {
             return MessageUpdate();
             break;
 
+        case 'tweetMichael':
+            return MessageMichael();
+            break;
 
         default: return '';
     }
@@ -469,18 +472,8 @@ function MessageQuality() {
 
         // displays //
         string += tombola.item(lexicon.LexMessages.quality.display.a) + " ";
-
-        // Michael's descriptions... //
-        if (!intro && tombola.percent(35)) {
-            string += tombola.item(lexicon.LexMessages.quality.michael.a) + ' "';
-            string += tombola.item(lexicon.LexMessages.quality.michael.b) + " ";
-            string += tombola.item(lexicon.LexMessages.quality.michael.c) + '"';
-        }
-        else {
-            string += tombola.item(lexicon.LexMessages.quality.display.b) + " ";
-            string += tombola.item(lexicon.LexMessages.quality.display.c);
-        }
-
+        string += tombola.item(lexicon.LexMessages.quality.display.b) + " ";
+        string += tombola.item(lexicon.LexMessages.quality.display.c);
 
     } else {
 
@@ -502,6 +495,32 @@ function MessageQuality() {
     return conclude(string);
 }
 
+function MessageMichael() {
+    var string = "";
+    var preframe = tombola.percent(60);
+
+    // message //
+    string += tombola.item(lexicon.LexMessages.quality.quantity) + " of ";
+    if (preframe) {
+        string += tombola.item(lexicon.LexMessages.quality.preframe) + " ";
+    } else {
+        string += "the ";
+    }
+    string += tombola.item(lexicon.LexMessages.quality.messages) + " ";
+    if (!preframe) {
+        string += tombola.item(lexicon.LexMessages.quality.postframe) + " ";
+    }
+
+    // displays //
+    string += tombola.item(lexicon.LexMessages.quality.display.a) + " ";
+
+    // Michael's descriptions... //
+    string += tombola.item(lexicon.LexMessages.quality.michael.a) + ' "';
+    string += tombola.item(lexicon.LexMessages.quality.michael.b) + " ";
+    string += tombola.item(lexicon.LexMessages.quality.michael.c) + '"';
+
+    return conclude(string);
+}
 
 //-------------------------------------------------------------------------------------------
 //  THE DAY / GENERAL

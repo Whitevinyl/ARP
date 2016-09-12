@@ -1,9 +1,9 @@
 console.log("hello this is bot.");
-
+var Tombola = require('tombola');
+var tombola = new Tombola();
 
 var Colorflex = require('colorflex');
 var config = require('./config');
-
 
 var Scheduler = require('./js/node/_SCHEDULER');
 var scheduler = new Scheduler();
@@ -28,17 +28,22 @@ global.sampleRate = 44100;
 //-------------------------------------------------------------------------------------------
 
 
+
+
+
+
+
 // GO //
 function init() {
     action.init(config,soundCloudReady);
-    //scheduler.init();
+    scheduler.init();
 }
 init();
 
 
 // callback once SoundCloud has initialised //
 function soundCloudReady() {
-    action.audio();
+    //action.audio();
 }
 
 
