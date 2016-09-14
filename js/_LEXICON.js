@@ -134,8 +134,8 @@ function Lexicon() {
             },
             michael: {
                 a: ['what Michael calls', 'what Michael referred to as', 'what Michael described as', 'what Michael just referred to as', 'what Michael has started calling', 'what Michael has been calling', "what Michael's notes refer to as", "what Michael has marked as", 'what Michael has listed as'],
-                b: ['ballsy', 'special', 'whooshy', 'noisy', 'squelchy', 'devil', 'goblin', 'gremlin', 'ghost', 'llama', 'chinchilla', 'fruity', 'dreamy', 'piercing', 'pigeon', "Putin's", 'possessed', 'Guinea-pig', 'Pikachu', "E.T's", 'machine-gun', 'dinosaur', 'Godzilla', 'sparkly', 'wah-wah', 'T-Pain', "Nixon's"],
-                c: ['whistles', 'growls', 'shrieks', 'chirps', 'howls', 'booms', 'clangs', 'drums', 'panpipes', 'flutes', 'screams', 'squeals', 'bongos', 'trumpets', 'gargling', 'gurglings', 'blast-beats', 'rapping', 'maracas', 'beat-boxing', 'wailing', 'sirens', 'coughing', 'washboard', 'cowbell', 'finger-drums', 'break-downs', 'horns', 'vuvuzela']
+                b: ['ballsy', 'special', 'whooshy', 'noisy', 'squelchy', 'devil', 'goblin', 'gremlin', 'ghost', 'llama', 'chinchilla', 'fruity', 'dreamy', 'piercing', 'pigeon', "Putin's", 'possessed', 'Guinea-pig', 'Pikachu', "E.T's", 'machine-gun', 'dinosaur', 'Godzilla', 'sparkly', 'wah-wah', 'T-Pain', "Nixon's", 'distorted'],
+                c: ['whistles', 'growls', 'shrieks', 'chirps', 'howls', 'booms', 'clangs', 'drums', 'panpipes', 'flutes', 'screams', 'squeals', 'bongos', 'trumpets', 'gargling', 'gurglings', 'blast-beats', 'rapping', 'maracas', 'beat-boxing', 'wailing', 'sirens', 'coughing', 'washboard', 'cowbell', 'finger-drums', 'break-downs', 'horns', 'vuvuzela', 'screeches', 'barking', 'squawking']
             }
         },
         peaks: {
@@ -280,8 +280,8 @@ function Lexicon() {
         frame: ['today', 'this afternoon', 'later this afternoon', 'at 6pm', 'this evening', 'tomorrow morning'], // make time based
         me: ["I'll be", "I'm", "we're", "we'll be", 'we are'],
         who: {
-            michael: ['Michael', 'Dr Michael Kelper', 'Dr Kelper'],
-            sara: ['Sara', 'Dr Sara Trigo', 'Dr Trigo']
+            michael: ['Michael', 'Michael Kelper'],
+            sara: ['Sara', 'Sara Trigo']
         },
         single: ['is', 'will be', 'is going to be'],
         multiple: ['are', 'will be', 'are going to be'],
@@ -293,6 +293,43 @@ function Lexicon() {
             a: ['audio', 'radio', 'unencoding', 'astronomy', 'radio-astronomy'],
             b: ['work', 'findings', 'results', 'studies', 'objectives', 'processes', 'techniques', 'challenges', 'collections', 'experiments', 'research']
         }
+    };
+
+
+    //-------------------------------------------------------------------------------------------
+    //  INTERVIEW
+    //-------------------------------------------------------------------------------------------
+
+
+    this.Interview = {
+        show: {
+            type: ['radio show', 'radio channel', 'tv show', 'webcast', 'podcast', 'livestream'],
+            a: ['Signal', 'Carrier', 'Power', 'Night', 'Brain', 'Rookie', 'Mind', 'Sonic', 'Noise', 'Nylon', 'Stretch', 'Lit', 'Star', 'Sky', 'Input', 'Neon', 'Solar', 'Booster', 'Silent', 'Flashing', 'Fruit', 'Circuit', 'Web', 'New', 'Carbon', 'Live', 'Cloud', 'Sugar', 'Nerd', 'Pure', 'Huge', 'Micro', 'Dark', 'Bright', 'Concrete', 'Mutual', 'Tokyo', 'Chicago', 'Moscow', 'Berlin', 'Johannesburg', 'Santiago', 'Sydney', 'Lazer', 'Steel', 'Amped', 'Factory', 'Underground', 'Hidden'],
+            b: ['Wire', 'Wave', 'Call', 'Blast', 'Flag', 'Work', 'Soup', 'Warp', 'Sling', 'Frenzy', 'City', 'Voice', 'Patrol', 'Twist', 'Blink', 'Launch', 'Pad', 'Wolf', 'Drift', 'Gloss', 'Lens', 'Venus', 'Planet', 'Earth', 'Space', 'Realm', 'Steps', 'Buzz', 'Connection', 'Shadow', 'Shelter', 'Core', 'Complex', 'Gaze', 'Haze', 'Dream', 'Matter', 'Elements', 'Bleep', 'Beam', 'Hype', 'Eon', 'Action'],
+            c: ['Hour','Weekend', 'Night', 'Weekly', 'Focus', 'Talks', 'Daily']
+        },
+        past: ['I did an interview with', 'we did an interview with', 'I spoke to', 'Sara did an interview with', 'Sara spoke to', 'Michael did an interview with', 'Michael spoke to'],
+        present: ["I'm being interviewed by", "we're being interviewed by", "I'm speaking with", "we're speaking with",'Sara is speaking with', 'Michael is speaking to'],
+        short: ["I'll be on", "I'm on", "we'll be on", "we're on", "I'm speaking on", "we're speaking on", 'Sara will be on'],
+        preTopic: ["I'll be talking about", "we'll be talking about", 'Sara will be talking about', 'Michael will be talking about'],
+        mode: ['Airing', 'Live', 'On', 'Broadcasting'],
+        frame: ['tonight', 'this evening', 'at 9pm', 'at 10pm', 'in an hour', '7am tomorrow','8am tomorrow'],
+        topic: ['Topic:', 'Subject:', 'Discussing', 'Talking about', 'Looking at'],
+        our: ['our', 'our recent', 'some of our', 'our early', 'the latest', 'our newest'],
+        on: {
+            a: ['audio', 'radio', 'unencoding', 'astronomy', 'radio-astronomy'],
+            b: ['work', 'findings', 'results', 'studies', 'objectives', 'processes', 'techniques', 'challenges', 'collections', 'experiments', 'research']
+        },
+        on2: {
+            a: ['language &', 'interplanetary', 'extrasolar', 'intercivilizational', 'long-range', 'extraterrestrial', 'astronomy &', 'loneliness &', 'isolation &', 'Earth &', 'Time &', 'Space &'],
+            b: ['messages', 'communication', 'transmission', 'encounters', 'dialogue', 'beacons', 'signals', 'theory', 'paradoxes', 'challenges', 'barriers', 'understanding', 'travel', 'distance', 'observation', 'evidence', 'expansion', 'colonisation', 'cultures', 'existence']
+        }
+    };
+
+
+    this.Names = {
+        a: ['Arturo','Eduardo','Jorge','Pedro','Juan', 'José', 'Patricio', 'Manuel', 'Ramon', 'Luis', 'Luisa', 'Luco', 'Maria', 'Marisa', 'Delia', 'Federico', 'Violetta', 'Emiliano'],
+        b: ['Rodriguez', 'Riesco', 'Parra', 'Ortega', 'Montt', 'Marín', 'Letelier', 'Aguirre', 'Cerda', 'Alessandri', 'Palma', 'Alquinta', 'Sanfuentes', 'Andonaegui', 'Balmaceda', 'Fernández', 'Barros', 'Bombal', 'Prieto', 'Enríquez', 'Ibañez']
     };
 
 }

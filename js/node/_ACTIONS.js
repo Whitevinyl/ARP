@@ -41,7 +41,7 @@ var proto = Action.prototype;
 
 
 proto.init = function(config,soundCloudReady) {
-    soundCloud.init(config.soundcloud,soundCloudReady);
+    //soundCloud.init(config.soundcloud,soundCloudReady);
     twitter.init(config.twitter);
 };
 
@@ -130,6 +130,10 @@ function uploadAudio(data,attempts) {
 
     });
 }
+
+proto.audioTest = function() {
+    genAudio.test();
+};
 
 
 //-------------------------------------------------------------------------------------------
@@ -289,5 +293,13 @@ proto.tweet = function(type) {
         twitter.post(tw);
     }
 };
+
+proto.print = function(type) {
+
+    // gen data //
+    var data = genTweet.generateTweet(type);
+    console.log(data);
+};
+
 
 module.exports = Action;

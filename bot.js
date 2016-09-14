@@ -36,7 +36,11 @@ global.sampleRate = 44100;
 // GO //
 function init() {
     action.init(config,soundCloudReady);
-    scheduler.init();
+    //action.print('tweetInterview');
+    //action.chartPhase();
+
+
+    action.audioTest();
 }
 init();
 
@@ -44,11 +48,17 @@ init();
 // callback once SoundCloud has initialised //
 function soundCloudReady() {
     //action.audio();
+
+    //scheduler.init();
+
+
 }
 
 
 
-
+function logging(txt) {
+    console.log(txt);
+}
 
 
 

@@ -626,7 +626,7 @@ Chart.prototype.vectorScope5 = function(signal,scale) {
 
     var cp = peak;
     if (cp<0) cp = -cp;
-    if (this.scopeStyle!==2) cp = 1;
+    //if (this.scopeStyle!==2) cp = 1;
     var col = new RGBA(255*cp,255*cp,255*cp,1);
 
     //color.strokeRGBA(cxa,(255 * cp),(255 * cp),(255 * cp),1);

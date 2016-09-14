@@ -268,14 +268,6 @@ WavePlayer.prototype.process = function(input, frequency) {
 //-------------------------------------------------------------------------------------------
 
 
-function FilterWrapper(settings) {
-    this.filter = settings.filter;
-    this.mods = [];
-}
-FilterWrapper.prototype.process = function(signal,index) {
-
-};
-
 
 
 //-------------------------------------------------------------------------------------------
@@ -446,13 +438,13 @@ function filterStereoInvert(signal,threshold) {
 // ERODE ? //
 function filterErode(input,width,index) {
     if (index % tombola.range(1,width)===0) {
-        //input *= tombola.rangeFloat(0.85,0.95);
         input = -input;
     }
     return input;
 }
 
 function filterStereoErode(signal,width,index) {
+    console.log(index);
     return [
         filterErode(signal[0],width,index),
         filterErode(signal[1],width,index)
@@ -1034,7 +1026,7 @@ function FilterSiren() {
 
 
 FilterSiren.prototype.process = function(input,ducking,chance) {
-
+    console.log(this.lp);
     if (this.i<=0 && tombola.chance(1,chance)) {
         this.i = 0;
         this.a = 0;
@@ -1211,6 +1203,19 @@ FilterLowPass2.prototype.process = function(cutoff,res,input) {
     this.out1 = out;
 
     return out;
+};
+
+function FilterStereoLowPass2() {
+    this.lp1 = new FilterLowPass2();
+    this.lp2 = new FilterLowPass2();
+    console.log('lp1: '+this.lp1.a1);
+}
+FilterStereoLowPass2.prototype.process = function(signal, cutoff,res) {
+    console.log('lp1: '+this.lp1.a1);
+    return [
+        this.lp1.process(cutoff,res,signal[0]),
+        this.lp2.process(cutoff,res,signal[1])
+    ];
 };
 
 
@@ -1476,6 +1481,7 @@ module.exports = {
     FilterLowPass: FilterLowPass,
     FilterStereoLowPass: FilterStereoLowPass,
     FilterLowPass2: FilterLowPass2,
+    FilterStereoLowPass2: FilterStereoLowPass2,
 
     LFO: LFO,
     Square: Square,

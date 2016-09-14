@@ -90,6 +90,10 @@ GenTweet.prototype.generateTweet = function(type) {
             return MessageMichael();
             break;
 
+        case 'tweetInterview':
+            return TweetInterview();
+            break;
+
         default: return '';
     }
 };
@@ -158,6 +162,93 @@ function TweetTalk() {
     return conclude(string);
 }
 
+
+//-------------------------------------------------------------------------------------------
+//  INTERVIEW
+//-------------------------------------------------------------------------------------------
+
+
+function TweetInterview() {
+    console.log('interview');
+    var string = "";
+
+    var tense;
+    var specify = tombola.percent(50);
+    var type = tombola.percent(80);
+    var preframe = tombola.percent(30);
+    var topic = tombola.percent(75);
+    var preTopic = tombola.percent(40);
+    var topicType = tombola.weightedItem(['on','on2'],[1,0.9]);
+    if (topicType==='on2') {
+        specify = true;
+    }
+
+
+    if (!(topic && preTopic)) {
+        if (preframe) {
+            tense = tombola.weightedItem(['present','short'],[1,0.8]);
+            string += tombola.item(lexicon.Interview.frame) + " ";
+            string += tombola.item(lexicon.Interview[tense]) + " ";
+        } else {
+            tense = tombola.weightedItem(['past','present','short'],[1,1,0.8]);
+            string += tombola.item(lexicon.Interview[tense]) + " ";
+        }
+    } else {
+        if (preframe) {
+            string += tombola.item(lexicon.Interview.frame) + " ";
+        }
+    }
+
+
+    if (topic && preTopic) {
+        string += tombola.item(lexicon.Interview.preTopic) + " ";
+        if (topicType!=='on2' && (tombola.percent(30) || !specify) ) {
+            string += tombola.item(lexicon.Interview.our) + " ";
+        }
+        if (specify) {
+            string += tombola.item(lexicon.Interview[topicType].a) + " ";
+        }
+        string += tombola.item(lexicon.Interview[topicType].b) + ", ";
+        string += tombola.item(['with ', 'for ']);
+    }
+
+    // show //
+    if (type) {
+        string += "the " + tombola.item(lexicon.Interview.show.type) + " ";
+    }
+    string += '"';
+    if (tombola.percent(10)) {
+        string += "The ";
+    }
+    string += tombola.item(lexicon.Interview.show.a) + " ";
+    string += tombola.item(lexicon.Interview.show.b);
+    if (!type || tombola.percent(20)) {
+        string += " "+tombola.item(lexicon.Interview.show.c);
+    }
+    string += '"';
+
+    // topic //
+    if (topic && !preTopic) {
+        string += ". " + tombola.item(lexicon.Interview.topic) + " ";
+        if (topicType!=='on2' && (tombola.percent(30) || !specify)) {
+            string += tombola.item(lexicon.Interview.our) + " ";
+        }
+        if (specify) {
+            string += tombola.item(lexicon.Interview[topicType].a) + " ";
+        }
+        string += tombola.item(lexicon.Interview[topicType].b);
+    }
+
+    if (!preframe) {
+        //if (!(topic && !preTopic)) {
+            string  += ".";
+        //}
+        string += " " + tombola.item(lexicon.Interview.mode);
+        string += " " + tombola.item(lexicon.Interview.frame);
+    }
+
+    return conclude(string);
+}
 
 //-------------------------------------------------------------------------------------------
 //  OBSERVATIONS

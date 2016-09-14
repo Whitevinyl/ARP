@@ -9,7 +9,7 @@ var action = new Action();
 
 var DEBUG = true;
 
-var checkTime = 1000 * 60 * 20; // polling frequency: 20 minutes
+var checkTime = 1000 * 60 * 10; // polling frequency: 10 minutes
 var windowTime = 1000 * 60 * 60 * 48; // schedule window 48 hours
 
 if (DEBUG) {
@@ -197,16 +197,16 @@ function actionDealer() {
 
     var tweetActions = [
         'tweetJourney','tweetTalk','tweetToday','tweetSighting','tweetSky','tweetLight',
-        'tweetQuality','tweetVoices','tweetPeaks','tweetUpdate', 'tweetMichael'
+        'tweetQuality','tweetVoices','tweetPeaks','tweetUpdate', 'tweetMichael', 'tweetInterview'
     ];
     var tweetOptions = {
         weights: [
-            8, 2, 1, 8, 4, 5,
-            10, 1, 3, 2, 0.75
+            8, 1.5, 1, 8, 4, 5,
+            10, 1, 3, 2, 0.75, 1
         ],
         instances: [
             1,1,1,1,1,1,
-            2,1,2,1,1
+            2,1,2,1,1,1
         ]
     };
 

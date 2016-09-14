@@ -24,12 +24,14 @@ function GenerateAudio() {
 
 }
 
+var proto = GenerateAudio.prototype;
+
 //-------------------------------------------------------------------------------------------
 //  MAIN
 //-------------------------------------------------------------------------------------------
 
 
-GenerateAudio.prototype.generate = function() {
+proto.generate = function() {
 
     // AUDIO LENGTH //
     var seconds = tombola.range(19,29);
@@ -402,6 +404,125 @@ function printWaveform(seconds) {
 }
 
 
+proto.test = function() {
+
+    console.log('test');
+    var filters = [];
+    filters = this.buildFilters();
+    //var siren = new audio.FilterSiren();
+
+    var channels = [new Float32Array(30),new Float32Array(30)];
+
+
+    for (var i=0; i<30; i++) {
+
+        var signal = [0,0];
+
+        //signal = siren.process(signal,0.5,1);
+
+        for (var h=0; h<filters.length; h++) {
+            signal = filters[h].process(signal, channels, i);
+        }
+
+        channels[0][i] = signal[0];
+        channels[1][i] = signal[1];
+    }
+
+    console.log(channels);
+};
+
+
+proto.buildFilters =  function() {
+
+    var f = [];
+
+    var wrap = new FilterWrapper();
+    var settings = [
+        {
+            context: wrap,
+            value: 'signal'
+        },
+        {
+            value: 0.5
+        },
+        {
+            value: 1
+        }
+    ];
+    wrap.init(new audio.FilterSiren(),null,settings);
+
+    f.push(wrap);
+
+    var wrap2 = new FilterWrapper();
+    var settings2 = [
+        {
+            context: wrap2,
+            value: 'signal'
+        },
+        {
+            value: 60
+        },
+        {
+            context: wrap2,
+            value: 'index'
+        }
+    ];
+    wrap2.init(null,audio.filterStereoErode,settings2);
+
+    f.push(wrap2);
+
+
+    return f;
+};
+
+//-------------------------------------------------------------------------------------------
+//  FILTERS
+//-------------------------------------------------------------------------------------------
+
+
+function FilterWrapper() {
+    this.filter = null;
+    this.filterFunc = null;
+    this.mods = [];
+    this.signal = null;
+    this.channel = null;
+    this.index = null;
+    this.args = [];
+    this.settings = [];
+}
+FilterWrapper.prototype.init = function(filter,filterFunc,settings) {
+    this.filter = filter;
+    if (this.filter) {
+        this.filterFunc = this.filter.process;
+    } else {
+        this.filterFunc = filterFunc;
+    }
+    this.settings = settings;
+};
+
+FilterWrapper.prototype.updateArgs = function(settings) {
+    this.args = [];
+    for (var z = 0; z < settings.length; z++) {
+        var a = settings[z];
+        if (a.context) {
+            this.args.push(this[a.value]);
+        } else {
+            this.args.push(a.value);
+        }
+    }
+};
+
+FilterWrapper.prototype.process = function(signal,channel,index) {
+    this.signal = signal;
+    this.channel = channel;
+    this.index = index;
+    this.updateArgs(this.settings);
+    var ctx = this;
+    if (this.filter) {
+        ctx = this.filter;
+    }
+    return this.filterFunc.apply(this.filter,this.args);
+};
 
 
 module.exports = GenerateAudio;
