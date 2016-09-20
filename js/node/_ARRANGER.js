@@ -36,6 +36,22 @@ proto.arrangement = function() {
 //  ALGORITHMS
 //-------------------------------------------------------------------------------------------
 
+// TESTING //
+proto.test = function() {
+    var filters = [];
+
+    filters.push( orchestrator.createComponent('voice') );
+    //filters.push( orchestrator.createComponent('howl') );
+
+    // TESTING //
+    filters.push( orchestrator.createComponent('thud') );
+
+
+    //filters.push( orchestrator.createComponent('clipping') );
+    //filters.push( orchestrator.createComponent('lowPass') );
+    return filters;
+};
+
 
 // BASIC //
 proto.basic = function() {
@@ -67,7 +83,7 @@ proto.basic = function() {
     }
 
     // EXTRA //
-    items = ['chopper','foldBack1','foldBack2','invert','panner','shear'];
+    items = ['chopper','foldBack','foldBackII','invert','panner','shear'];
     options = {
         weights:[ 2, 2, 1.6, 1, 1.2, 2, 0.8],
         instances:[ 1, 1, 1, 1, 1, 1, 1]
@@ -82,11 +98,19 @@ proto.basic = function() {
     if (tombola.percent(40)) {
         filters.push( orchestrator.createComponent('reverb') );
     }
+
+    filters.push( orchestrator.createComponent('thud') );
     filters.push( orchestrator.createComponent('clipping') );
     filters.push( orchestrator.createComponent('lowPass') );
     if (tombola.percent(4)) {
         filters.push( orchestrator.createComponent('reverseDelay') );
+    } else {
+        if (tombola.percent(32)) {
+            filters.push( orchestrator.createComponent('resampler') );
+        }
     }
+
+    //filters.push( orchestrator.createComponent('phaser') );
 
     return filters;
 };

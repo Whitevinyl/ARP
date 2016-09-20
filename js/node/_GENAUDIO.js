@@ -60,8 +60,8 @@ function printWaveform(seconds) {
     noise.push(new audio.VoiceCrackle());
 
 
-    var LPL = new audio.FilterLowPass2();
-    var LPR = new audio.FilterLowPass2();
+    var LPL = new audio.LowPass();
+    var LPR = new audio.LowPass();
 
     var holdL = new audio.FilterDownSample();
     var holdR = new audio.FilterDownSample();
@@ -125,7 +125,7 @@ function printWaveform(seconds) {
     var flipper = new audio.FilterFlipper();
     var Jmp = new audio.Jump();
 
-    var resampler = new audio.FilterResampler();
+    var resampler = new audio.Resampler();
     var pulse = new audio.FilterPulse();
     var siren = new audio.FilterSiren();
     var subSwell = new audio.FilterSubSwell();
@@ -199,7 +199,7 @@ function printWaveform(seconds) {
         // NOISE CHANGE //
         if (noiseShift && tombola.chance(1,20000)) {
             var p = noise[1].panning;
-            noise[1] = tombola.item([new audio.VoiceWhite(), new audio.VoiceBrown(), new audio.VoiceRoar(), new audio.VoiceCracklePeak(), new audio.VoiceCrackle()]);
+            noise[1] = tombola.item([new audio.White(), new audio.VoiceBrown(), new audio.Roar(), new audio.VoiceCracklePeak(), new audio.VoiceCrackle()]);
             noise[1].panning = p;
         }
 
@@ -253,7 +253,7 @@ function printWaveform(seconds) {
                 delay += (tombola.fudge(3, 2)*0.5);
             }
             delay = utils.valueInRange(delay, 10, 5000);
-            signal = audio.filterStereoFeedbackX(signal,0.5,delay,channels,i); ////
+            signal = audio.feedback(signal,0.5,delay,channels,i); ////
         }
 
 
@@ -263,7 +263,7 @@ function printWaveform(seconds) {
         // FEEDBACK FILTER //
         if (phaseLFO) {
             var dt = 10 + modRoot + (Lfo.process(1.2)*1500);
-            signal = audio.filterStereoFeedbackX(signal,modLevel,dt,channels,i); ////
+            signal = audio.feedback(signal,modLevel,dt,channels,i); ////
         }
 
 
@@ -274,7 +274,7 @@ function printWaveform(seconds) {
                 foldback += (tombola.fudge(1, 1)*0.02);
             }
             foldback = utils.valueInRange(foldback, 0.05, 1);
-            signal = audio.filterStereoFoldBack(signal,foldback);  /////
+            signal = audio.foldBack(signal,foldback);  /////
         }
 
 
@@ -291,7 +291,7 @@ function printWaveform(seconds) {
 
         // REVERB //
         if (reverb) {
-            signal = audio.filterStereoReverb(signal,0.5,20,11,channels,i); /////
+            signal = audio.reverb(signal,0.5,20,11,channels,i); /////
         }
 
 
@@ -300,7 +300,7 @@ function printWaveform(seconds) {
 
 
         // CLIPPING 2 DISTORTION //
-        signal = audio.filterStereoClipping2(signal,clipping,0.2);  /////
+        signal = audio.clipping(signal,clipping,0.2);  /////
 
 
         // RESAMPLER //

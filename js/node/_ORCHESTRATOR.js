@@ -57,29 +57,29 @@ proto.createComponent = function(componentName,args,mods) {
             break;
 
 
-        case 'foldBack1':
-            settings.filterFunc = audio.filterStereoFoldBack;
+        case 'foldBack':
+            settings.filterFunc = audio.foldBack;
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.65,0.95))} ); // threshold
             break;
 
 
-        case 'foldBack2':
-            settings.filterFunc = audio.filterStereoFoldBack2;
+        case 'foldBackII':
+            settings.filterFunc = audio.foldBackII;
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.65,0.95))} ); // threshold
             settings.args.push( {value: pick( args[1], tombola.rangeFloat(0.2,0.4))} ); // reduction power
             break;
 
 
         case 'clipping':
-            settings.filterFunc = audio.filterStereoClipping2;
+            settings.filterFunc = audio.clipping;
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.7,0.95))} ); // threshold
             settings.args.push( {value: pick( args[1], tombola.rangeFloat(0.05,0.2))} ); // spill power
             break;
 
 
         case 'reverb':
-            settings.filterFunc = audio.filterStereoReverb;
-            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.3,0.55))} ); // level
+            settings.filterFunc = audio.reverb;
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.5,0.6))} ); // level
             settings.args.push( {value: pick( args[1], tombola.range(10,45))} ); // delay
             settings.args.push( {value: pick( args[2], 11)} ); // size
             settings.args.push( {context: true, value: 'channel'} ); // channel
@@ -88,7 +88,7 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'invert':
-            settings.filterFunc = audio.filterStereoInvert;
+            settings.filterFunc = audio.invert;
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.60,0.95))} ); // threshold
             settings.args.push( pick( args[1], {mod: 0, min: tombola.rangeFloat(-0.5,0), max: tombola.rangeFloat(0.2,0.5), floor: 0, ceil: 1 }) ); // mix
             settings.mods.push( pick( mods[0], this.createMod('walk')) );
@@ -96,7 +96,7 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'erode':
-            settings.filterFunc = audio.filterStereoErode;
+            settings.filterFunc = audio.erode;
             settings.args.push( {value: pick( args[0], tombola.range(100,1500))} ); // width
             settings.args.push( {context: true, value: 'index'} ); // index
             settings.args.push( pick( args[1], {mod: 0, min: tombola.rangeFloat(-0.5,0), max: tombola.rangeFloat(0.2,0.6), floor: 0, ceil: 1 }) ); // mix
@@ -114,17 +114,17 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'saturation':
-            settings.filterFunc = audio.filterStereoSaturation;
-            settings.args.push( {value: pick( args[0], 0.9)} ); // threshold
-            settings.args.push( {value: pick( args[1], 1)} ); // mix
+            settings.filterFunc = audio.saturation;
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.6,0.9))} ); // threshold
+            settings.args.push( {value: pick( args[1], tombola.rangeFloat(0.5,1))} ); // mix
             break;
 
 
         case 'panner':
-            settings.filterFunc = audio.filterStereoPanner;
-            var panWidth = tombola.rangeFloat(0.2,1);
+            settings.filterFunc = audio.panner;
+            var panWidth = tombola.rangeFloat(0.4,1);
             settings.args.push( pick( args[0], {mod: 0, min: -panWidth, max: panWidth }) ); // panning
-            settings.mods.push( pick( mods[0], this.createMod('walk')) );
+            settings.mods.push( pick( mods[0], this.createModType('movement','medium')) );
             break;
 
 
@@ -172,7 +172,7 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'click':
-            settings.filter = new audio.FilterClick();
+            settings.filter = new audio.Click();
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
             settings.args.push( {value: pick( args[1], tombola.range(160000,280000))} ); // chance
             settings.args.push( {value: pick( args[2], null)} ); // mechanical
@@ -215,6 +215,13 @@ proto.createComponent = function(componentName,args,mods) {
             break;
 
 
+        case 'thud':
+            settings.filter = new audio.Thud();
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.5,0.8))} ); // ducking
+            settings.args.push( {value: pick( args[1], tombola.range(20000,50000))} ); // chance
+            break;
+
+
         case 'phaseSine':
             settings.filter = new audio.PhaseWrapper();
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.2,0.6))} ); // mix
@@ -228,7 +235,7 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'fm':
-            settings.filter = new audio.FMWrapper();
+            settings.filter = new audio.FM();
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.5))} ); // mix
             settings.args.push( {value: pick( args[1], tombola.rangeFloat(16,30))} ); // frequency
             settings.args.push( pick( args[2], {mod: 0, min: 0, max: 1}) ); // a1
@@ -256,6 +263,26 @@ proto.createComponent = function(componentName,args,mods) {
             break;
 
 
+        case 'cluster':
+            settings.filter = new audio.Cluster();
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(500,600))} );  // frequency
+            settings.args.push( {value: pick( args[1], tombola.rangeFloat(16000,30000))} );  // chance
+            settings.args.push( pick( args[2], {mod: 1, min: 0.5, max: tombola.rangeFloat(0.5,0.8) }) ); // amp
+            settings.mods.push( pick( mods[0], this.createMod('weave',[tombola.rangeFloat(0.05,0.12),tombola.range(8000,12000)])) );
+            settings.mods.push( pick( mods[1], this.createMod('walk',[tombola.rangeFloat(0.05,0.25),tombola.range(11000,20000)])) );
+            break;
+
+
+        case 'flocking':
+            settings.filter = new audio.Flocking();
+            settings.args.push( pick( args[0], {mod: 0, min: 200, max: tombola.rangeFloat(700,1000) }) );  // frequency
+            settings.args.push( {value: pick( args[1], tombola.rangeFloat(0.1,0.2))} );  // rate
+            settings.args.push( pick( args[2], {mod: 1, min: tombola.rangeFloat(0,0.15), max: tombola.rangeFloat(0.4,0.7) }) ); // amp
+            settings.mods.push( pick( mods[0], this.createMod('weave',[tombola.rangeFloat(0.05,0.12),tombola.range(10000,30000)])) );
+            settings.mods.push( pick( mods[1], this.createMod('walk',[tombola.rangeFloat(0.05,0.25),tombola.range(11000,20000)])) );
+            break;
+
+
         case 'bitCrush':
             settings.filter = new audio.FilterStereoDownSample();
             settings.args.push( pick( args[0], {mod: 0, min: tombola.range(5,15), max: tombola.range(100,200) }) ); // bit size
@@ -275,7 +302,7 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'lowPass':
-            settings.filter = new audio.FilterStereoLowPass2();
+            settings.filter = new audio.StereoLowPass();
             settings.args.push( pick( args[0], {mod: 0, min: tombola.rangeFloat(400,600), max: tombola.rangeFloat(8000,11000) }) ); // cutoff
             settings.args.push( {value: pick( args[1], 0.92)} ); // resonance
             //settings.mods.push( pick( mods[0], this.createMod('walk',[tombola.rangeFloat(0.1,0.3),tombola.range(20000,40000)])) );
@@ -293,7 +320,7 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'phaser':
-            settings.filterFunc = audio.filterStereoFeedbackX;
+            settings.filterFunc = audio.feedback;
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.25,0.55))} ); // level
             settings.args.push( pick( args[1], {mod: 0, min: tombola.rangeFloat(5,10), max: tombola.rangeFloat(100,500) }) ); // delay
             settings.args.push( {context: true, value: 'channel'} );
@@ -303,7 +330,7 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'chorus':
-            settings.filterFunc = audio.filterStereoFeedbackX;
+            settings.filterFunc = audio.feedback;
             settings.args.push( pick( args[0],{mod: 0, min: tombola.rangeFloat(0.1,0.3), max: tombola.rangeFloat(0.4,0.6)  }) ); // mix
             settings.args.push( pick( args[1], {mod: 1, min: tombola.rangeFloat(100,600), max: tombola.rangeFloat(800,1000) }) ); // delay
             settings.args.push( {context: true, value: 'channel'} );
@@ -315,13 +342,22 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'reverseDelay':
-            settings.filterFunc = audio.filterStereoReverseFeedbackX;
+            settings.filterFunc = audio.reverseDelay;
             settings.args.push( pick( args[0], {mod: 0, min: tombola.rangeFloat(0.2,0.4), max: tombola.rangeFloat(0.75,1)  }) ); // mix
             settings.args.push( {value: pick( args[1], tombola.range(2500,20000))} ); // delay
             settings.args.push( {value: pick( args[2], tombola.range(100,250))} ); // feedback
             settings.args.push( {context: true, value: 'channel'} );
             settings.args.push( {context: true, value: 'index'} );
             settings.mods.push( pick( mods[0], this.createMod('walk',[tombola.rangeFloat(0.05,0.25),tombola.range(11000,20000)])) );
+            break;
+
+
+        case 'resampler':
+            settings.filter = new audio.Resampler();
+            settings.args.push( {value: pick( args[0], tombola.range(0,6))} ); // mode
+            settings.args.push( {value: pick( args[1], tombola.range(20000,150000))} ); // chance
+            settings.args.push( {context: true, value: 'channel'} );
+            settings.args.push( {context: true, value: 'index'} );
             break;
 
 

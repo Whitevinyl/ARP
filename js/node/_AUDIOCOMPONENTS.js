@@ -3,10 +3,47 @@ var utils = require('./lib/utils');
 var Tombola = require('tombola');
 var tombola = new Tombola();
 
-// These are javascript components used for generating/filtering audio signals. Multiple
-// techniques are used, subtractive & additive synthesis, wavetables, granular self-sampling,
-// IIR & FIR filtering.
-// Needs a tidy up (and a couple decommissioning) but they are roughly categorised.
+// These are vanilla javascript components used for generating/filtering audio signals.
+// Multiple techniques are used, subtractive & additive synthesis, wavetables, granular
+// self-sampling, IIR & FIR filtering.
+// I've started separating these out to individual files, (in the folder 'audioComponents').
+// I'm no signal processing expert, so lots of trial & error and experimental noisiness here!
+
+
+// INLINE FILTERS //
+var clipping = require('./audioComponents/filters/Clipping');
+var erode = require('./audioComponents/filters/Erode');
+var feedback = require('./audioComponents/filters/Feedback');
+var foldBack = require('./audioComponents/filters/FoldBack');
+var foldBackII = require('./audioComponents/filters/FoldBackII');
+var invert = require('./audioComponents/filters/Invert');
+var panner = require('./audioComponents/filters/Panner');
+var reverb = require('./audioComponents/filters/Reverb');
+var reverseDelay = require('./audioComponents/filters/ReverseDelay');
+var saturation = require('./audioComponents/filters/Saturation');
+
+
+// PERSISTENT FILTERS //
+var LowPass = require('./audioComponents/filters/LowPass');
+
+// SIGNAL GENERATORS //
+var Click = require('./audioComponents/generators/Click');
+var Cluster = require('./audioComponents/generators/Cluster');
+var Flocking = require('./audioComponents/generators/Flocking');
+var FMSine = require('./audioComponents/generators/FMSine');
+var Resampler = require('./audioComponents/generators/Resampler');
+var Thud = require('./audioComponents/generators/Thud');
+
+// VOICES //
+var WavePlayer = require('./audioComponents/voices/WavePlayer');
+var table = require('./audioComponents/voices/Tables');
+var Roar = require('./audioComponents/voices/Roar');
+var White = require('./audioComponents/voices/White');
+
+
+// !!!
+// Everything below this point is currently in the process of being tidied into the
+// 'audioComponents' folder (it's taking a while!)
 
 //-------------------------------------------------------------------------------------------
 //  VOICE OBJECT
@@ -28,13 +65,14 @@ Voice.prototype.process = function(signal,type) {
 
     // UPDATE VOICE //
     if (tombola.chance(1,500)) {
-        this.gain += (tombola.fudge(1, 1))*0.01;
+        this.gain += tombola.fudgeFloat(1, 0.01); // this makes some artefacts, look at alts
     }
-    this.panning += (tombola.fudge(1,1)*0.005);
+    this.panning += tombola.rangeFloat(-0.005,0.005);
+    this.panning = utils.valueInRange(this.panning, -1, 1);
 
     this.frequency = utils.valueInRange(this.frequency, 10, 19000);
     this.gain = utils.valueInRange(this.gain, 0, 0.5);
-    this.panning = utils.valueInRange(this.panning, -1, 1);
+
 
     // UPDATE VOICE WAVE SHAPES //
     if (type==='none' && tombola.chance(1,5000)) {
@@ -78,25 +116,7 @@ PhaseWrapper.prototype.process = function(signal, mix, frequency, f1, f2, amp) {
     ];
 };
 
-function FMWrapper() {
-    this.phase = new FMSine();
-    this.panning = tombola.rangeFloat(-1,1);
-}
-FMWrapper.prototype.process = function(signal, mix, frequency, a1, a2, amp) {
 
-    a1 = a1 || 0.5;
-    a2 = a2 || 0.1;
-    amp = utils.arg(amp,1);
-
-    var ps = this.phase.process(frequency, a1, a2)/2;
-    this.panning += (tombola.fudge(1,1)*0.005);
-    this.panning = utils.valueInRange(this.panning, -1, 1);
-
-    return [
-        (signal[0]*(1-(mix*amp))) + ((ps * (mix*amp)) * (1 + (-this.panning))),
-        (signal[1]*(1-(mix*amp))) + ((ps * (mix*amp)) * (1 + this.panning))
-    ];
-};
 
 
 //-------------------------------------------------------------------------------------------
@@ -111,7 +131,7 @@ NoiseWrapper.prototype.process = function(signal,chance) {
     // NOISE CHANGE //
     if (chance && tombola.chance(1,chance)) {
         var p = this.noise.panning;
-        this.noise = tombola.item([new VoiceWhite(), new VoiceBrown(), new VoiceRoar(), new VoiceCracklePeak(), new VoiceCrackle()]);
+        this.noise = tombola.item([new White(), new VoiceBrown(), new Roar(), new VoiceCracklePeak(), new VoiceCrackle()]);
         this.noise.panning = p;
     }
 
@@ -168,33 +188,10 @@ VoiceBrown.prototype.process = function() {
 };
 
 
-// WHITE NOISE //
-function VoiceWhite() {
-    this.gain = 0.5;
-    this.panning = 0;
-    this.amplitude = 0;
-}
-VoiceWhite.prototype.process = function() {
-    var white = (Math.random() * 2 - 1);
-    return white * this.gain;
-};
 
 
-// ROAR NOISE //
-function VoiceRoar(threshold) {
-    this.gain = 0.2;
-    this.panning = 0;
-    this.amplitude = 0;
-    this.threshold = threshold || 0.8;
-}
-VoiceRoar.prototype.process = function() {
-    var white = (Math.random() * 2 - 1);
-    if (white>(-this.threshold) && white<this.threshold) {
-        white = this.amplitude;
-    }
-    this.amplitude = white;
-    return white * this.gain;
-};
+
+
 
 
 // CRACKLE NOISE //
@@ -328,295 +325,8 @@ function waveArc3(voice, amp, i) {
     voice.amplitude =  (c*t*t*t*t + b) * amp;
 }
 
-function WavePlayer(wave) {
-    this.waveforms = wave.waveforms;
-    this.wave = tombola.item(this.waveforms);
-    this.a = 0.3;
-    this.f = 200;
-    this.i = 0;
-    this.p = 0;
-}
-WavePlayer.prototype.process = function(input, frequency) {
-
-    this.f += 0.0001;
-    this.f = valueInRange(this.f,5,18000);
-    if (frequency) this.f = frequency;
-
-    this.i += this.wave.length/(sampleRate/this.f);
-
-    if (this.i>=(this.wave.length-1)) {
-        this.i = 0;
-        this.wave = tombola.item(this.waveforms);
-    }
-
-    // pan //
-    this.p += tombola.rangeFloat(-0.008,0.008);
-    this.p = valueInRange(this.p, -1, 1);
-
-    var sample = [
-        (this.wave[Math.round(this.i)] + tombola.fudgeFloat(2,0.1)) * (1 + -this.p),
-        (this.wave[Math.round(this.i)] + tombola.fudgeFloat(2,0.1)) * (1 + this.p)
-    ];
-
-    input = [
-        input[0] + (sample[0] * this.a),
-        input[1] + (sample[1] * this.a)
-    ];
-
-    return input;
-};
-
-//-------------------------------------------------------------------------------------------
-//  FILTERS
-//-------------------------------------------------------------------------------------------
 
 
-
-
-//-------------------------------------------------------------------------------------------
-//  INLINE FILTERS
-//-------------------------------------------------------------------------------------------
-
-
-
-function filterNoise(level) {
-    return tombola.rangeFloat(-level,level);
-}
-
-
-// FEEDBACK //
-function filterFeedback(level,delay,channel,index) {
-    delay = Math.round(delay);
-    if (index<delay) {
-        return 0;
-    }
-    return (channel[index-delay]*level);
-}
-
-
-function filterStereoFeedbackX(signal,level,delay,channel,index) {
-    return [
-        signal[0] + filterFeedback(level,delay,channel[1],index),
-        signal[1] + filterFeedback(level,delay,channel[0],index)
-    ];
-}
-
-
-// FEEDBACK 2//
-function filterFeedback2(input,level,delay,channel,index,l) {
-    delay = Math.round(delay);
-    if ((index + delay) < l) {
-        channel[index+delay] = input*level;
-    }
-}
-
-function filterStereoFeedback2X(signal,level,delay,channel,index,l) {
-    filterFeedback2(signal[0],level,delay,channel[1],index,l);
-    filterFeedback2(signal[1],level,delay,channel[0],index,l);
-}
-
-
-// REVERSE FEEDBACK //
-function filterReverseFeedback(input,level,delay,feedback,channel,index) {
-    for (var z=0; z<feedback; z++) {
-        var lvl = Math.pow(level,z+1);
-        var ind = Math.round(z * delay);
-        if ((index-ind)>0) {
-            channel[index-ind] += ((input*lvl)*0.8);
-        }
-    }
-}
-
-function filterStereoReverseFeedbackX(signal,level,delay,feedback,channel,index) {
-    filterReverseFeedback(signal[0],level,delay,feedback,channel[1],index);
-    filterReverseFeedback(signal[1],level,delay,feedback,channel[0],index);
-    return [
-        signal[0]*(1-level),
-        signal[1]*(1-level)
-    ];
-}
-
-
-// REVERB //
-function filterReverb(level,delay,size,channel,index) {
-    var primes = [0, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101];
-    var out = 0;
-    var r = 1/(size*1.3);
-    for (var j=0; j<size; j++) {
-        out += filterFeedback(((level) - (r*j))*0.15,delay + (primes[j]*60),channel,index);
-    }
-    return out;
-}
-
-function filterStereoReverb(signal,level,delay,size,channel,index) {
-    return [
-        signal[0] += filterReverb(level,delay,size,channel[1],index),
-        signal[1] += filterReverb(level,delay,size,channel[0],index)
-    ];
-}
-
-
-// REVERB 2 // NOT YET WORKING
-function filterReverb2(level,delay,size,channel,index) {
-    var primes = [0, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101];
-    var out = 0;
-    var scale = 1;
-    var r = 1/(size*1.3);
-    for (var j=0; j<size; j++) {
-        out += filterFeedback(((level) - (r*j))*0.15, delay + ((primes[size-1]*scale)-(primes[size-j]*scale)),channel,index);
-        //out += filterFeedback(((level) - (r*(size-j)))*0.15,delay + ((primes[size-1]*scale)-(primes[j]*scale)),channel,index);
-    }
-    return out;
-}
-
-
-// FOLDBACK //
-function filterFoldBack(input,threshold) {
-    if (input>threshold || input<-threshold) {
-        input = Math.abs(Math.abs(utils.fmod(input - threshold, threshold*4)) - threshold*2) - threshold;
-    }
-    return input;
-}
-
-function filterStereoFoldBack(signal,threshold) {
-    return [
-        filterFoldBack(signal[0],threshold),
-        filterFoldBack(signal[1],threshold)
-    ];
-}
-
-
-// FOLDBACK2 //
-function filterFoldBack2(input,threshold, power) {
-    if (input>threshold) {
-        input = threshold - ((input-threshold)*power);
-    }
-    if (input<-threshold) {
-        input = -threshold - ((input-(-threshold))*power);
-    }
-    return valueInRange(input,-threshold,threshold);
-}
-
-function filterStereoFoldBack2(signal,threshold,power) {
-    return [
-        filterFoldBack2(signal[0],threshold,power),
-        filterFoldBack2(signal[1],threshold,power)
-    ];
-}
-
-
-// CLIPPING //
-function filterClipping(input, threshold, output) {
-    return (valueInRange(input, -threshold, threshold) * (1/threshold)) * output;
-}
-
-function filterStereoClipping(signal,threshold,output) {
-    return [
-        filterClipper(signal[0],threshold,output),
-        filterClipper(signal[1],threshold,output)
-    ];
-}
-
-
-// CLIPPING2 //
-function filterClipping2(input,threshold, power) {
-    if (input>threshold) {
-        input = threshold + ((input-threshold)*power);
-    }
-    if (input<-threshold) {
-        input = -threshold + ((input-(-threshold))*power);
-    }
-    return input;
-}
-
-function filterStereoClipping2(signal,threshold,power) {
-    return [
-        filterClipping2(signal[0],threshold,power),
-        filterClipping2(signal[1],threshold,power)
-    ];
-}
-
-
-// INVERT WAVEFORM //
-function filterInvert(input,threshold) {
-    var a = input;
-    if (input>0) {
-        a = threshold - (input*threshold);
-        if (a<0) a=0;
-    }
-    if (input<0) {
-        a = -threshold - (input*threshold);
-        if (a>0) a=0;
-    }
-    return a;
-}
-
-function filterStereoInvert(signal,threshold,mix) {
-    mix = utils.arg(mix,1);
-    return [
-        (signal[0] * (1-mix)) + (filterInvert(signal[0],threshold)*mix),
-        (signal[1] * (1-mix)) + (filterInvert(signal[1],threshold)*mix)
-    ];
-}
-
-
-// ERODE ? //
-function filterErode(input,width,index) {
-    if (index % tombola.range(1,width)===0) {
-        input = -input;
-    }
-    return input;
-}
-
-function filterStereoErode(signal,width,index,mix) {
-    mix = utils.arg(mix,1);
-    return [
-        (signal[0] * (1-mix)) + (filterErode(signal[0],width,index)*mix),
-        (signal[1] * (1-mix)) + (filterErode(signal[1],width,index)*mix)
-    ];
-}
-
-
-// SATURATION //
-function filterSaturation(input,threshold) {
-    var out;
-    input = (input+1)/2;
-    if (input>threshold) {
-        out = threshold + (input-threshold)/(1+((input-threshold)/(1-threshold))^2);
-    }
-
-    if (input>1) {
-        out = (threshold+1)/2;
-    }
-
-    out = out*(1/((threshold+1)/2));
-    return (out*2)-1;
-}
-
-function filterStereoSaturation(signal,threshold,mix) {
-    mix = utils.arg(mix,1);
-    return [
-        (signal[0] * (1-mix)) + (filterSaturation(signal[0],threshold)*mix),
-        (signal[1] * (1-mix)) + (filterSaturation(signal[1],threshold)*mix)
-    ];
-}
-
-
-// PANNER //
-function filterStereoPanner(signal,panning) {
-    if (panning<0) {
-        signal = [
-            (signal[0] * (1+panning)) + (signal[1] * (-panning)),
-            signal[1] * (1+panning)
-        ];
-    } else {
-        signal = [
-            signal[0] * (1-panning),
-            (signal[1] * (1-panning)) + (signal[0] * (panning))
-        ];
-    }
-    return signal;
-}
 
 
 //-------------------------------------------------------------------------------------------
@@ -663,44 +373,6 @@ PhaseSine.prototype.process = function(f,mf1,mf2) {
 
 
 
-// FM SINE? //
-function FMSine() {
-    this.f = 200;
-    this.v = 0;
-
-    this.mf1 = 10;
-    this.mv1 = 0;
-    this.ma1 = 1;
-
-    this.mf2 = 10;
-    this.mv2 = 0;
-    this.ma2 = 0.6;
-}
-FMSine.prototype.process = function(f,a1,a2) {
-
-
-    a1 = a1 || 0.5;
-    a2 = a2 || 0.1;
-
-    if (f) this.f = f;
-    this.mf1 = f*4;
-    this.mf2 = f*2;
-
-    // modulation waves //
-    this.mv1 += this.mf1/(sampleRate/4);
-    if(this.mv1 > 2) this.mv1 -= 4;
-
-    this.mv2 += this.mf2/(sampleRate/4);
-    if(this.mv2 > 2) this.mv2 -= 4;
-
-    var m1 = this.mv1 * a1;
-    var m2 = this.mv2 * a2;
-
-    // affected wave //
-    this.v += (((this.f)/(sampleRate/4)));
-    if(this.v > 2) this.v -= 4;
-    return ((this.v * m1) + m2) * (2-Math.abs((this.v * m1) + m2));
-};
 
 
 
@@ -709,7 +381,7 @@ function InOut() {
 }
 InOut.prototype.process = function(signal,index,l) {
     var fade = sampleRate/5;
-    var n = this.static.process()*0.3;
+    var n = this.static.process()*0.1;
     var mix;
 
     // intro //
@@ -772,7 +444,7 @@ FilterRamp.prototype.process = function(input,ducking,chance,speed,retrigger) {
         this.r = tombola.rangeFloat(0.01, speed*2)/sampleRate;
         this.m = 1 + (tombola.rangeFloat(0.01, speed*10)/sampleRate);
 
-        var voiceType = tombola.item([Metallic,Voice2,Voice3]);
+        var voiceType = tombola.item([table.Metallic,table.Voice2,table.Voice3]);
         this.voices = [];
         this.f = [];
         var voiceNo = tombola.range(3,4);
@@ -847,7 +519,7 @@ FilterWail.prototype.process = function(input,ducking,chance,max,retrigger) {
             this.l = tombola.range(max * 50,max * 1000);
         }
 
-        var voiceType = tombola.item([Metallic,Voice2,Voice3]);
+        var voiceType = tombola.item([table.Metallic,table.Voice2,table.Voice3]);
         this.voices = [];
         this.f = [];
         var voiceNo = tombola.range(7,10);
@@ -915,7 +587,7 @@ FilterWail.prototype.process = function(input,ducking,chance,max,retrigger) {
 
 // SUB HOWL //
 function FilterSubHowl() {
-    this.filter = new FilterLowPass2();
+    this.filter = new LowPass.mono();
     this.mod = new MoveTo();
     this.p = tombola.rangeFloat(-1,1);
 }
@@ -949,7 +621,7 @@ function FilterHowl() {
 FilterHowl.prototype.process = function(input,frequency,amp) {
 
     if (this.voices.length === 0) {
-        var voiceType = tombola.item([Metallic,Voice2,Voice3]);
+        var voiceType = tombola.item([table.Metallic,table.Voice2,table.Voice3]);
         this.voices = [];
         this.f = [];
         var voiceNo = tombola.range(7,10);
@@ -1002,7 +674,7 @@ FilterBurst.prototype.process = function(input,ducking,chance,max,retrigger,maxf
         this.l = tombola.range(max * 500,max * 1000);
 
 
-        var voiceType = tombola.item([Metallic,Voice2,Voice3]);
+        var voiceType = tombola.item([table.Metallic,table.Voice2,table.Voice3]);
         this.voices = [];
         this.f = [];
         var voiceNo = tombola.range(6,12);
@@ -1057,217 +729,6 @@ FilterBurst.prototype.process = function(input,ducking,chance,max,retrigger,maxf
     return input;
 };
 
-
-
-// RESAMPLER //
-function FilterResampler() {
-    this.s = 0;
-    this.c = 0;
-    this.i = -1;
-    this.r = 0;
-    this.sp = 3;
-    this.l = 5000;
-    this.m = [0,0];
-    this.mc = 0;
-}
-FilterResampler.prototype.process = function(input,mode,chance,channel,index) {
-
-    var ind;
-
-    if (mode===0) { // GRAIN BURST //
-        if (index>4000 && this.i<0 && tombola.chance(1,chance)) {
-            // get sample //
-            if (this.s===0) this.s = tombola.range(1,index);
-            this.i = 0;
-            this.sp = tombola.rangeFloat(-0.6,1.5);
-            this.r = tombola.rangeFloat(0.01,2);
-            this.l = tombola.range(5000,40000);
-        }
-
-        if (this.i>=0) {
-            input =  [
-                channel[0][this.s + Math.round(this.i)],
-                channel[1][this.s + Math.round(this.i)]
-            ];
-
-            if (this.i<this.l) {
-                this.r += (this.sp/sampleRate);
-                this.i += this.r;
-            } else {
-                this.i =-1;
-            }
-        }
-    }
-    if (mode===1 || mode===2) { // LOOP GRAIN //
-        if (index>10000 && this.i<0 && tombola.chance(1,chance)) {
-            // get sample //
-            this.s = tombola.range(1,index);
-            this.i = 0;
-            this.sp = tombola.rangeFloat(-0.5,0.6);
-            this.r = tombola.rangeFloat(0.7,2);
-            this.l = tombola.range(700,7000);
-            this.c = tombola.range(3,11);
-        }
-
-
-        if (this.i>=0) {
-            ind = this.s + Math.round(this.i);
-
-            if (ind<index) {
-                input = [
-                    channel[0][this.s + Math.round(this.i)],
-                    channel[1][this.s + Math.round(this.i)]
-                ];
-
-                if (this.i < this.l) {
-                    this.r += (this.sp / sampleRate);
-                    this.i += this.r;
-                } else {
-                    this.i = -1;
-                }
-
-                if (this.r < 0.0001) { // kill reverse //
-                    this.c = 0;
-                    this.i = -1;
-                }
-
-                if (this.c > 0 && this.i < 0) {
-                    this.c -= 1;
-                    this.i = 0;
-                    this.r += (this.sp / sampleRate);
-                    this.r += tombola.fudgeFloat(4, 0.05);
-                    this.i += this.r;
-
-                    if (mode === 2) this.s = tombola.range(1, index);
-                    //this.r = tombola.rangeFloat(0.8,2);
-                }
-            }
-        }
-    }
-    if (mode===3 || mode===5) { // DRAG //
-        if (index>5000 && this.i<0 && tombola.chance(1,chance)) {
-            this.i = 0;
-            this.sp = 0;
-            if (mode===5) {
-                //this.r = tombola.rangeFloat(-3,3);
-            }
-            this.l = tombola.range(6000,80000);
-            this.s = tombola.range(200,5000);
-            this.s = valueInRange(this.s,1,index-1);
-            this.mc = 0;
-        }
-
-        if (this.i>=0) {
-
-            this.i++;
-            var g = 0.9;
-            if (mode===3) {
-                this.sp += tombola.fudge(18,1);
-            } else {
-                this.sp = tombola.fudge(10,1);
-                //g = 1/Math.ceil((this.i/7)/this.s);
-            }
-            this.sp = valueInRange(this.sp,-(index-1),this.s-40);
-
-            input = [
-                (channel[0][index - this.s + Math.round(this.sp)]) * g,
-                (channel[1][index - this.s + Math.round(this.sp)]) * g
-            ];
-
-            if ((this.m[0]==input[0] && this.m[1]==input[1])) {
-                this.mc++;
-            } else {
-                this.mc = 0;
-            }
-
-            if (this.i > this.l || this.mc>20) {
-                this.i = -1;
-            }
-            this.m = input;
-        }
-    }
-    if (mode===4) { // TIME STRETCH //
-        if (index>10000 && this.c<=0 && tombola.chance(1,chance)) {
-            this.s = tombola.range(1,index-10000);
-            this.i = 0;
-            this.sp = tombola.rangeFloat(-0.05,0.05);
-            this.r = tombola.rangeFloat(1,3);
-            this.l = 380;
-            this.c = tombola.range(90,160);
-        }
-
-
-        if (this.c>0 && this.i>=0) {
-            ind = this.s + Math.round(this.i);
-
-            if (ind<index) {
-
-                input =  [
-                    channel[0][ind],
-                    channel[1][ind]
-                ];
-
-                if (this.i<this.l) {
-                    this.r += (this.sp/sampleRate);
-                    this.i +=this.r;
-                } else {
-                    this.i = -1;
-                }
-
-                if (this.i<0) {
-                    this.c -= 1;
-                    this.i = 0;
-                    this.s += Math.floor(this.l/2);
-                }
-
-            } else {
-                this.c = 0;
-                this.i = -1;
-            }
-        }
-    }
-    if (mode===6) { // REVERSE STRETCH //
-        if (index>35500 && this.c<=0 && tombola.chance(1,chance)) {
-            this.l = 380;
-            this.s = tombola.range(index-5000,index-this.l);
-            this.i = 0;
-            this.sp = tombola.rangeFloat(-0.05,0.05);
-            this.r = tombola.rangeFloat(1,3);
-            this.c = tombola.range(90,160);
-        }
-
-
-        if (this.c>0 && this.i>=0) {
-            ind = this.s + Math.round(this.i);
-
-            if (ind>1 && ind<index) {
-
-                input =  [
-                    (input[0]*0.5) + (channel[0][ind]*0.4),
-                    (input[1]*0.5) + (channel[1][ind]*0.4)
-                ];
-
-                if (this.i<this.l) {
-                    this.r += (this.sp/sampleRate);
-                    this.i +=this.r;
-                } else {
-                    this.i = -1;
-                }
-
-                if (this.i<0) {
-                    this.c -= 1;
-                    this.i = 0;
-                    this.s -= Math.floor(this.l/2);
-                }
-
-            } else {
-                this.c = 0;
-                this.i = -1;
-            }
-        }
-    }
-    return input;
-};
 
 
 // PULSE //
@@ -1477,7 +938,7 @@ FilterNoisePulse.prototype.process = function(input,ducking,chance) {
         this.ma = 0;
         this.c = 0;
         this.mi = 0;
-        this.voice = tombola.item( [new VoiceRoar(tombola.rangeFloat(0.2,0.9)), new VoiceBrown(), new VoicePink(), new VoiceCrackle(tombola.rangeFloat(0.05,0.5)), new VoiceCracklePeak(tombola.rangeFloat(0.0005,0.5))]);
+        this.voice = tombola.item( [new Roar(tombola.rangeFloat(0.2,0.9)), new VoiceBrown(), new VoicePink(), new VoiceCrackle(tombola.rangeFloat(0.05,0.5)), new VoiceCracklePeak(tombola.rangeFloat(0.0005,0.5))]);
     }
 
     if (this.c<(this.l.length-1) && this.i>=0) {
@@ -1532,111 +993,6 @@ FilterNoisePulse.prototype.process = function(input,ducking,chance) {
 
 
 
-// CLICKS //
-function FilterClick() {
-    this.a = 0;
-    this.ma = 0;
-    this.i = -1;
-    this.mi = 0;
-    this.c = 0;
-    this.l = [];
-    this.tl = 0;
-    this.p = 0;
-    this.voice = null;
-    this.s = 0;
-}
-FilterClick.prototype.process = function(input,ducking,chance,mechanical) {
-
-    if (this.i<=0 && tombola.chance(1,chance)) {
-        mechanical = utils.arg(mechanical,tombola.percent(10));
-        this.l = [];
-        this.tl = 0;
-        var min = 400;
-        var max = 8000;
-        if (mechanical) {
-            max = 4000;
-        }
-        var drift = tombola.range(600,1200);
-        var pulses = tombola.range(10,30);
-        var l = tombola.range(min,max);
-        var d = tombola.range(-drift,drift);
-        for (var i=0; i<pulses; i++) {
-            this.l.push(l);
-            this.tl += l;
-            if (!mechanical) {
-                if (tombola.chance(1,3)) {
-                    d = tombola.range(-drift,drift);
-                }
-                if ((l+d)<min) d = tombola.range(0,drift);
-                if ((l+d)>max) d = tombola.range(-drift,0);
-                l += d;
-            }
-        }
-        this.i = 0;
-        this.a = 0;
-        this.ma = 0;
-        this.c = 0;
-        this.mi = 0;
-        this.s = tombola.rangeFloat(0.01,0.07);
-        this.voice = tombola.item( [new VoiceRoar(tombola.rangeFloat(0.2,0.9)), new VoiceWhite()]);
-    }
-
-    if (this.c<(this.l.length-1) && this.i>=0) {
-
-        if (this.i<this.l[this.c]) {
-            this.i ++;
-        } else {
-            this.i = 0;
-            this.c += 1;
-            this.a = 0;
-        }
-        this.mi ++;
-
-        // amp //
-        var attack = this.l[this.c]*0.001;
-        var hold = this.l[this.c]*this.s;
-        var release = this.l[this.c]*0.005;
-        if (this.i<attack) {
-            this.a += (1/attack);
-        }
-        if (this.i>=attack && this.i<(attack+hold)) {
-            this.a = 1;
-        }
-        if (this.i>(attack+hold) && this.i<(attack+hold+release)) {
-            this.a -= (1/release);
-        }
-        if (this.i>=(attack+hold+release)) {
-            this.a = 0;
-        }
-
-        // master amp //
-        attack = this.tl*0.3;
-        release = this.tl*0.4;
-        if ((this.mi)<attack) {
-            this.ma += (1/attack);
-        }
-        if ((this.mi)>(this.tl-release)) {
-            this.ma -= (1/release);
-        }
-
-        // pan //
-        this.p += tombola.rangeFloat(-0.005,0.005);
-        this.p = valueInRange(this.p, -1, 1);
-
-        //voice //
-        var n = this.voice.process();
-        var signal = [
-            n * (1 + -this.p),
-            n * (1 + this.p)
-        ];
-
-        input = [
-            (input[0] * (1-((this.a * this.ma) * ducking))) + (signal[0] * (this.a * this.ma)),
-            (input[1] * (1-((this.a * this.ma) * ducking))) + (signal[1] * (this.a * this.ma))
-        ];
-    }
-    return input;
-};
 
 
 function SimpleTriangle(frequency) {
@@ -2122,41 +1478,6 @@ FilterStereoLowPass.prototype.process = function(cutoff,input) {
 };
 
 
-// LOW PASS 2 //
-function FilterLowPass2() {
-    this.a1 = this.a2 = this.a3 = this.b1 = this.b2 = this.in1 = this.in2 = this.out1 = this.out2 = 0;
-}
-FilterLowPass2.prototype.process = function(cutoff,res,input) {
-
-    res = valueInRange(res,0.6,1.4);
-    var c = 1.0 / Math.tan(Math.PI * cutoff / sampleRate);
-
-    this.a1 = 1.0 / ( 1.0 + res * c + c * c);
-    this.a2 = 2* this.a1;
-    this.a3 = this.a1;
-    this.b1 = 2.0 * ( 1.0 - c*c) * this.a1;
-    this.b2 = ( 1.0 - res * c + c * c) * this.a1;
-
-    var out = (this.a1 * input) + (this.a2 * this.in1) + (this.a3 * this.in2) - (this.b1 * this.out1) - (this.b2 * this.out2);
-
-    this.in2 = this.in1;
-    this.in1 = input;
-    this.out2 = this.out1;
-    this.out1 = out;
-
-    return out;
-};
-
-function FilterStereoLowPass2() {
-    this.lp1 = new FilterLowPass2();
-    this.lp2 = new FilterLowPass2();
-}
-FilterStereoLowPass2.prototype.process = function(signal, cutoff, res) {
-    return [
-        this.lp1.process(cutoff,res,signal[0]),
-        this.lp2.process(cutoff,res,signal[1])
-    ];
-};
 
 
 //-------------------------------------------------------------------------------------------
@@ -2394,91 +1715,7 @@ Takeoff.prototype.process = function(r,c,d) {
     return valueInRange(this.p,-1,1);
 };
 
-function Metallic() {
-    var a = [
-        0, -0.7, -0.4, -0.6,
-        -0.45, -0.1, -0.3, -0.35,
-        0.4, 0.6, 0.7, 0.5,
-        0.3, 0.2, -0.13, -0.07,
-        0, -0.06, -0.12, -0.18
 
-        -0.2, -0.18, -0.1, -0.03,
-        0.25, 1, 0, -0.05,
-        -0.15, -0.2, -0.25, -0.3,
-        -0.32, -0.33, -0.33, -0.32,
-        -0.25, -0.2, -0.15, -0.1
-    ];
-    var b = [
-        0, -0.1, -0.2, -0.3,
-        0, 0.5, 1, 0.5,
-        -0.4, -0.6, -0.7, -0.6,
-        -0.4, -0.6, -0.7, -0.8,
-        -0.9, -0.6, -0.2, -0.1,
-
-        0, 0.1, 0.2, 0.3,
-        0, -0.5, -1, -0.5,
-        0.4, 0.6, 0.7, 0.6,
-        0.4, 0.6, 0.7, 0.6,
-        0.25, 0.2, 0.15, 0.1
-    ];
-    var c = [
-        0, 0.1, -0.05, 0.08,
-        -0.12, 0, -0.12, 0,
-        -0.15, -0.4, -0.9, -0.95,
-        -1, -1, -0.5, -0.4,
-        -0.1, -0.3, -0.2, -0.3,
-        -0.65, -0.6, -0.7, -0.3,
-        -0.1, -0.2, 0, 0.2,
-        0.1, 0.2, 0.16, 0.7,
-        0.6, 0.3, 0.3, 0.05,
-        0.3, 0.6, 1, 0.95,
-        0.9, 0.7, 0.8, 0.1
-    ];
-
-
-    this.waveforms = [b, c];
-}
-
-function Voice2() {
-    var a = [
-        0, 0.1, 0, 0.3,
-        0.5, 0.4, 0.7, 0.5,
-        -0.2, -0.4, -0.3, 0,
-        0.4, 0.7, 0.9, 1,
-        0.9, 0.7, 0.4, 0.2,
-
-        0, -0.1, 0.2, 0,
-        -0.1, -0.2, -0.3, -0.4,
-        -0.9, 0.3, -0.2, -0.1,
-        0, 0.1, 0.2, 0.1,
-        -0.4, -0.5, -0.4, -0.1
-    ];
-    var b = [
-        0, 0.5, 0.55, 0.6,
-        0.65, 0.7, 0.75, 0.8,
-        0.85, 0.9, 0.95, 1,
-        0.8, 0.6, 0.4, 0.2,
-
-        0, -0.5, -0.55, -0.6,
-        -0.65, -0.7, -0.75, -0.8,
-        -0.85, -0.9, -0.95, -1,
-        -0.8, -0.6, -0.4, -0.2
-    ];
-
-
-    this.waveforms = [a, b];
-}
-
-function Voice3() {
-    var a = [
-        0, 1, 0, -1
-    ];
-    var b = [
-        1, -1
-    ];
-
-    this.waveforms = [a, b];
-}
 
 
 function valueInRange(value,floor,ceiling) {
@@ -2493,14 +1730,16 @@ function valueInRange(value,floor,ceiling) {
 
 
 module.exports = {
-    Voice: Voice, //
+    Voice: Voice,
+    NoiseWrapper: NoiseWrapper,
+
     VoicePink: VoicePink,
     VoiceBrown: VoiceBrown,
-    VoiceWhite: VoiceWhite,
+    White: White,
     VoiceCrackle: VoiceCrackle,
     VoiceCracklePeak: VoiceCracklePeak,
-    VoiceRoar: VoiceRoar,
-    NoiseWrapper: NoiseWrapper, //
+    Roar: Roar,
+
 
     InOut : InOut,
 
@@ -2508,34 +1747,27 @@ module.exports = {
     waveSawtooth: waveSawtooth,
     WavePlayer: WavePlayer,
 
-    filterNoise: filterNoise,
-    filterFeedback: filterFeedback,
-    filterStereoFeedbackX: filterStereoFeedbackX, //
-    filterFeedback2: filterFeedback2,
-    filterStereoFeedback2X: filterStereoFeedback2X,
-    filterStereoReverseFeedbackX: filterStereoReverseFeedbackX, //
-    filterReverb: filterReverb,
-    filterStereoReverb: filterStereoReverb, //
-    filterFoldBack: filterFoldBack,
-    filterStereoFoldBack: filterStereoFoldBack, //
-    filterFoldBack2: filterFoldBack2,
-    filterStereoFoldBack2: filterStereoFoldBack2, //
-    filterClipping: filterClipping,
-    filterStereoClipping: filterStereoClipping,
-    filterClipping2: filterClipping2,
-    filterStereoClipping2: filterStereoClipping2, //
-    filterInvert: filterInvert,
-    filterStereoInvert: filterStereoInvert, //
-    filterErode: filterErode,
-    filterStereoErode: filterStereoErode, //
-    filterStereoPanner: filterStereoPanner, //
-    filterStereoSaturation: filterStereoSaturation, //
+    clipping: clipping,
+    erode: erode,
+    feedback: feedback.stereo,
+    foldBack: foldBack,
+    foldBackII: foldBackII,
+    invert: invert,
+    panner: panner,
+    reverb: reverb,
+    reverseDelay: reverseDelay,
+    saturation: saturation,
 
+
+    Cluster: Cluster,
+    Flocking: Flocking,
+    FM: FMSine.wrapper,
+    Resampler: Resampler,
+    Click: Click,
+    Thud: Thud,
     PhaseSine: PhaseSine,
     PhaseWrapper: PhaseWrapper, //
-    FMWrapper: FMWrapper, //
     FilterWail: FilterWail, //
-    FilterResampler: FilterResampler,
     FilterPulse: FilterPulse, //
     FilterGrowl: FilterGrowl, //
     FilterSubSwell: FilterSubSwell, //
@@ -2545,7 +1777,6 @@ module.exports = {
     FilterRumble: FilterRumble, //
     FilterRamp: FilterRamp, //
     FilterNoisePulse: FilterNoisePulse, //
-    FilterClick: FilterClick, //
     FilterBeep: FilterBeep, //
     FilterSubHowl: FilterSubHowl, //
 
@@ -2554,10 +1785,9 @@ module.exports = {
     FilterStereoChopper: FilterStereoChopper, //
     FilterDownSample: FilterDownSample,
     FilterStereoDownSample: FilterStereoDownSample, //
-    FilterLowPass: FilterLowPass,
     FilterStereoLowPass: FilterStereoLowPass,
-    FilterLowPass2: FilterLowPass2,
-    FilterStereoLowPass2: FilterStereoLowPass2, //
+    LowPass: LowPass.mono,
+    StereoLowPass: LowPass.stereo, //
     FilterStereoResonant: FilterStereoResonant, //
     FilterShear: FilterShear, //
 
