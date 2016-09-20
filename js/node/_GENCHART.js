@@ -7,10 +7,8 @@ var tombola = new Tombola();
 var Simplex = require('perlin-simplex');
 var audio = require('./_AUDIOCOMPONENTS');
 
-
 // Here we generate all the data for the charts, as well as various meta data tags which
 // are used by charts & audio, for tweet text, soundcloud descriptions etc
-
 
 //-------------------------------------------------------------------------------------------
 //  INIT
@@ -20,12 +18,15 @@ var audio = require('./_AUDIOCOMPONENTS');
 function Chart() {
     this.scopeStyle = 2;
 }
+var proto = Chart.prototype;
+
 
 //-------------------------------------------------------------------------------------------
 //  WAVEFORM SECTION
 //-------------------------------------------------------------------------------------------
 
-Chart.prototype.generateWaveSection = function(length) {
+
+proto.generateWaveSection = function(length) {
 
     length = Math.floor(length * sampleRate);
 
@@ -241,7 +242,8 @@ Chart.prototype.generateWaveSection = function(length) {
 //  PERIODIC WAVES
 //-------------------------------------------------------------------------------------------
 
-Chart.prototype.generatePeriodicWaves = function(n) {
+
+proto.generatePeriodicWaves = function(n) {
 
     var waves = [];
     var wavelength = tombola.range(60,90);
@@ -501,7 +503,7 @@ Chart.prototype.generatePeriodicWaves = function(n) {
 //-------------------------------------------------------------------------------------------
 
 
-Chart.prototype.vectorScope = function(signal,scale) {
+proto.vectorScope = function(signal,scale) {
     var a = signal[0];
     var b = signal[1];
     var arat = 1;
@@ -530,7 +532,7 @@ Chart.prototype.vectorScope = function(signal,scale) {
     ];
 };
 
-Chart.prototype.vectorScope2 = function(signal,scale) {
+proto.vectorScope2 = function(signal,scale) {
     var a = signal[0];
     var b = signal[1];
     var arat = 1;
@@ -553,7 +555,7 @@ Chart.prototype.vectorScope2 = function(signal,scale) {
     ];
 };
 
-Chart.prototype.vectorScope3 = function(signal,scale) {
+proto.vectorScope3 = function(signal,scale) {
     var a = signal[0];
     var b = signal[1];
     if (a<0) a = -a;
@@ -568,7 +570,7 @@ Chart.prototype.vectorScope3 = function(signal,scale) {
     ];
 };
 
-Chart.prototype.vectorScope4 = function(signal,scale) {
+proto.vectorScope4 = function(signal,scale) {
     var a = signal[0];
     var b = signal[1];
     var ba = a;
@@ -600,7 +602,7 @@ Chart.prototype.vectorScope4 = function(signal,scale) {
     ];
 };
 
-Chart.prototype.vectorScope5 = function(signal,scale) {
+proto.vectorScope5 = function(signal,scale) {
     var a = signal[0];
     var b = signal[1];
     var ba = a;
@@ -643,7 +645,7 @@ Chart.prototype.vectorScope5 = function(signal,scale) {
     ];
 };
 
-Chart.prototype.vectorScope6 = function(signal,scale,n) {
+proto.vectorScope6 = function(signal,scale,n) {
     var a = signal[0];
     var b = signal[1];
     var ba = a;
@@ -681,7 +683,7 @@ Chart.prototype.vectorScope6 = function(signal,scale,n) {
 //-------------------------------------------------------------------------------------------
 
 
-Chart.prototype.generateScopeData = function(length) {
+proto.generateScopeData = function(length) {
 
     var map = [];
     var peak = 0;
@@ -840,7 +842,7 @@ Chart.prototype.generateScopeData = function(length) {
 //-------------------------------------------------------------------------------------------
 
 
-Chart.prototype.generateTimeSpectrum = function(layers,length) {
+proto.generateTimeSpectrum = function(layers,length) {
 
     // INIT //
     var simplex = new Simplex();
@@ -1172,7 +1174,6 @@ Chart.prototype.generateTimeSpectrum = function(layers,length) {
 
 
     // map data is drawn, now construct the json //
-
     var seconds = this.generateSpectrumSeconds();
     var min = seconds[0];
     var max = seconds[seconds.length-1];
@@ -1195,32 +1196,32 @@ Chart.prototype.generateTimeSpectrum = function(layers,length) {
 //-------------------------------------------------------------------------------------------
 
 
-Chart.prototype.generateSpectrumSeconds = function() {
+proto.generateSpectrumSeconds = function() {
     var sec = tombola.range(3,17);
     return [sec, sec+2, sec+4, sec+6, sec+8];
 };
 
 
-Chart.prototype.generateScopeSeconds = function() {
+proto.generateScopeSeconds = function() {
     var a = tombola.range(3,10);
     var b = tombola.range(a+4,a+11);
     return [a, a+tombola.range(2,4), b, b+tombola.range(2,4)];
 };
 
 
-Chart.prototype.generateSpectrumParagraph = function(min,max) {
+proto.generateSpectrumParagraph = function(min,max) {
     var insert = tombola.item(['of ','of an active section of ','of the loudest section of ']);
     return 'Frequency response map ' + insert + 'audio signal between ' + min + ' and ' + max + ' seconds.';
 };
 
 
-Chart.prototype.generateScopeParagraph = function(seconds) {
+proto.generateScopeParagraph = function(seconds) {
     var insert = tombola.item(['sections of ','active sections of ','of the clearest sections of ']);
     return 'Images of stereo phase correlation of two ' + insert + 'audio signal at ' + seconds[0] + ' and ' + seconds[2] + ' seconds.';
 };
 
 
-Chart.prototype.generateWaveformParagraph = function() {
+proto.generateWaveformParagraph = function() {
     var secs = '';
     if (tombola.chance(2,3)) {
         secs += (tombola.range(50,200)/100) + ' seconds long ';
@@ -1230,7 +1231,7 @@ Chart.prototype.generateWaveformParagraph = function() {
 };
 
 
-Chart.prototype.generateDate = function() {
+proto.generateDate = function() {
     var time = new Date();
     time.setDate(time.getDate()-tombola.range(4,12));
     var d = time.getDate();
@@ -1255,7 +1256,7 @@ Chart.prototype.generateDate = function() {
 };
 
 
-Chart.prototype.generateTime = function() {
+proto.generateTime = function() {
     var h = tombola.range(0,23);
     var m = tombola.range(0,59);
     var s = tombola.range(0,59);
@@ -1273,7 +1274,7 @@ Chart.prototype.generateTime = function() {
 };
 
 
-Chart.prototype.generateID = function() {
+proto.generateID = function() {
     var n = tombola.range(1000000,9999999);
     return {
         string: 'ID: ' + n,
@@ -1282,7 +1283,7 @@ Chart.prototype.generateID = function() {
 };
 
 
-Chart.prototype.generateCat = function() {
+proto.generateCat = function() {
     var c = tombola.weightedItem(['A','B','C','D'] , [8,6,3,1]);
     return {
         string: 'cat: ' + c,
@@ -1291,7 +1292,7 @@ Chart.prototype.generateCat = function() {
 };
 
 
-Chart.prototype.generateFrequency = function() {
+proto.generateFrequency = function() {
     return {
         string: 'centimetre band, 8.92467255 GHz',
         strict: '8.92467255 GHz'
@@ -1299,13 +1300,13 @@ Chart.prototype.generateFrequency = function() {
 };
 
 
-Chart.prototype.generateBandWidth = function() {
+proto.generateBandWidth = function() {
     var bw = tombola.range(3000,6000)/100;
     return '' + bw + ' Hz';
 };
 
 
-Chart.prototype.generateLevel = function(bad) {
+proto.generateLevel = function(bad) {
     var l;
     if (bad) {
         l = tombola.range(-30000,-20000)/100;

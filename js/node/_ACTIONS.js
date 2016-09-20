@@ -24,10 +24,8 @@ var soundCloud = new SoundCloud();
 var Twitter = require('./_TWITTER');
 var twitter = new Twitter();
 
-
 // All of the main generation actions get initiated here - audio, charts, tweets and star
 // trail photos.
-
 
 //-------------------------------------------------------------------------------------------
 //  INIT
@@ -54,10 +52,11 @@ proto.init = function(config,soundCloudReady) {
 proto.audio = function() {
 
     // generate audio data //
-    var data = genAudio.generate();
+    //var data = genAudio.generate();
+    var data = genAudio.test();
 
     // encode audio data to wav //
-    wavEncoder.encode(data.audioData).then(function(buffer){
+    wavEncoder.encode(data.audioData,{ float: false, bitDepth: 24 }).then(function(buffer){
         console.log(buffer);
 
         // write wav as file //
@@ -69,7 +68,7 @@ proto.audio = function() {
                 console.log("succeeded in saving");
 
                 // upload file to soundcloud //
-                uploadAudio(data,3);
+                //uploadAudio(data,3);
             }
         });
     });
@@ -130,10 +129,6 @@ function uploadAudio(data,attempts) {
 
     });
 }
-
-proto.audioTest = function() {
-    genAudio.test();
-};
 
 
 //-------------------------------------------------------------------------------------------

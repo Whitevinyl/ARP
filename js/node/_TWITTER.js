@@ -1,7 +1,8 @@
 
 var Twit = require('twit');
 
-// Basic twitter API posting using the library twit.
+// Basic twitter API posting using the library twit. These methods are implemented in
+// 'action' (_ACTIONS.js)
 
 //-------------------------------------------------------------------------------------------
 //  INIT

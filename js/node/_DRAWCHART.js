@@ -8,9 +8,9 @@ var chart = new GenChart();
 var bgCols = [new RGBA(10,15,22,1), new RGBA(255,236,88,1), new RGBA(30,34,37,1), new RGBA(120,122,124,1), new RGBA(25,29,32,1)];
 var graphCols = [new RGBA(235,26,76,1), new RGBA(39,37,46,1,1), new RGBA(75,254,170,1), new RGBA(172,26,240,1), new RGBA(245,243,233,1), new RGBA(10,10,10,1), new RGBA(61,21,71,1), new RGBA(174,0,232,1), new RGBA(156,0,235,1), new RGBA(0,46,196,1), new RGBA(88,28,237,1), new RGBA(162,0,255,1), new RGBA(0,166,255,1), new RGBA(255,0,89,1), new RGBA(195,0,145,1), new RGBA(104,0,156,1), new RGBA(42,23,61,1), new RGBA(237,21,86,1), new RGBA(41,37,48,1), new RGBA(149,129,148,1), new RGBA(6,209,91,1), new RGBA(50,240,220,1), new RGBA(115,90,120,1), new RGBA(200,200,200,1), new RGBA(39,40,41,1)];
 
-
 // Here are the drawing functions for all of the charts. In need of a tidy up currently.
-
+// Data for each chart comes from 'chart' (_GENCHART.js). Chart creation & tweeting is
+// initiated in 'action' (_ACTIONS.js)
 
 //-------------------------------------------------------------------------------------------
 //  INIT
@@ -33,16 +33,14 @@ function Draw() {
     this.dataType = Math.round(u/82);
     this.subType = Math.round(u/100);
 
-
-
     var Canvas = require('canvas');
-
     this.canvas = new Canvas(this.fullX, this.fullY);
     this.cxa = this.canvas.getContext('2d');
 }
+var proto = Draw.prototype;
 
 
-Draw.prototype.fillBackground = function(cxa) {
+proto.fillBackground = function(cxa) {
     color.master = new RGBA(0,0,0,0);
     color.lowPass = new RGBA(-4,-4,-4,0);
     color.fill(cxa,bgCols[4]);
@@ -55,7 +53,7 @@ Draw.prototype.fillBackground = function(cxa) {
 //  WAVEFORM SECTION
 //-------------------------------------------------------------------------------------------
 
-Draw.prototype.drawWaveformChart = function(data) {
+proto.drawWaveformChart = function(data) {
 
     var cxa = this.cxa;
     var units = this.units;
@@ -148,7 +146,7 @@ Draw.prototype.drawWaveformChart = function(data) {
 };
 
 
-Draw.prototype.drawWaveSection = function(data, x, y, w, h) {
+proto.drawWaveSection = function(data, x, y, w, h) {
 
     var l = data[0].length;
     var sw = w / l;
@@ -199,7 +197,7 @@ Draw.prototype.drawWaveSection = function(data, x, y, w, h) {
 //  PERIODIC WAVES
 //-------------------------------------------------------------------------------------------
 
-Draw.prototype.drawPeriodicWaveChart = function(data) {
+proto.drawPeriodicWaveChart = function(data) {
 
     var cxa = this.cxa;
     var units = this.units;
@@ -258,7 +256,7 @@ Draw.prototype.drawPeriodicWaveChart = function(data) {
 
 
 
-Draw.prototype.drawPeriodicWave = function(data, x, y, w, h) {
+proto.drawPeriodicWave = function(data, x, y, w, h) {
 
     var l = data.map.length;
     var sw = w / l;
@@ -298,7 +296,7 @@ Draw.prototype.drawPeriodicWave = function(data, x, y, w, h) {
 //  PHASE CHART
 //-------------------------------------------------------------------------------------------
 
-Draw.prototype.drawVectorScopeChart = function(data) {
+proto.drawVectorScopeChart = function(data) {
 
     var cxa = this.cxa;
     var units = this.units;
@@ -529,7 +527,7 @@ Draw.prototype.drawVectorScopeChart = function(data) {
 //-------------------------------------------------------------------------------------------
 
 
-Draw.prototype.drawVectorScope = function(channels,style,func,scale,line,x,y) {
+proto.drawVectorScope = function(channels,style,func,scale,line,x,y) {
     var i;
     var m = 0;
     var l = channels[0].length;
@@ -584,7 +582,7 @@ Draw.prototype.drawVectorScope = function(channels,style,func,scale,line,x,y) {
 //-------------------------------------------------------------------------------------------
 
 
-Draw.prototype.drawTimeSpectrumChart = function(data) {
+proto.drawTimeSpectrumChart = function(data) {
     var cxa = this.cxa;
 
     // bg //
@@ -792,7 +790,7 @@ Draw.prototype.drawTimeSpectrumChart = function(data) {
 //-------------------------------------------------------------------------------------------
 
 
-Draw.prototype.drawTimeSpectrum = function(signal,x,y,w,h,fill1,fill2) {
+proto.drawTimeSpectrum = function(signal,x,y,w,h,fill1,fill2) {
 
     var cxa = this.cxa;
 
@@ -829,7 +827,7 @@ Draw.prototype.drawTimeSpectrum = function(signal,x,y,w,h,fill1,fill2) {
 //-------------------------------------------------------------------------------------------
 
 
-Draw.prototype.drawLogo = function(x,y,s,c1,c2) {
+proto.drawLogo = function(x,y,s,c1,c2) {
 
     var cxa = this.cxa;
 

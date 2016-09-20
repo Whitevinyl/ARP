@@ -5,15 +5,16 @@ var tombola = new Tombola();
 
 var GenChart = require('./_GENCHART');
 var genChart = new GenChart();
+var Arranger = require('./_ARRANGER');
+var arranger = new Arranger();
 
 var audio = require('./_AUDIOCOMPONENTS');
-
+var FilterWrapper = require('./_FILTERWRAPPER');
 
 // Audio is generated here using javascript components in _AUDIOCOMPONENTS.js. Signals are
 // generated and filtered in sequence and panned between stereo channels. Multiple techniques
 // are used, subtractive & additive synthesis, wavetables, granular self-sampling, IIR & FIR
 // filtering.
-
 
 //-------------------------------------------------------------------------------------------
 //  INIT
@@ -98,6 +99,16 @@ function printWaveform(seconds) {
     console.log('phaseLFO: '+phaseLFO);
     var sampleMode = tombola.item([1,3]);
 
+
+    rumble = false;
+    pulsing = false;
+    phaseLFO = false;
+    sampleMode = 3;
+    fold = false;
+    reverb = false;
+    phaseWander = true;
+    noiseShift = true;
+
     var Lfo = new audio.LFO();
     var Lfo2 = new audio.LFO();
     var Wlk = new audio.Walk();
@@ -123,6 +134,8 @@ function printWaveform(seconds) {
     var phaseSine = new audio.PhaseSine();
     var phaseLfo = new audio.LFO();
     var phaseLfo2 = new audio.LFO();
+    var bitCrush = new audio.FilterStereoDownSample();
+    var bitMod = new audio.Glide2();
 
     // LOOP THROUGH SAMPLES //
     for (var i=0; i<l; i++) {
@@ -163,11 +176,11 @@ function printWaveform(seconds) {
 
 
         // BIT CRUSH //
-        signal[0] = holdL.process(hold,signal[0]);
+        /*signal[0] = holdL.process(hold,signal[0]);
         signal[1] = holdR.process(hold,signal[1]);
-        /*if (tombola.chance(1,5000)) {
+        /!*if (tombola.chance(1,5000)) {
             hold += tombola.fudge(3, 1);
-        }*/
+        }*!/
         if (tombola.chance(1,40000)) {
             holdMod = tombola.fudgeFloat(8,0.0001);
         }
@@ -178,7 +191,10 @@ function printWaveform(seconds) {
         }
         if (hold>150) {
             holdMod = -0.0001;
-        }
+        }*/
+
+        // BIT CRUSH //
+        signal = bitCrush.process(signal,audio.controlRange(10,150,bitMod.process(0.07,10000)),0.5); ///
 
         // NOISE CHANGE //
         if (noiseShift && tombola.chance(1,20000)) {
@@ -207,12 +223,6 @@ function printWaveform(seconds) {
             signal[0] += (noiseAmp  * (1 + (-noise[h].panning)) );
             signal[1] += (noiseAmp  * (1 + noise[h].panning) );
         }
-
-
-        // BIT CRUSH //
-        /*var hold2 = 10 + (glide2.process(1, 25000)*200);
-        signal[0] = holdL.process(hold2,signal[0]);
-        signal[1] = holdR.process(hold2,signal[1]);*/
 
 
         // PULSE //
@@ -269,14 +279,14 @@ function printWaveform(seconds) {
 
 
         // CHOPPER FILTER //
-        chopRate = 6000 + (Wlk3.process(1,20000)*5800);
+        /*chopRate = 6000 + (Wlk3.process(1,20000)*5800);
         chopDepth = 1 + (Wlk2.process(3,100));
         if (chopDepth>1) {
             chopDepth = 1;
         }
-        var chp = chop.process(chopRate,chopDepth);
-        signal[0] *= chp;
-        signal[1] *= chp;
+        var chp = chop.process(chopRate,chopDepth); /////
+        signal[0] *= chp; ////
+        signal[1] *= chp;*/
 
 
         // REVERB //
@@ -294,12 +304,11 @@ function printWaveform(seconds) {
 
 
         // RESAMPLER //
-        signal = resampler.process(signal,sampleMode,200000,channels,i);
-        //signal = resampler.process(signal,4,200000,channels,i);
+        signal = resampler.process(signal,sampleMode,200000,channels,i); ///
 
 
         // LOW PASS FILTER //
-        signal[0] = LPL.process(cutoff,0.92,signal[0]);
+        signal[0] = LPL.process(cutoff,0.92,signal[0]); /////
         signal[1] = LPR.process(cutoff,0.92,signal[1]);
         cutoff = 4700 + (Wlk.process(0.2, 30000)*4300);
         if (cutstyle) {
@@ -309,28 +318,14 @@ function printWaveform(seconds) {
         //cutoff = 4700 + (Jmp.process(30000)*4300);
         //cutoff = 4700 + (takeoff.process(0.2, 30000)*4300);
 
-
-        // FEEDBACK FILTER //
-        /*if (i % tombola.range(2,3) === 0) {
-            var ndt = 1000 + (glide.process(5, 30000, -1)*995);
-            filterFeedback2(totalL, 0.6,ndt,channels[1],i,l);
-            filterFeedback2(totalR, 0.6,ndt,channels[0],i,l);
-        }*/
-
-
         // INVERT DISTORTION //
         //signal = filterStereoInvert(signal, 0.5); // horrible :)
-
         // ERODE DISTORTION //
         //signal = filterStereoErode(signal,3000,i); // crackles
-
-
         // FLIPPER DISTORTION //
         /*var flp = 25 + (glide.process(0.5,20000)*10);
         totalL = flipper.process(totalL,flp);
         totalR = flipper.process(totalR,flp);*/
-
-
         // PANNER //
         /*var panRate = 20 + (Wlk4.process(0.5,26000)*19.8);
         signal = filterStereoPanner(signal,Lfo2.process(panRate));*/
@@ -405,124 +400,742 @@ function printWaveform(seconds) {
 
 
 proto.test = function() {
+    var seconds = 28;
+    var peak = 0;
+    var l = sampleRate * seconds;
+    var inOut = new audio.InOut();
 
     console.log('test');
-    var filters = [];
-    filters = this.buildFilters();
-    //var siren = new audio.FilterSiren();
+    //var filters = this.buildFilters();
+    var filters = arranger.arrangement();
+    var channels = [new Float32Array(l),new Float32Array(l)];
 
-    var channels = [new Float32Array(30),new Float32Array(30)];
-
-
-    for (var i=0; i<30; i++) {
-
+    for (var i=0; i<l; i++) {
         var signal = [0,0];
 
-        //signal = siren.process(signal,0.5,1);
 
         for (var h=0; h<filters.length; h++) {
-            signal = filters[h].process(signal, channels, i);
+            // process //
+            var process = filters[h].process(signal, channels, i);
+            // failsafe //
+            signal = signalTest(process,signal);
         }
 
-        channels[0][i] = signal[0];
-        channels[1][i] = signal[1];
+        signal = inOut.process(signal,i,l);
+
+        // WRITE VALUES //
+        if (channels[0][i]) {
+            channels[0][i] += signal[0];
+        } else {
+            channels[0][i] = signal[0];
+        }
+        if (channels[1][i]) {
+            channels[1][i] += signal[1];
+        } else {
+            channels[1][i] = signal[1];
+        }
+
+
+        // PEAK //
+        var ttl = channels[0][i];
+        if (ttl<0) { ttl = -ttl; }
+        var ttr = channels[1][i];
+        if (ttr<0) { ttr = -ttr; }
+
+        if (ttl > peak) { peak = ttl; }
+        if (ttr > peak) { peak = ttr; }
     }
 
-    console.log(channels);
+
+    // PASS 2 //
+    var mult = 1/peak;
+
+    for (i=0; i<l; i++) {
+
+        // GET VALUES //
+        signal[0] = channels[0][i];
+        signal[1] = channels[1][i];
+
+        // NORMALISE //
+        signal[0] *= mult;
+        signal[1] *= mult;
+
+        // FADES //
+        var f = 1;
+        var fade = 2500;
+        if (i<fade) { f = i / fade; }
+        if (i>((l-1)-fade)) { f = ((l-1)-i) / fade; }
+
+        // WRITE VALUES //
+        channels[0][i] = signal[0] * f;
+        channels[1][i] = signal[1] * f;
+    }
+
+    console.log('generated');
+    return {
+        audioData: {
+            sampleRate: sampleRate,
+            channelData: channels
+        },
+        seconds: seconds,
+        id: genChart.generateID(),
+        cat: genChart.generateCat(),
+        date: genChart.generateDate(),
+        time: genChart.generateTime(),
+        frequency: genChart.generateFrequency(),
+        bandwidth: genChart.generateBandWidth(),
+        level: genChart.generateLevel()
+    };
 };
+
+function signalTest(signal,fallback) {
+    if (signal!==undefined && signal[0]!==undefined && signal[1]!==undefined && signal[0]==signal[0] && signal[1]==signal[1]) {
+        return signal;
+    } else {
+        return fallback;
+    }
+}
 
 
 proto.buildFilters =  function() {
-
+    var settings;
     var f = [];
 
-    var wrap = new FilterWrapper();
-    var settings = [
-        {
-            context: wrap,
-            value: 'signal'
-        },
-        {
-            value: 0.5
-        },
-        {
-            value: 1
-        }
-    ];
-    wrap.init(new audio.FilterSiren(),null,settings);
+    // SIREN //
+    /*settings = {
+        filter: new audio.FilterSiren(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.5},
+            {value: 100000}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));*/
 
-    f.push(wrap);
 
-    var wrap2 = new FilterWrapper();
-    var settings2 = [
-        {
-            context: wrap2,
-            value: 'signal'
-        },
-        {
-            value: 60
-        },
-        {
-            context: wrap2,
-            value: 'index'
-        }
-    ];
-    wrap2.init(null,audio.filterStereoErode,settings2);
+    // PULSE //
+    /*settings = {
+        filter: new audio.FilterPulse(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.7},
+            {value: true}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));*/
 
-    f.push(wrap2);
 
+    // VOICE // 20 - 40
+    settings = {
+        filter: new audio.Voice(tombola.rangeFloat(20,40)),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 'triangle'}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // BITCRUSH //
+   /* settings = {
+        filter: new audio.FilterStereoDownSample(),
+        args: [
+            {context: true, value: 'signal'},
+            {mod:0, min:10, max: 150},
+            {value: 0.5}
+        ],
+        mods: [
+            {
+                mod: new audio.Glide2(),
+                args: [
+                    {value: 0.07},
+                    {value: 10000}
+                ]
+            }
+        ]
+    };
+    f.push(new FilterWrapper(settings));*/
+
+
+    // NOISE //
+    settings = {
+        filter: new audio.NoiseWrapper(),
+        args: [
+            {context: true, value: 'signal'}//,
+            //{value: 20000}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // SIREN //
+    settings = {
+         filter: new audio.FilterSiren(),
+         args: [
+             {context: true, value: 'signal'},
+             {value: 0.5},
+             {value: 100000}
+         ],
+         mods: []
+     };
+     f.push(new FilterWrapper(settings));
+
+
+    // SUB //
+    settings = {
+        filter: new audio.FilterSubSwell(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.6},
+            {value: 200000}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // WAIL //
+    settings = {
+        filter: new audio.FilterWail(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.6},
+            {value: 200000}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // GROWL //
+    settings = {
+        filter: new audio.FilterGrowl(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.6},
+            {value: 200000}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // PHASE WANDER //
+    settings = {
+        filterFunc: audio.filterStereoFeedbackX,
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.4},
+            {mod: 1, min: 10, max: 2000},
+            //{mod: 1, min: -0.1, max: 0.5, floor: 0, ceil: 1},
+            //{mod: 0, min: 500, max: 1000},
+            {context: true, value: 'channel'},
+            {context: true, value: 'index'}
+        ],
+        mods: [
+            /*{
+                mod: new audio.FudgeChance(),
+                args: [
+                    {value: 3},
+                    {value: 0.018},
+                    {value: 550}
+                ]
+            }*/
+            {
+                mod: new audio.Looper(),
+                args: [
+                    {value: 1000},
+                    {value: 0.05},
+                    {value: 50000}
+                ]
+            },
+            {
+                mod: new audio.MoveTo(),
+                args: [
+                    {value: 0.09},
+                    {value: 20000}
+                ]
+            }
+        ]
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // CHOPPER //
+    settings = {
+        filter: new audio.FilterStereoChopper(),
+        args: [
+            {context: true, value: 'signal'},
+            {mod:0, min:200, max: 12000},
+            {mod:1, min:0, max: 2, floor: 0, ceil: 1}
+        ],
+        mods: [
+            {
+                mod: new audio.WalkSmooth(),
+                args: [
+                    {value: 3},
+                    {value: 100}
+                ]
+            },
+            {
+                mod: new audio.Walk(),
+                args: [
+                    {value: 1},
+                    {value: 20000}
+                ]
+            }
+        ]
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // CLIPPING //
+    settings = {
+        filterFunc: audio.filterStereoClipping2,
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.9},
+            {value: 0.2}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // RESAMPLER //
+    settings = {
+        filter: new audio.FilterResampler(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 3},
+            {value: 200000},
+            {context: true, value: 'channel'},
+            {context: true, value: 'index'}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // LOW PASS //
+    settings = {
+        filter: new audio.FilterStereoLowPass2(),
+        args: [
+            {context: true, value: 'signal'},
+            {mod: 0, min: 400, max: 9000},
+            {value: 0.92}
+        ],
+        mods: [
+            {
+                mod: new audio.Walk(),
+                args: [
+                    {value: 0.2},
+                    {value: 30000}
+                ]
+            }
+        ]
+    };
+    f.push(new FilterWrapper(settings));
+
+    // WAIL //
+    /*settings = {
+        filter: new audio.FilterWail(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.5},
+            {value: 10000}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));*/
+
+    // GROWL //
+    /*settings = {
+        filter: new audio.FilterGrowl(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.3},
+            {value: 150000}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));*/
+
+    // WAIL //
+    /*settings = {
+        filter: new audio.FilterWail(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.3},
+            {value: 10000},
+            {value: 200}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));
+
+    settings = {
+        filter: new audio.FilterWail(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.3},
+            {value: 15000},
+            {value: 300}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));*/
+
+
+    // HOWL //
+    /*settings = {
+        filter: new audio.FilterHowl(),
+        args: [
+            {context: true, value: 'signal'},
+            {mod:0, min:150, max: 900},
+            {mod:1, min:0, max: 0.7}
+        ],
+        mods: [
+            {
+                mod: new audio.Weave(),
+                args: [
+                    {value: 0.1},
+                    {value: 7000}
+                ]
+            },
+            {
+                mod: new audio.Walk(),
+                args: [
+                    {value: 0.09},
+                    {value: 15000}
+                ]
+            }
+        ]
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    settings = {
+        filter: new audio.FilterHowl(),
+        args: [
+            {context: true, value: 'signal'},
+            {mod:0, min:150, max: 900},
+            {mod:1, min:0, max: 0.7}
+        ],
+        mods: [
+            {
+                mod: new audio.Weave(),
+                args: [
+                    {value: 0.1},
+                    {value: 7000}
+                ]
+            },
+            {
+                mod: new audio.Walk(),
+                args: [
+                    {value: 0.09},
+                    {value: 15000}
+                ]
+            }/!*,
+            {
+                mod: new audio.Glide(),
+                args: [
+                    {value: 5},
+                    {value: 25000},
+                    {value: 1}
+                ]
+            },
+            {
+                mod: new audio.WeaveJump(),
+                args: [
+                    {value: 0.1},
+                    {value: 7000},
+                    {value: 80000}
+                ]
+            }*!/
+        ]
+    };
+    f.push(new FilterWrapper(settings));*/
+
+
+    // PHASE SINE //
+    /*var ps1 = tombola.rangeFloat(20,300);
+    //var ps2 = tombola.rangeFloat(0.001,1.1);
+    var ps2 = tombola.rangeFloat(0.001,0.3);
+    var ps3 = tombola.rangeFloat(20,300);
+    console.log('f: ' + ps1 + ' f1: ' + ps2 + ' f2: ' + ps3);
+
+    settings = {
+        filter: new audio.PhaseWrapper(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.3},
+            //{value: ps1},
+            {mod:1, min:16, max:200},
+            {value: ps2},
+            {value: ps3},
+            {mod:0, min: -1, max: 1, floor: 0, ceil: 1}
+        ],
+        mods: [
+            {
+                mod: new audio.Walk(),
+                args: [
+                    {value: 0.09},
+                    {value: 20000}
+                ]
+            },
+            {
+                mod: new audio.Weave(),
+                args: [
+                    {value: 0.085},
+                    {value: 8000}
+                ]
+            }
+        ]
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // PHASE SINE //
+    ps1 = tombola.rangeFloat(20,300);
+    //ps2 = tombola.rangeFloat(0.001,1.1);
+    ps2 = tombola.rangeFloat(0.001,0.3);
+    ps3 = tombola.rangeFloat(20,300);
+    console.log('f: ' + ps1 + ' f1: ' + ps2 + ' f2: ' + ps3);
+
+    settings = {
+        filter: new audio.PhaseWrapper(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.3},
+            //{value: ps1},
+            {mod:1, min:16, max:200},
+            {value: ps2},
+            {value: ps3},
+            {mod:0, min: -1, max: 1, floor: 0, ceil: 1}
+        ],
+        mods: [
+            {
+                mod: new audio.Walk(),
+                args: [
+                    {value: 0.09},
+                    {value: 20000}
+                ]
+            },
+            {
+                mod: new audio.Weave(),
+                args: [
+                    {value: 0.085},
+                    {value: 8000}
+                ]
+            }
+        ]
+    };
+    f.push(new FilterWrapper(settings));*/
+
+
+    // ERODE //
+    /*settings = {
+        filterFunc: audio.filterStereoErode,
+        args: [
+            {context: true, value: 'signal'},
+            {value: 1000},
+            {context: true, value: 'index'}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));*/
+
+    // GROWL //
+    /*settings = {
+        filter: new audio.FilterGrowl(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.3},
+            {value: 150000}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));*/
+
+
+    // BURST //
+    /*settings = {
+        filter: new audio.FilterBurst(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 1},
+            {value: 50000},
+            {value: 300},
+            {value: true},
+            {value: 100}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));
+    // BURST //
+    settings = {
+        filter: new audio.FilterBurst(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 1},
+            {value: 160000},
+            {value: 300},
+            {value: true},
+            {value: 500}
+        ],
+        mods: [
+            {
+                mod: new audio.Jump(),
+                args: [
+                    {value: 90000}
+                ]
+            }
+        ]
+    };
+    f.push(new FilterWrapper(settings));*/
+
+
+
+
+
+
+    // DISTORTION //
+    /*settings = {
+        filterFunc: audio.filterStereoFoldBack2,
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.5},
+            {value: 0.5}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));
+
+
+    // FEEDBACK //
+    settings = {
+        filterFunc: audio.filterStereoFeedbackX,
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.5},
+            //{mod: 0, min: 40, max: 400},
+            {mod: 2, min: 10, max: 4000},
+            //{mod: 1, min: 10, max: 1000},
+            {context: true, value: 'channel'},
+            {context: true, value: 'index'}
+        ],
+        mods: [
+            {
+                mod: new audio.Glide(),
+                args: [
+                    //{mod: 0, min: 0.02, max: 0.15},
+                    {value: 1},
+                    {value: 80000}
+                ]
+            },
+            {
+                mod: new audio.FudgeChance(),
+                args: [
+                    //{mod: 0, min: 0.02, max: 0.15},
+                    {value: 3},
+                    {value: 0.005},
+                    {value: 600}
+                ]
+            },
+            {
+                mod: new audio.MoveTo(),
+                args: [
+                    //{mod: 0, min: 0.02, max: 0.15},
+                    {value: 0.5},
+                    {value: 100000}
+                ]
+            }
+        ]
+    };
+    f.push(new FilterWrapper(settings));*/
+
+
+    // CLIPPING //
+    /*settings = {
+        filterFunc: audio.filterStereoClipping2,
+        args: [
+            {context: true, value: 'signal'},
+            {value: 0.9},
+            {value: 0.1}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));*/
+
+
+
+
+
+    // LOW PASS //
+    /*settings = {
+        filter: new audio.FilterStereoLowPass2(),
+        args: [
+            {context: true, value: 'signal'},
+            //{mod: 1, min: 350, max: 9000},
+            {mod: 2, min: 500, max: 8000},
+            {value: 0.92}
+        ],
+        mods: [
+            {
+                mod: new audio.WalkSmooth(),
+                args: [
+                    {value: 0.2},
+                    {value: 1000}
+                ]
+            },
+            {
+                mod: new audio.Walk(),
+                args: [
+                    //{mod: 0, min: 0.02, max: 0.15},
+                    {value: 0.1},
+                    {value: 20000}
+                ]
+            },
+            {
+                mod: new audio.MoveTo(),
+                args: [
+                    //{mod: 0, min: 0.02, max: 0.15},
+                    {value: 0.5},
+                    {value: 100000}
+                ]
+            }
+        ]
+    };
+    f.push(new FilterWrapper(settings));*/
+
+
+
+
+
+    // RESAMPLER //
+    /*var mode = tombola.weightedItem([1,2,3,4],[5,1,5,2]);
+    console.log(mode);
+    settings = {
+        filter: new audio.FilterResampler(),
+        args: [
+            {context: true, value: 'signal'},
+            {value: 6},
+            {value: 200000},
+            {context: true, value: 'channel'},
+            {context: true, value: 'index'}
+        ],
+        mods: []
+    };
+    f.push(new FilterWrapper(settings));*/
 
     return f;
 };
 
-//-------------------------------------------------------------------------------------------
-//  FILTERS
-//-------------------------------------------------------------------------------------------
-
-
-function FilterWrapper() {
-    this.filter = null;
-    this.filterFunc = null;
-    this.mods = [];
-    this.signal = null;
-    this.channel = null;
-    this.index = null;
-    this.args = [];
-    this.settings = [];
-}
-FilterWrapper.prototype.init = function(filter,filterFunc,settings) {
-    this.filter = filter;
-    if (this.filter) {
-        this.filterFunc = this.filter.process;
-    } else {
-        this.filterFunc = filterFunc;
-    }
-    this.settings = settings;
-};
-
-FilterWrapper.prototype.updateArgs = function(settings) {
-    this.args = [];
-    for (var z = 0; z < settings.length; z++) {
-        var a = settings[z];
-        if (a.context) {
-            this.args.push(this[a.value]);
-        } else {
-            this.args.push(a.value);
-        }
-    }
-};
-
-FilterWrapper.prototype.process = function(signal,channel,index) {
-    this.signal = signal;
-    this.channel = channel;
-    this.index = index;
-    this.updateArgs(this.settings);
-    var ctx = this;
-    if (this.filter) {
-        ctx = this.filter;
-    }
-    return this.filterFunc.apply(this.filter,this.args);
-};
 
 
 module.exports = GenerateAudio;

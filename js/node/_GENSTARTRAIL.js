@@ -10,10 +10,8 @@ var drawStars = new DrawStarTrail();
 var glowCols = [new RGBA(14,77,213,0.7),new RGBA(123,29,131,0.7),new RGBA(180,140,45,0.7)];
 var tempo = 0.055;
 
-
 // Here we generate the data for the star trail long exposure photos thar Robert sometimes
 // posts.
-
 
 //-------------------------------------------------------------------------------------------
 //  INIT
@@ -23,13 +21,14 @@ var tempo = 0.055;
 function StarTrails() {
 
 }
+var proto = StarTrails.prototype;
 
 //-------------------------------------------------------------------------------------------
 //  GENERATE
 //-------------------------------------------------------------------------------------------
 
 
-StarTrails.prototype.generateTrails = function() {
+proto.generateTrails = function() {
 
     var fullX = drawStars.fullX;
     var fullY = drawStars.fullY;
@@ -174,7 +173,7 @@ StarTrails.prototype.generateTrails = function() {
 
 // gets called multiple times (loop length dependent on shutter time) to rotate the stars.
 
-StarTrails.prototype.update = function(data) {
+proto.update = function(data) {
 
     var length = data.stars.length;
     var cutoff = 500;

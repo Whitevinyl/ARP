@@ -38,16 +38,16 @@ function init() {
     action.init(config,soundCloudReady);
     //action.print('tweetInterview');
     //action.chartPhase();
+    action.audio();
 
-
-    action.audioTest();
+    //action.audioTest();
 }
 init();
 
 
 // callback once SoundCloud has initialised //
 function soundCloudReady() {
-    //action.audio();
+    action.audio();
 
     //scheduler.init();
 

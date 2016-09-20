@@ -62,8 +62,9 @@ defaultSchedule = writeSchedule(d,defaultEvents);
 function Scheduler() {
     this.checkInterval = null;
 }
+var proto = Scheduler.prototype;
 
-Scheduler.prototype.init = function() {
+proto.init = function() {
     var scheduleExists = fs.existsSync(file);
     if (!scheduleExists) {
         var that = this;
@@ -90,11 +91,11 @@ Scheduler.prototype.init = function() {
 // actionHandler.
 // It also checks to see when we need a new schedule written by the actionDealer.
 
-Scheduler.prototype.check = function() {
+proto.check = function() {
     checkSchedule();
     this.checkInterval = setInterval(checkSchedule,checkTime);
 };
-Scheduler.prototype.stop = function() {
+proto.stop = function() {
     clearInterval(this.checkInterval);
 };
 

@@ -9,12 +9,14 @@ function Vector( x, y ) {
     this.y = y || 0;
 }
 
+
 function logPosition(minpos,maxpos,minval,maxval,value) {
     var minlval = Math.log(minval);
     var maxlval = Math.log(maxval);
     var scale = (maxlval - minlval) / (maxpos - minpos);
     return minpos + (Math.log(value) - minlval) / scale;
 }
+
 
 function valueInRange(value,floor,ceiling) {
     if (value < floor) {
@@ -26,13 +28,25 @@ function valueInRange(value,floor,ceiling) {
     return value;
 }
 
+
 function stripUriMeta(uri) {
     return uri.split(',')[1];
 }
 
+
 function fmod(a,b) {
     return a % b;
 }
+
+
+function arg(a,b) {
+    if (a !== undefined || null) {
+        return a;
+    } else {
+        return b;
+    }
+}
+
 
 module.exports = {
     Point: Point,
@@ -41,5 +55,6 @@ module.exports = {
     logPosition: logPosition,
     valueInRange: valueInRange,
     stripUriMeta: stripUriMeta,
-    fmod: fmod
+    fmod: fmod,
+    arg: arg
 };

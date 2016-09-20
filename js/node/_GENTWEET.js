@@ -7,15 +7,13 @@ var lexicon = new Lexicon();
 
 var timeNow, atacamaTime;
 var morningLight, eveningLight, nightTime;
-var tweetText = '';
 
 // Here text tweets are generated. Different types of tweets have different algorithms, making
 // heavy use of tombola.js to randomise everything. Words & short phrases are categorised in
-// the Lexicon (_LEXICON.js).
+// the 'Lexicon' (_LEXICON.js).
 // Some tweets are time specific - e.g nighttime tweets happen when it really is nighttime in
 // Chile, same with sunrise/sunset. This is calculated using the suncalc library, and is handled
-// in the actionDealer in _SCHEDULER.js
-
+// in the 'actionDealer' (_SCHEDULER.js). Tweeting is initiated in 'action' (_ACTIONS.js)
 
 //-------------------------------------------------------------------------------------------
 //  INIT
@@ -25,7 +23,7 @@ var tweetText = '';
 function GenTweet() {
 
 }
-
+var proto = GenTweet.prototype;
 
 function timeInit() {
     // get today's sunlight times for Atacama
@@ -43,7 +41,7 @@ function timeInit() {
 
 
 
-GenTweet.prototype.generateTweet = function(type) {
+proto.generateTweet = function(type) {
 
     switch (type) {
         case 'tweetJourney':

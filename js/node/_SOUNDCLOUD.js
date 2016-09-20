@@ -5,6 +5,7 @@ var SC = require('soundcloud-nodejs-api-wrapper');
 
 // this makes the best of two different SoundCloud API wrappers for node, auth is handled by
 // 'soundcloud-node-api-wrapper', and track upload is adapted from 'soundcloudnodejs'.
+// These methods are implemented in 'action' (_ACTIONS.js)
 
 //-------------------------------------------------------------------------------------------
 //  INIT
