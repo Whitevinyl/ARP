@@ -22,6 +22,12 @@ function WavePlayer(wave) {
 //  PROCESS
 //-------------------------------------------------------------------------------------------
 
+WavePlayer.prototype.setWave = function(wave) {
+    this.waveforms = wave.waveforms;
+    this.wave = tombola.item(this.waveforms);
+};
+
+
 WavePlayer.prototype.process = function(input, frequency) {
 
     this.f += 0.0001;

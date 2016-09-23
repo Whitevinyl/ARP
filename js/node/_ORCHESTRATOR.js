@@ -90,7 +90,7 @@ proto.createComponent = function(componentName,args,mods) {
         case 'invert':
             settings.filterFunc = audio.invert;
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.60,0.95))} ); // threshold
-            settings.args.push( pick( args[1], {mod: 0, min: tombola.rangeFloat(-0.5,0), max: tombola.rangeFloat(0.2,0.5), floor: 0, ceil: 1 }) ); // mix
+            settings.args.push( pick( args[1], {mod: 0, min: tombola.rangeFloat(-0.5,0), max: tombola.rangeFloat(0.1,0.3), floor: 0, ceil: 1 }) ); // mix
             settings.mods.push( pick( mods[0], this.createMod('walk')) );
             break;
 
@@ -116,15 +116,15 @@ proto.createComponent = function(componentName,args,mods) {
         case 'saturation':
             settings.filterFunc = audio.saturation;
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.6,0.9))} ); // threshold
-            settings.args.push( {value: pick( args[1], tombola.rangeFloat(0.5,1))} ); // mix
+            settings.args.push( {value: pick( args[1], tombola.rangeFloat(0.3,0.5))} ); // mix
             break;
 
 
         case 'panner':
             settings.filterFunc = audio.panner;
-            var panWidth = tombola.rangeFloat(0.4,1);
+            var panWidth = tombola.rangeFloat(0.8,1);
             settings.args.push( pick( args[0], {mod: 0, min: -panWidth, max: panWidth }) ); // panning
-            settings.mods.push( pick( mods[0], this.createModType('movement','medium')) );
+            settings.mods.push( pick( mods[0], this.createModType('modulation',tombola.item(['medium','fast']))) );
             break;
 
 
@@ -137,9 +137,9 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'siren':
-            settings.filter = new audio.FilterSiren();
+            settings.filter = new audio.Siren();
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
-            settings.args.push( {value: pick( args[1], tombola.range(160000,270000))} ); // chance
+            settings.args.push( {value: pick( args[1], tombola.range(40000,270000))} ); // chance
             break;
 
 
@@ -187,11 +187,39 @@ proto.createComponent = function(componentName,args,mods) {
             break;
 
 
+        case 'pattern':
+            settings.filter = new audio.Pattern();
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
+            settings.args.push( {value: pick( args[1], tombola.range(100000,280000))} ); // chance
+            break;
+
+
+        case 'patternII':
+            settings.filter = new audio.PatternII();
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
+            settings.args.push( {value: pick( args[1], 30000)} ); // chance
+            break;
+
+
+        case 'call':
+            settings.filter = new audio.Call();
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
+            settings.args.push( {value: pick( args[1], 30000)} ); // chance
+            break;
+
+
+        case 'purr':
+            settings.filter = new audio.Purr();
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.6,0.9))} ); // ducking
+            settings.args.push( {value: pick( args[1], tombola.range(90000,220000))} ); // chance
+            break;
+
+
         case 'ramp':
-            settings.filter = new audio.FilterRamp();
+            settings.filter = new audio.Ramp();
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
             settings.args.push( {value: pick( args[1], tombola.range(160000,280000))} ); // chance
-            settings.args.push( {value: pick( args[2], tombola.range(80,120))} ); // frequency drift
+            settings.args.push( {value: pick( args[2], tombola.range(0.1,1.5))} ); // speed
             settings.args.push( {value: pick( args[3], false)} ); // retrigger
             break;
 
@@ -209,16 +237,23 @@ proto.createComponent = function(componentName,args,mods) {
         case 'pulse':
             settings.filter = new audio.FilterPulse();
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
-            settings.args.push( {value: pick( args[1], tombola.weightedItem([true,false],[1,6])) } ); // reverse
+            settings.args.push( {value: pick( args[1], tombola.weightedItem([true,false],[1,4])) } ); // reverse
             settings.args.push( pick( args[2], {mod: 0, min: tombola.rangeFloat(-0.2,0.2), max: tombola.rangeFloat(0.8,1), floor: 0, ceil: 1 }) ); // mix
             settings.mods.push( pick( mods[0], this.createMod('walk')) );
             break;
 
 
-        case 'thud':
-            settings.filter = new audio.Thud();
+        case 'sweep':
+            settings.filter = new audio.Sweep();
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.5,0.8))} ); // ducking
-            settings.args.push( {value: pick( args[1], tombola.range(20000,50000))} ); // chance
+            settings.args.push( {value: pick( args[1], tombola.range(25000,250000))} ); // chance
+            break;
+
+
+        case 'sweepII':
+            settings.filter = new audio.SweepII();
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.5,0.8))} ); // ducking
+            settings.args.push( {value: pick( args[1], tombola.range(25000,250000))} ); // chance
             break;
 
 
@@ -275,11 +310,11 @@ proto.createComponent = function(componentName,args,mods) {
 
         case 'flocking':
             settings.filter = new audio.Flocking();
-            settings.args.push( pick( args[0], {mod: 0, min: 200, max: tombola.rangeFloat(700,1000) }) );  // frequency
-            settings.args.push( {value: pick( args[1], tombola.rangeFloat(0.1,0.2))} );  // rate
-            settings.args.push( pick( args[2], {mod: 1, min: tombola.rangeFloat(0,0.15), max: tombola.rangeFloat(0.4,0.7) }) ); // amp
+            settings.args.push( pick( args[0], {mod: 0, min: 500, max: tombola.rangeFloat(700,800) }) );  // frequency
+            settings.args.push( {value: pick( args[1], tombola.rangeFloat(0.001,0.002))} );  // rate
+            settings.args.push( pick( args[2], {mod: 1, min: tombola.rangeFloat(0.3,0.4), max: tombola.rangeFloat(0.85,1) }) ); // amp
             settings.mods.push( pick( mods[0], this.createMod('weave',[tombola.rangeFloat(0.05,0.12),tombola.range(10000,30000)])) );
-            settings.mods.push( pick( mods[1], this.createMod('walk',[tombola.rangeFloat(0.05,0.25),tombola.range(11000,20000)])) );
+            settings.mods.push( pick( mods[1], this.createMod('walk',[tombola.rangeFloat(0.09,0.25),tombola.range(18000,25000)])) );
             break;
 
 
@@ -296,8 +331,8 @@ proto.createComponent = function(componentName,args,mods) {
             settings.filter = new audio.FilterStereoChopper();
             settings.args.push( pick( args[0], {mod: 0, min: tombola.rangeFloat(100,300), max: tombola.rangeFloat(8000,14000) }) ); // rate
             settings.args.push( pick( args[1], {mod: 1, min: tombola.rangeFloat(0,0.2), max: tombola.rangeFloat(1.5,2), floor: 0, ceil: 1  }) ); // depth
-            settings.mods.push( pick( mods[0], this.createMod('walkSmooth',[tombola.rangeFloat(1,3),tombola.range(100,200)])) );
-            settings.mods.push( pick( mods[1], this.createMod('walk',[tombola.rangeFloat(0.6,1),tombola.range(18000,30000)])) );
+            settings.mods.push( pick( mods[0], this.createMod('walk',[tombola.rangeFloat(0.6,1.5),tombola.range(15000,30000)])) );
+            settings.mods.push( pick( mods[1], this.createMod('walkSmooth',[tombola.rangeFloat(2,4),tombola.range(90,200)])) );
             break;
 
 
@@ -311,7 +346,7 @@ proto.createComponent = function(componentName,args,mods) {
 
 
         case 'resonant':
-            settings.filter = new audio.FilterStereoResonant();
+            settings.filter = new audio.StereoResonant();
             settings.args.push( pick( args[0], {mod: 0, min: tombola.rangeFloat(100,500), max: tombola.rangeFloat(10000,15000) }) ); // frequency
             settings.args.push( {value: pick( args[1], 0.3)} ); // resonance
             settings.args.push( {value: pick( args[2], 0.6)} ); // mix
@@ -343,25 +378,33 @@ proto.createComponent = function(componentName,args,mods) {
 
         case 'reverseDelay':
             settings.filterFunc = audio.reverseDelay;
-            settings.args.push( pick( args[0], {mod: 0, min: tombola.rangeFloat(0.2,0.4), max: tombola.rangeFloat(0.75,1)  }) ); // mix
+            settings.args.push( pick( args[0], {mod: 0, min: tombola.rangeFloat(0.2,0.4), max: tombola.rangeFloat(0.7,0.85)  }) ); // mix
             settings.args.push( {value: pick( args[1], tombola.range(2500,20000))} ); // delay
             settings.args.push( {value: pick( args[2], tombola.range(100,250))} ); // feedback
             settings.args.push( {context: true, value: 'channel'} );
             settings.args.push( {context: true, value: 'index'} );
-            settings.mods.push( pick( mods[0], this.createMod('walk',[tombola.rangeFloat(0.05,0.25),tombola.range(11000,20000)])) );
+            settings.mods.push( pick( mods[0], this.createModType('amp','medium')) );
             break;
 
 
         case 'resampler':
             settings.filter = new audio.Resampler();
             settings.args.push( {value: pick( args[0], tombola.range(0,6))} ); // mode
-            settings.args.push( {value: pick( args[1], tombola.range(20000,150000))} ); // chance
+            settings.args.push( {value: pick( args[1], tombola.range(100000,350000))} ); // chance
             settings.args.push( {context: true, value: 'channel'} );
             settings.args.push( {context: true, value: 'index'} );
             break;
 
 
+        case 'testing':
+            settings.filter = new audio.Testing();
+            settings.args.push( {value: pick( args[0], 90)} ); // frequency
+            settings.args.push( {value: pick( args[1], 20000)} ); // chance
+            break;
+
+
         default:
+            console.log('Failed: ' + componentName.toUpperCase());
             return null;
     }
 

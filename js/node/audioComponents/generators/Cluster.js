@@ -5,6 +5,7 @@ var tombola = new Tombola();
 
 var WavePlayer = require('../voices/WavePlayer');
 var table = require('../voices/Tables');
+var MultiPass = require('../filters/MultiPass');
 
 // A multi-voice drone. Voices are clustered around a primary frequency,and sporadically
 // splinter out before gliding back to the primary frequency.
@@ -19,11 +20,16 @@ function ClusterVoice(f,ratio,voice) {
     this.f = f;
     this.voice = voice;
     this.speed = tombola.rangeFloat(0.5,2);
+
 }
 
 function Cluster() {
     this.voices = [];
     this.a = 1;
+    this.filter = new MultiPass.stereo();
+    this.pass = '';
+    this.res = 1;
+    this.cutoff = 0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -38,8 +44,17 @@ Cluster.prototype.process = function(input,frequency,chance,amp) {
     // CREATE VOICES //
     if (this.voices.length === 0) {
 
-        var voiceNo = tombola.range(5,7);
+        // filter setup //
+        this.pass = tombola.weightedItem(['LP','HP'],[2,1]);
 
+        this.res = tombola.rangeFloat(0.1,0.7);
+        if (this.pass=='LP') {
+            this.cutoff = tombola.rangeFloat(200,500);
+        } else {
+            this.cutoff = tombola.rangeFloat(6000,7000);
+        }
+
+        var voiceNo = tombola.range(5,7);
         this.voices = [];
         for (var i=0; i<voiceNo; i++) {
             var f = 1 + (tombola.fudgeFloat(8,0.001));
@@ -68,6 +83,9 @@ Cluster.prototype.process = function(input,frequency,chance,amp) {
     // alter volume based on number of voices //
     signal[0] *= (1/vl);
     signal[1] *= (1/vl);
+
+    // filter //
+    signal = this.filter.process(signal,this.pass,this.cutoff,this.res);
 
     return [
         (input[0] * (1-(amp))) + (signal[0] * amp),

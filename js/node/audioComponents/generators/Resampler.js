@@ -109,7 +109,7 @@ Resampler.prototype.process = function(input,mode,chance,channel,index) {
             }
             this.l = tombola.range(6000,80000);
             this.s = tombola.range(200,5000);
-            this.s = valueInRange(this.s,1,index-1);
+            this.s = utils.valueInRange(this.s,1,index-1);
             this.mc = 0;
         }
 
@@ -123,7 +123,7 @@ Resampler.prototype.process = function(input,mode,chance,channel,index) {
                 this.sp = tombola.fudge(10,1);
                 //g = 1/Math.ceil((this.i/7)/this.s);
             }
-            this.sp = valueInRange(this.sp,-(index-1),this.s-40);
+            this.sp = utils.valueInRange(this.sp,-(index-1),this.s-40);
 
             input = [
                 (channel[0][index - this.s + Math.round(this.sp)]) * g,

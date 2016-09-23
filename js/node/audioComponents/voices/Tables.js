@@ -1,6 +1,14 @@
+var easing = require('../../lib/easing');
+var utils = require('../../lib/utils');
 
-// Tables for periodic waveforms used by the WavePlayer. These were just manually written,
-// will hopefully add more or create them dynamically in future.
+// Tables for periodic waveforms used by the WavePlayer. The first of these were just manually
+// written, 'SharkFin' populates it's table dynamically using a tweening/easing equation - I'll
+// be trying more of these in future, although it only seems stable at lower frequencies (if
+// stable is what you're going for).
+
+//-------------------------------------------------------------------------------------------
+//  MANUAL
+//-------------------------------------------------------------------------------------------
 
 function Metallic() {
     var a = [
@@ -84,8 +92,87 @@ function Voice3() {
     this.waveforms = [a, b];
 }
 
+//-------------------------------------------------------------------------------------------
+//  ALGORITHMIC
+//-------------------------------------------------------------------------------------------
+
+// SHARKFIN //
+function SharkFin(length) {
+    var a = [];
+    length = length || 2000;
+    for (var i=0; i<length; i++) {
+        a.push( easing.circleIn(i,-1,1,length) );
+    }
+    for (i=0; i<length; i++) {
+        a.push( easing.circleIn(i,1,-1,length) );
+    }
+    this.waveforms = [a];
+}
+
+
+// curves for EaseWave //
+var easeWaves = [
+    easing.cubicIn,
+    easing.circleInOut,
+    easing.custom1,
+    easing.custom2,
+    easing.custom3,
+    easing.custom4,
+    easing.custom5
+];
+
+// EASE WAVE //
+function EaseWave(type,length) {
+    var ease = easeWaves[type];
+    //console.log(ease);
+    var a = [];
+    length = length || 10000;
+    for (var i=0; i<length; i++) {
+        a.push( ease(i,-1,1,length) );
+    }
+    for (i=0; i<length; i++) {
+        a.push( ease(i,1,-1,length) );
+    }
+    this.waveforms = [a];
+}
+
+// curves for EaseWave //
+var easeWaves2 = [
+    easing.custom6, // thin
+    easing.custom7, // full more squared
+    easing.custom8 // full & more harmonic
+];
+
+// EASE WAVE2 //
+function EaseWave2(type,length) {
+    var a = [];
+    var easingFunction = easeWaves2[type];
+    //console.log(easingFunction);
+    var r,start,end;
+
+    length = length || 10000;
+
+    start = -1;
+    end = 1;
+    for (var i=0; i<length; i++) {
+        r = easingFunction(i/length);
+        a.push( utils.valueInRange(start + (end - start) * r) );
+    }
+    start = 1;
+    end = -1;
+    for (i=0; i<length; i++) {
+        r = easingFunction(i/length);
+        a.push( utils.valueInRange(start + (end - start) * r) );
+    }
+    this.waveforms = [a];
+}
+
+
 module.exports = {
     Metallic: Metallic,
     Voice2: Voice2,
-    Voice3: Voice3
+    Voice3: Voice3,
+    SharkFin: SharkFin,
+    EaseWave: EaseWave,
+    EaseWave2: EaseWave2
 };

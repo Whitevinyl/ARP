@@ -20,7 +20,7 @@ function LowPass() {
 
 LowPass.prototype.process = function(cutoff,res,input) {
 
-    res = utils.valueInRange(res,0.6,1.4);
+    res = utils.valueInRange(res,0.1,1.4);
     var c = 1.0 / Math.tan(Math.PI * cutoff / sampleRate);
 
     this.a1 = 1.0 / ( 1.0 + res * c + c * c);

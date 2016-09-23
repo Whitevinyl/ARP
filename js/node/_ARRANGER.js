@@ -27,9 +27,14 @@ var proto = Arranger.prototype;
 //-------------------------------------------------------------------------------------------
 
 proto.arrangement = function() {
-    return this.basic();
+    return this.test();
 };
 
+proto.filterCheck = function(filters) {
+    for (var i=0; i<filters.length; i++) {
+        // do something to check for null filters as a safety
+    }
+};
 
 
 //-------------------------------------------------------------------------------------------
@@ -40,12 +45,12 @@ proto.arrangement = function() {
 proto.test = function() {
     var filters = [];
 
-    filters.push( orchestrator.createComponent('voice') );
+    filters.push( orchestrator.createComponent('flocking') );
     //filters.push( orchestrator.createComponent('howl') );
 
     // TESTING //
-    filters.push( orchestrator.createComponent('thud') );
-
+    filters.push( orchestrator.createComponent('testing') );
+    //filters.push( orchestrator.createComponent('call') );
 
     //filters.push( orchestrator.createComponent('clipping') );
     //filters.push( orchestrator.createComponent('lowPass') );
@@ -56,61 +61,78 @@ proto.test = function() {
 // BASIC //
 proto.basic = function() {
     var filters = [];
-    var deck, items, options, count, i;
+    var count, i;
+
+    //------------- SETUP DECKS -------------//
+
+    // BED SETUP //
+    var bedItems = ['flocking','cluster','voice','noise','rumble','subHowl','howl','fm','phaseSine'];
+    var bedOptions = {
+        weights:[1.5, 1, 2, 2, 1, 2, 2, 1, 1],
+        instances:[1, 2, 1, 1, 1, 2, 3, 1, 1]
+    };
+    var bedDeck = tombola.weightedDeck(bedItems,bedOptions);
+
+
+    // GENERATOR SETUP //
+    var generatorItems = ['pattern','growl','siren','pulse','noisePulse','beep','click','sub', 'wail','burst','ramp','fm','sweep','sweepII'];
+    var generatorOptions = {
+        weights:[2, 2, 2, 0.8, 2, 1.3, 1.5, 1, 1.4, 1.5, 1.2, 1, 1.5, 1.5],
+        instances:[2, 1, 2, 1, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1]
+    };
+    var generatorDeck = tombola.weightedDeck(generatorItems,generatorOptions);
+
+
+    // EFFECT SETUP //
+    var effectItems = ['saturation','chopper','foldBack','foldBackII','invert','panner','shear','bitCrush',tombola.weightedItem(['phaser','chorus'],[3,1])];
+    var effectOptions = {
+        weights:[1, 2.2, 2, 1.6, 0.5, 1.2, 0.5, 1, 2.5],
+        instances:[1, 1, 1, 1, 1, 1, 1, 1, 1]
+    };
+    var effectDeck = tombola.weightedDeck(effectItems,effectOptions);
+
+
+
+    //------------- DRAW ITEMS -------------//
+
 
     // BED //
-    items = ['voice','noise','rumble','subHowl','howl','fm','phaseSine'];
-    options = {
-        weights:[ 2, 2, 1, 2, 2, 1, 1],
-        instances:[ 1, 1, 1, 2, 3, 1, 1]
-    };
-    deck = tombola.weightedDeck(items,options);
     count = tombola.range(2,3);
     for (i=0; i<count; i++) {
-        filters.push( orchestrator.createComponent(deck.draw()) );
+        filters.push( orchestrator.createComponent(bedDeck.draw()) );
     }
+
 
     // MAIN //
-    items = ['growl','siren','pulse','noisePulse','beep','click','sub', 'wail','burst','ramp','fm',tombola.weightedItem(['phaser','chorus'],[3,1]),'bitCrush'];
-    options = {
-        weights:[ 2, 2, 0.8, 2, 1.3, 1.5, 1, 1.4, 1, 1.2, 1, 2, 1],
-        instances:[ 1, 2, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1]
-    };
-    deck = tombola.weightedDeck(items,options);
-    count = tombola.range(3,6);
+    count = tombola.range(4,8);
     for (i=0; i<count; i++) {
-        filters.push( orchestrator.createComponent(deck.draw()) );
-    }
+        if (tombola.percent(70)) {
+            filters.push( orchestrator.createComponent(generatorDeck.draw()) );
+        }
+        else {
+            filters.push( orchestrator.createComponent(effectDeck.draw()) );
+        }
 
-    // EXTRA //
-    items = ['chopper','foldBack','foldBackII','invert','panner','shear'];
-    options = {
-        weights:[ 2, 2, 1.6, 1, 1.2, 2, 0.8],
-        instances:[ 1, 1, 1, 1, 1, 1, 1]
-    };
-    deck = tombola.weightedDeck(items,options);
-    count = tombola.range(0,2);
-    for (i=0; i<count; i++) {
-        filters.push( orchestrator.createComponent(deck.draw()) );
     }
+    filters.push( orchestrator.createComponent('purr') );
 
     // LAST //
     if (tombola.percent(40)) {
         filters.push( orchestrator.createComponent('reverb') );
     }
-
-    filters.push( orchestrator.createComponent('thud') );
     filters.push( orchestrator.createComponent('clipping') );
     filters.push( orchestrator.createComponent('lowPass') );
+
+
+    // POST FILTER //
     if (tombola.percent(4)) {
         filters.push( orchestrator.createComponent('reverseDelay') );
     } else {
-        if (tombola.percent(32)) {
+        if (tombola.percent(35)) {
             filters.push( orchestrator.createComponent('resampler') );
         }
     }
 
-    //filters.push( orchestrator.createComponent('phaser') );
 
     return filters;
 };

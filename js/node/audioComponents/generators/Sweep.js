@@ -5,16 +5,17 @@ var tombola = new Tombola();
 var Roar = require('../voices/Roar');
 var LowPass = require('../filters/LowPass');
 
-// Opening or closing sounding filtered noise bursts
+// Long opening or closing sounding filtered noise bursts
 
 //-------------------------------------------------------------------------------------------
 //  INIT
 //-------------------------------------------------------------------------------------------
 
-function Thud() {
+function Sweep() {
     this.a = 0;
     this.fa = 0;
     this.cutoff = 0;
+    this.resonance = 0;
     this.i = -1;
     this.l = 0;
     this.p = 0;
@@ -27,11 +28,12 @@ function Thud() {
 //  PROCESS
 //-------------------------------------------------------------------------------------------
 
-Thud.prototype.process = function(input,ducking,chance) {
+Sweep.prototype.process = function(input,ducking,chance) {
 
     if (this.i<=0 && tombola.chance(1,chance)) {
-        this.cutoff = tombola.rangeFloat(600,4000);
-        this.l = tombola.range(60000,200000);
+        this.cutoff = tombola.rangeFloat(100,3300);
+        this.resonance = tombola.rangeFloat(0.4,1.2);
+        this.l = tombola.range(30000,200000);
         this.i = 0;
         this.a = 0;
         this.style = tombola.item(['in','out']);
@@ -41,7 +43,7 @@ Thud.prototype.process = function(input,ducking,chance) {
         if (this.style == 'out') {
             this.fa = this.cutoff;
         }
-        this.voice = new Roar(tombola.rangeFloat(0.5,0.99));
+        this.voice = new Roar(tombola.rangeFloat(0.1,0.99));
     }
 
     if (this.i>=0) {
@@ -55,7 +57,6 @@ Thud.prototype.process = function(input,ducking,chance) {
 
         // amp //
         var attack, release;
-
         if (this.style == 'in') {
             attack = this.l / 2;
             release = this.l - attack;
@@ -84,20 +85,23 @@ Thud.prototype.process = function(input,ducking,chance) {
 
 
         //voice //
-        var n = this.filter.process(utils.valueInRange(this.fa, 10, 20000), 0.9, this.voice.process());
+        var n = this.filter.process(utils.valueInRange(this.fa, 10, 20000), this.resonance, this.voice.process());
         var signal = [
             n * (1 + -this.p),
             n * (1 + this.p)
         ];
 
         input = [
-            (input[0] * (1-(this.a * ducking))) + (signal[0] * this.a),
-            (input[1] * (1-(this.a * ducking))) + (signal[1] * this.a)
+            (input[0] * (1-(this.a * ducking))) + (signal[0] * (this.a * 0.8)),
+            (input[1] * (1-(this.a * ducking))) + (signal[1] * (this.a * 0.8))
         ];
     }
     return input;
 };
 
+//-------------------------------------------------------------------------------------------
+//  EASING FUNCTIONS
+//-------------------------------------------------------------------------------------------
 
 
 function inCirc(t, b, c, d) {
@@ -119,4 +123,4 @@ function inOutCirc(t, b, c, d) {
 }
 
 
-module.exports = Thud;
+module.exports = Sweep;
