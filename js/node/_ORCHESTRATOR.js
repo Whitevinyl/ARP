@@ -226,7 +226,7 @@ proto.createComponent = function(componentName,args,mods) {
             settings.filter = new audio.Ramp();
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
             settings.args.push( {value: pick( args[1], tombola.range(160000,280000))} ); // chance
-            settings.args.push( {value: pick( args[2], tombola.range(0.1,1.5))} ); // speed
+            settings.args.push( {value: pick( args[2], tombola.range(0.08,1.4))} ); // speed
             settings.args.push( {value: pick( args[3], false)} ); // retrigger
             break;
 

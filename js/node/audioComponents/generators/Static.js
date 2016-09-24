@@ -18,7 +18,7 @@ var MultiPass = require('../filters/MultiPass');
 function Static() {
     this.noise = new Noise.stereo();
     this.filter = new MultiPass.stereo();
-    this.threshold = tombola.rangeFloat(0.5,0.99);
+    this.threshold = tombola.rangeFloat(0.6,0.95);
     this.mod = new FudgeChance();
 }
 
@@ -27,7 +27,7 @@ function Static() {
 //-------------------------------------------------------------------------------------------
 
 Static.prototype.process = function(signal,level) {
-    level = utils.arg(level,tombola.rangeFloat(0.001,0.002));
+    level = utils.arg(level,tombola.rangeFloat(0.002,0.003));
 
 
     // create noise //
@@ -37,7 +37,7 @@ Static.prototype.process = function(signal,level) {
 
 
     // filter a little //
-    noiseLayer = this.filter.process(noiseLayer,'LP',8000,0.8);
+    noiseLayer = this.filter.process(noiseLayer,'LP',10000,0.8);
 
 
     return common.add(signal,noiseLayer);

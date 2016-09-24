@@ -27,7 +27,7 @@ var proto = Arranger.prototype;
 //-------------------------------------------------------------------------------------------
 
 proto.arrangement = function() {
-    return this.basic();
+    return this.ambient();
 };
 
 proto.filterCheck = function(filters) {
@@ -57,6 +57,7 @@ proto.test = function() {
 proto.basic = function() {
     var filters = [];
     var count, i;
+    var reverbAllowed = true;
 
     //------------- SETUP DECKS -------------//
 
@@ -105,14 +106,18 @@ proto.basic = function() {
             filters.push( orchestrator.createComponent(generatorDeck.draw()) );
         }
         else {
-            filters.push( orchestrator.createComponent(effectDeck.draw()) );
+            var effect = effectDeck.draw();
+            filters.push( orchestrator.createComponent(effect) );
+            if (effect==='phaser'||effect==='chorus') {
+                reverbAllowed = false;
+            }
         }
 
     }
     //filters.push( orchestrator.createComponent('testing') );
 
     // LAST //
-    if (tombola.percent(40)) {
+    if (reverbAllowed && tombola.percent(40)) {
         filters.push( orchestrator.createComponent('reverb') );
     }
     filters.push( orchestrator.createComponent('clipping') );
@@ -120,7 +125,7 @@ proto.basic = function() {
     filters.push( orchestrator.createComponent('static') );
 
     // POST FILTER //
-    if (tombola.percent(4)) {
+    if (reverbAllowed && tombola.percent(4)) {
         filters.push( orchestrator.createComponent('reverseDelay') );
     } else {
         if (tombola.percent(35)) {
@@ -131,6 +136,90 @@ proto.basic = function() {
 
     return filters;
 };
+
+
+
+// AMBIENT //
+proto.ambient = function() {
+    var filters = [];
+    var count, i;
+    var reverbAllowed = true;
+
+    //------------- SETUP DECKS -------------//
+
+    // BED SETUP //
+    var bedItems = ['flocking','cluster','voice','noise','rumble','subHowl','howl'];
+    var bedOptions = {
+        weights:[2, 1, 1, 1, 1.5, 2, 2],
+        instances:[2, 2, 1, 1, 1, 2, 3]
+    };
+    var bedDeck = tombola.weightedDeck(bedItems,bedOptions);
+
+    // GENERATOR SETUP //
+    var generatorItems = ['flocking','howl','purr','pattern','growl','siren','pulse','noisePulse','beep','click','sub', 'wail','burst','ramp','fm','sweep','sweepII','phaseSine'];
+    var generatorOptions = {
+        weights:[1, 1, 1.5, 1.5, 1.5, 1.5, 0.8, 1.2, 1.2, 1.5, 0.8, 1.5, 1.5, 1.2, 1, 0.8, 1.2, 1.5],
+        instances:[1, 1, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 2]
+    };
+    var generatorDeck = tombola.weightedDeck(generatorItems,generatorOptions);
+
+
+    // EFFECT SETUP //
+    var effectItems = ['saturation','chopper','foldBack','foldBackII','panner',tombola.weightedItem(['phaser','chorus'],[3,1])];
+    var effectOptions = {
+        weights:[0.8, 2, 0.5, 0.5, 1, 2],
+        instances:[1, 1, 1, 1, 1, 1]
+    };
+    var effectDeck = tombola.weightedDeck(effectItems,effectOptions);
+
+
+    //------------- DRAW ITEMS -------------//
+
+
+    // BED //
+    count = tombola.range(1,2);
+    for (i=0; i<count; i++) {
+        filters.push( orchestrator.createComponent(bedDeck.draw()) );
+    }
+
+    // MAIN //
+    count = tombola.range(4,7);
+    for (i=0; i<count; i++) {
+        if (tombola.percent(92)) {
+            filters.push( orchestrator.createComponent(generatorDeck.draw()) );
+        }
+        else {
+            var effect = effectDeck.draw();
+            filters.push( orchestrator.createComponent(effect) );
+            if (effect==='phaser'||effect==='chorus') {
+                reverbAllowed = false;
+            }
+        }
+
+    }
+
+
+    // LAST //
+    if (reverbAllowed && tombola.percent(80)) {
+        filters.push( orchestrator.createComponent('reverb') );
+    }
+    filters.push( orchestrator.createComponent('clipping') );
+    filters.push( orchestrator.createComponent('lowPass') );
+    filters.push( orchestrator.createComponent('static') );
+
+    // POST FILTER //
+    if (reverbAllowed && tombola.percent(3)) {
+        filters.push( orchestrator.createComponent('reverseDelay') );
+    } else {
+        if (tombola.percent(20)) {
+            filters.push( orchestrator.createComponent('resampler',[tombola.range(0,6),tombola.range(250000,350000)]) );
+        }
+    }
+
+    return filters;
+};
+
+
 
 
 module.exports = Arranger;
