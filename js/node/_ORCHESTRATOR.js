@@ -104,6 +104,13 @@ proto.createComponent = function(componentName,args,mods) {
             break;
 
 
+        case 'metallic':
+            settings.filter = new audio.Metallic();
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(60,90))} ); // frequency
+            settings.args.push( {value: pick( args[1], 50000)} ); // chance
+            break;
+
+
         case 'shear':
             settings.filter = new audio.FilterShear();
             settings.args.push( {context: true, value: 'channel'} ); // channel
@@ -396,10 +403,15 @@ proto.createComponent = function(componentName,args,mods) {
             break;
 
 
+        case 'static':
+            settings.filter = new audio.Static();
+            break;
+
+
         case 'testing':
             settings.filter = new audio.Testing();
-            settings.args.push( {value: pick( args[0], 90)} ); // frequency
-            settings.args.push( {value: pick( args[1], 20000)} ); // chance
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(60,90))} ); // frequency
+            settings.args.push( {value: pick( args[1], 50000)} ); // chance
             break;
 
 

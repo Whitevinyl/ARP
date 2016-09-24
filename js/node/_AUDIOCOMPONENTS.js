@@ -26,7 +26,7 @@ var saturation = require('./audioComponents/filters/Saturation');
 var LowPass = require('./audioComponents/filters/LowPass');
 var LowPassII = require('./audioComponents/filters/LowPassII');
 var MultiPass = require('./audioComponents/filters/MultiPass');
-var Repeater = require('./audioComponents/filters/Repeater');
+var Repeater = require('./audioComponents/common/Repeater');
 var Resonant = require('./audioComponents/filters/Resonant');
 var Tremolo = require('./audioComponents/filters/Tremolo');
 
@@ -36,12 +36,14 @@ var Click = require('./audioComponents/generators/Click');
 var Cluster = require('./audioComponents/generators/Cluster');
 var Flocking = require('./audioComponents/generators/Flocking');
 var FMSine = require('./audioComponents/generators/FMSine');
+var Metallic = require('./audioComponents/generators/Metallic');
 var Pattern = require('./audioComponents/generators/Pattern');
 var PatternII = require('./audioComponents/generators/PatternII'); // wip
 var Purr = require('./audioComponents/generators/Purr');
 var Ramp = require('./audioComponents/generators/Ramp');
 var Resampler = require('./audioComponents/generators/Resampler');
 var Siren = require('./audioComponents/generators/Siren');
+var Static = require('./audioComponents/generators/Static');
 var Sweep = require('./audioComponents/generators/Sweep');
 var SweepII = require('./audioComponents/generators/SweepII');
 var Testing = require('./audioComponents/generators/Testing');
@@ -55,11 +57,14 @@ var Roar = require('./audioComponents/voices/Roar');
 var White = require('./audioComponents/voices/White');
 
 // MODS //
-var ArrayEnvelope = require('./audioComponents/mods/ArrayEnvelope');
-var controlRange = require('./audioComponents/mods/ControlRange');
+var FudgeChance = require('./audioComponents/mods/FudgeChance');
 var LFO = require('./audioComponents/mods/LFO');
 var MoveTo = require('./audioComponents/mods/MoveTo');
 var WalkSmooth = require('./audioComponents/mods/WalkSmooth');
+
+// COMMON //
+var ArrayEnvelope = require('./audioComponents/common/ArrayEnvelope');
+var controlRange = require('./audioComponents/common/ControlRange');
 
 
 // !!!
@@ -1415,18 +1420,6 @@ Glide2.prototype.process = function(r,c) {
 };
 
 
-// FUDGE CHANCE //
-function FudgeChance() {
-    this.p = tombola.rangeFloat(-1,1);
-}
-FudgeChance.prototype.process = function(d,s,c) {
-    if (tombola.chance(1,c)) {
-        this.p += tombola.fudgeFloat(d,s);
-    }
-    this.p = valueInRange(this.p,-1,1);
-    return this.p;
-};
-
 // RANGE CHANCE //
 function RangeChance() {
     this.p = tombola.rangeFloat(-1,1);
@@ -1512,12 +1505,14 @@ module.exports = {
     Cluster: Cluster,
     Flocking: Flocking,
     FM: FMSine.wrapper,
+    Metallic: Metallic,
     Pattern: Pattern,
     PatternII: PatternII,
     Purr: Purr,
     Ramp: Ramp,
     Resampler: Resampler,
     Siren: Siren,
+    Static: Static,
     Sweep: Sweep,
     SweepII: SweepII,
 

@@ -27,7 +27,7 @@ var proto = Arranger.prototype;
 //-------------------------------------------------------------------------------------------
 
 proto.arrangement = function() {
-    return this.test();
+    return this.basic();
 };
 
 proto.filterCheck = function(filters) {
@@ -46,14 +46,9 @@ proto.test = function() {
     var filters = [];
 
     filters.push( orchestrator.createComponent('flocking') );
-    //filters.push( orchestrator.createComponent('howl') );
 
     // TESTING //
     filters.push( orchestrator.createComponent('testing') );
-    //filters.push( orchestrator.createComponent('call') );
-
-    //filters.push( orchestrator.createComponent('clipping') );
-    //filters.push( orchestrator.createComponent('lowPass') );
     return filters;
 };
 
@@ -75,10 +70,10 @@ proto.basic = function() {
 
 
     // GENERATOR SETUP //
-    var generatorItems = ['pattern','growl','siren','pulse','noisePulse','beep','click','sub', 'wail','burst','ramp','fm','sweep','sweepII'];
+    var generatorItems = ['metallic','purr','pattern','growl','siren','pulse','noisePulse','beep','click','sub', 'wail','burst','ramp','fm','sweep','sweepII'];
     var generatorOptions = {
-        weights:[2, 2, 2, 0.8, 2, 1.3, 1.5, 1, 1.4, 1.5, 1.2, 1, 1.5, 1.5],
-        instances:[2, 1, 2, 1, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1]
+        weights:[1,1, 1.8, 2, 1.7, 2, 0.8, 2, 1.3, 1.5, 1, 1.4, 1.5, 1.2, 1, 1.5, 1.5],
+        instances:[1, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1]
     };
     var generatorDeck = tombola.weightedDeck(generatorItems,generatorOptions);
 
@@ -114,7 +109,7 @@ proto.basic = function() {
         }
 
     }
-    filters.push( orchestrator.createComponent('purr') );
+    //filters.push( orchestrator.createComponent('testing') );
 
     // LAST //
     if (tombola.percent(40)) {
@@ -122,7 +117,7 @@ proto.basic = function() {
     }
     filters.push( orchestrator.createComponent('clipping') );
     filters.push( orchestrator.createComponent('lowPass') );
-
+    filters.push( orchestrator.createComponent('static') );
 
     // POST FILTER //
     if (tombola.percent(4)) {

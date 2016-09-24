@@ -3,9 +3,9 @@ var Tombola = require('tombola');
 var tombola = new Tombola();
 
 var Roar = require('../voices/Roar');
-var Repeater = require('../filters/Repeater');
+var Repeater = require('../common/Repeater');
 var Tremolo = require('../filters/Tremolo');
-var arrayEnvelope = require('../mods/ArrayEnvelope');
+var arrayEnvelope = require('../common/ArrayEnvelope');
 var Sine = require('../voices/Sine');
 var MultiPass = require('../filters/MultiPass');
 

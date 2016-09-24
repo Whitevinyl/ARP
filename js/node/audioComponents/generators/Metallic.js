@@ -12,13 +12,13 @@ var Noise = require('../filters/Noise');
 var LowPass = require('../filters/LowPass');
 var MultiPass = require('../filters/MultiPass');
 
-// I just test component ideas here, whatever's here is the last thing I tested (& committed)
+// A metallic pulsing drone with harmonic squeals. Needs some further work, mods sorting etc
 
 //-------------------------------------------------------------------------------------------
 //  INIT
 //-------------------------------------------------------------------------------------------
 
-function Testing() {
+function Metallic() {
     this.voice = new HarmonicVoice();
     this.voice2 = new HarmonicVoice();
     this.a = 0.5;
@@ -38,7 +38,7 @@ function Testing() {
 //  PROCESS
 //-------------------------------------------------------------------------------------------
 
-Testing.prototype.process = function(input, frequency, chance) {
+Metallic.prototype.process = function(input, frequency, chance, rate) {
 
     if (tombola.chance(1,chance)) {
         this.direction = tombola.item([-1,1]);
@@ -49,7 +49,7 @@ Testing.prototype.process = function(input, frequency, chance) {
     frequency = common.range(frequency,frequency*1.025,this.mod3.process(1,25000));
 
     var rateProc = this.mod4.process(2,10000);
-    var rate = common.range(1,12,rateProc);
+    var tremoloRate = common.range(1,12,rateProc);
     var resonance = common.range(0.4,1.1,rateProc);
 
 
@@ -59,7 +59,7 @@ Testing.prototype.process = function(input, frequency, chance) {
     signal = this.voice2.process(signal, frequency*2, cutoff, resonance);
 
     signal = this.noise.process(signal, common.range(0,0.03,rateProc), 0.9);
-    signal = this.tremolo.process(signal, rate, 0.8, this.direction);
+    signal = this.tremolo.process(signal, tremoloRate, 0.8, this.direction);
     signal = this.delay.process(signal, delayTime, 0.4, true);
     signal = this.filter.process(signal, 2000, 0.85);
     signal = this.filter2.process(signal, 'HP', 100, 1);
@@ -72,4 +72,4 @@ Testing.prototype.process = function(input, frequency, chance) {
 };
 
 
-module.exports = Testing;
+module.exports = Metallic;

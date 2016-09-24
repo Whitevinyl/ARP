@@ -5,7 +5,7 @@ var tombola = new Tombola();
 var Roar = require('../voices/Roar');
 var WavePlayer = require('../voices/WavePlayer');
 var table = require('../voices/Tables');
-var Repeater = require('../filters/Repeater');
+var Repeater = require('../common/Repeater');
 var MultiPass = require('../filters/MultiPass');
 
 // A noise cluster with a randomised repeating envelope pattern

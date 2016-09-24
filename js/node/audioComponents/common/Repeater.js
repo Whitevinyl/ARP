@@ -17,7 +17,7 @@ function Repeater() {
 //  PROCESS
 //-------------------------------------------------------------------------------------------
 
-Repeater.prototype.process = function(signal,delay,mix) {
+Repeater.prototype.process = function(signal,delay,mix,crossover) {
     this.memory.push(signal);
 
     if (this.memory.length>delay) {
@@ -25,6 +25,7 @@ Repeater.prototype.process = function(signal,delay,mix) {
         while (this.memory.length>delay) {
             m = this.memory.shift();
         }
+        if (crossover) m = [m[1],m[0]];
         signal = [
             (signal[0]*(1-mix)) + (m[0]*mix),
             (signal[1]*(1-mix)) + (m[1]*mix)

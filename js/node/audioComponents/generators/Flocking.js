@@ -5,7 +5,7 @@ var tombola = new Tombola();
 
 var WavePlayer = require('../voices/WavePlayer');
 var table = require('../voices/Tables');
-var Repeater = require('../filters/Repeater');
+var Repeater = require('../common/Repeater');
 var MultiPass = require('../filters/MultiPass');
 
 // A multi-voice ambient sound. Voices are clustered around a primary frequency,and are

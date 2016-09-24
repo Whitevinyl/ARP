@@ -3,7 +3,7 @@ var Tombola = require('tombola');
 var tombola = new Tombola();
 
 var Roar = require('../voices/Roar');
-var Repeater = require('../filters/Repeater');
+var Repeater = require('../common/Repeater');
 var Tremolo = require('../filters/Tremolo');
 var Resonant = require('../filters/Resonant');
 

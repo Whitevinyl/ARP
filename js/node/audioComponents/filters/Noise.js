@@ -2,13 +2,14 @@ var utils = require('../../lib/utils');
 var Tombola = require('tombola');
 var tombola = new Tombola();
 
-// A simple tremolo, currently hard-coded as a sawtooth type
+// Add some delicious noise. Setting the threshold makes for a harsher, roaring unbalanced
+// noise, zero threshold is plain white noise.
 
 //-------------------------------------------------------------------------------------------
 //  MONO INIT
 //-------------------------------------------------------------------------------------------
 
-function Tremolo() {
+function Noise() {
     this.a = 0;
 }
 
@@ -16,52 +17,39 @@ function Tremolo() {
 //  MONO PROCESS
 //-------------------------------------------------------------------------------------------
 
-Tremolo.prototype.process = function(input,rate,depth,direction) {
+Noise.prototype.process = function(input,depth,threshold) {
+    threshold = threshold || 0;
+    var white = (Math.random() * 2 - 1);
 
-    direction = direction || 1;
-
-    // perform ramp //
-    this.a += ((rate/sampleRate) * direction);
-    if (this.a > 1) this.a -= 1;
-    if (this.a < 0) this.a += 1;
-
-    // calculate gain //
-    var g = 1 - (this.a*depth);
-
-    return input * g;
+    // hold if there's a threshold //
+    if (white>(-threshold) && white<threshold) {
+        white = this.a;
+    }
+    this.a = white;
+    return input + (white * depth);
 };
 
 //-------------------------------------------------------------------------------------------
 //  STEREO INIT
 //-------------------------------------------------------------------------------------------
 
-function StereoTremolo() {
-    this.a = 0;
+function StereoNoise() {
+    this.n1 = new Noise();
+    this.n2 = new Noise();
 }
 
 //-------------------------------------------------------------------------------------------
 //  STEREO PROCESS
 //-------------------------------------------------------------------------------------------
 
-StereoTremolo.prototype.process = function(input,rate,depth,direction) {
-
-    direction = direction || 1;
-
-    // perform ramp //
-    this.a += ((rate/sampleRate) * direction);
-    if (this.a > 1) this.a -= 1;
-    if (this.a < 0) this.a += 1;
-
-    // calculate gain //
-    var g = 1 - (this.a*depth);
-
+StereoNoise.prototype.process = function(input,depth,threshold) {
     return [
-        input[0] * g,
-        input[1] * g
+        this.n1.process(input[0],depth,threshold),
+        this.n2.process(input[1],depth,threshold)
     ];
 };
 
 module.exports = {
-    mono: Tremolo,
-    stereo: StereoTremolo
+    mono: Noise,
+    stereo: StereoNoise
 };
