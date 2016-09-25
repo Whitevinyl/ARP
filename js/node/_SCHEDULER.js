@@ -164,7 +164,7 @@ function checkSchedule() {
                         events.splice(i,1);
 
                         // update schedule //
-                        var updatedSchedule = {reschedule: obj.reschedule,events: events};
+                        var updatedSchedule = {reschedule: obj.reschedule,id:scheduleID,events: events};
                         jsonfile.writeFile(file, updatedSchedule, function(err) {
                             if (err) {
                                 console.log("failed to update schedule");
