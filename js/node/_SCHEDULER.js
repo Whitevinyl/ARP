@@ -26,6 +26,7 @@ if (DEBUG) {
 
 
 var d = new Date();
+var scheduleID = 1;
 var defaultSchedule;
 var defaultEvents = [
     {
@@ -49,6 +50,7 @@ var defaultEvents = [
 function writeSchedule(d,e) {
     return {
         reschedule: d.getTime() + windowTime,
+        id: scheduleID,
         events: e
     };
 }
@@ -123,6 +125,16 @@ function checkSchedule() {
                 console.log('obj.reschedule not found');
                 rescheduling = true;
             }
+            if (obj.id) {
+                if (obj.id!==scheduleID) {
+                    rescheduling = true;
+                }
+            } else {
+                console.log('obj.id not found');
+                rescheduling = true;
+            }
+
+
 
             if (rescheduling) {
                 actionDealer();
