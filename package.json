@@ -1,7 +1,7 @@
 {
   "name": "arp_observatory",
   "version": "0.0.1",
-  "description": "creative twitter and soundcloud bot",
+  "description": "creative twitter and soundcloud bot.",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js",
@@ -27,7 +27,7 @@
   "homepage": "https://github.com/Whitevinyl/ARP",
   "dependencies": {
     "canvas": "^1.4.0",
-    "colorflex": "0.0.1",
+    "colorflex": "0.0.2",
     "form-data": "^1.0.1",
     "jsonfile": "^2.3.1",
     "node-fetch": "^1.6.0",
@@ -35,7 +35,7 @@
     "perspectivejs": "^1.0.0",
     "soundcloud-nodejs-api-wrapper": "~0.3.2",
     "suncalc": "~1.7.0",
-    "tombola": "0.0.1",
+    "tombola": "0.0.2",
     "twit": "~2.2.4",
     "wav-encoder": "^1.1.0"
   }
