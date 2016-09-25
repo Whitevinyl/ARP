@@ -36,11 +36,12 @@ proto.generateWaveSection = function(length) {
     var i;
 
 
-    var LPL = new audio.FilterLowPass2();
-    var LPR = new audio.FilterLowPass2();
+    var LPL = new audio.LowPass();
+    var LPR = new audio.LowPass();
     var holdL = new audio.FilterDownSample();
     var holdR = new audio.FilterDownSample();
-    var resampler = new audio.FilterResampler();
+    var resampler = new audio.Resampler();
+    var noise = new audio.Noise.stereo();
 
     var sampleMode = tombola.item([1,3]);
 
@@ -59,7 +60,7 @@ proto.generateWaveSection = function(length) {
 
     var hold = tombola.range(10,200);
     var cutoff = tombola.range(20,2000);
-    var noise = tombola.rangeFloat(0.0005,0.005);
+    var noiseLevel = tombola.rangeFloat(0.0005,0.005);
     var amp = 1;
     if (tombola.chance(1,5)) {
         amp = tombola.rangeFloat(0.5,1);
@@ -113,13 +114,13 @@ proto.generateWaveSection = function(length) {
             delay += (tombola.fudge(3, 2)*0.5);
         }
         delay = utils.valueInRange(delay, 5, 5000);
-        signal = audio.filterStereoFeedbackX(signal,0.6,delay,channels,i);
+        signal = audio.feedback(signal,0.6,delay,channels,i);
 
 
         // FOLDBACK //
         if (fold) {
-            signal[0] = (audio.filterFoldBack(signal[0],0.5)*2);
-             signal[1] = (audio.filterFoldBack(signal[1],0.5)*2);
+            signal[0] = (audio.foldBack(signal[0],0.5)*2);
+             signal[1] = (audio.foldBack(signal[1],0.5)*2);
         }
         if (tombola.chance(1,30000)) {
             fold = !fold;
@@ -127,7 +128,7 @@ proto.generateWaveSection = function(length) {
 
         // CLIPPING //
         if (clipping) {
-            signal = audio.filterStereoClipping2(signal,0.7,0.5);
+            signal = audio.clipping(signal,0.7,0.5);
         }
         if (tombola.chance(1,30000)) {
             clipping = !clipping;
@@ -146,8 +147,10 @@ proto.generateWaveSection = function(length) {
         }
 
 
-        signal[0] += audio.filterNoise(noise);
-        signal[1] += audio.filterNoise(noise);
+        //signal[0] += audio.filterNoise(noise);
+        //signal[1] += audio.filterNoise(noise);
+
+        signal = noise.process(signal,noiseLevel);
 
         if (tombola.chance(1,ampChance)) {
             if (tombola.chance(1,3)) {
@@ -688,10 +691,10 @@ proto.generateScopeData = function(length) {
     var map = [];
     var peak = 0;
     var i;
-    var LPL = new audio.FilterLowPass2();
-    var LPR = new audio.FilterLowPass2();
+    var LPL = new audio.LowPass();
+    var LPR = new audio.LowPass();
     var Lfo = new audio.LFO();
-
+    var noise = new audio.Noise();
 
     for (var j=0; j<2; j++) {
 
@@ -715,7 +718,7 @@ proto.generateScopeData = function(length) {
         var hold = tombola.range(20,900);
         var cutoff = tombola.range(40,1000);
         var thresh = tombola.rangeFloat(0.6,1);
-        var noise = tombola.rangeFloat(0.0005,0.005);
+        var noiseLevel = tombola.rangeFloat(0.0005,0.005);
 
         // LOOP SAMPLES //
         for (i=0; i<length; i++) {
@@ -756,7 +759,7 @@ proto.generateScopeData = function(length) {
                 delay += (tombola.fudge(3, 2)*0.5);
             }
             delay = utils.valueInRange(delay, 5, 5000);
-            signal = audio.filterStereoFeedbackX(signal,0.6,delay,channels,i);
+            signal = audio.feedback(signal,0.6,delay,channels,i);
 
 
             /*signal[0] = filterFoldBack2(signal[0],thresh,0.5);
@@ -785,9 +788,10 @@ proto.generateScopeData = function(length) {
             signal[0] = LPL.process(cutoff,0.92,signal[0]);
             signal[1] = LPR.process(cutoff,0.92,signal[1]);
 
-            signal[0] += audio.filterNoise(noise);
-            signal[1] += audio.filterNoise(noise);
+            //signal[0] += audio.filterNoise(noise);
+            //signal[1] += audio.filterNoise(noise);
 
+            signal = noise.process(signal,noiseLevel);
 
             // WRITE VALUES //
             if (channels[0][i]) {
