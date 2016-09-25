@@ -27,6 +27,7 @@ var saturation = require('./audioComponents/filters/Saturation');
 // PERSISTENT FILTERS //
 var LowPass = require('./audioComponents/filters/LowPass');
 var LowPassII = require('./audioComponents/filters/LowPassII');
+var Noise = require('./audioComponents/filters/Noise');
 var MultiPass = require('./audioComponents/filters/MultiPass');
 var Repeater = require('./audioComponents/common/Repeater');
 var Resonant = require('./audioComponents/filters/Resonant');
@@ -1550,6 +1551,8 @@ module.exports = {
     StereoResonant: Resonant.stereo,
     Tremolo: Tremolo.mono,
     StereoTremolo: Tremolo.stereo,
+    Noise: Noise.mono,
+    StereoNoise: Noise.stereo,
     FilterShear: FilterShear,
 
     controlRange: controlRange,
