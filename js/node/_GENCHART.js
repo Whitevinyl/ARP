@@ -41,7 +41,7 @@ proto.generateWaveSection = function(length) {
     var holdL = new audio.FilterDownSample();
     var holdR = new audio.FilterDownSample();
     var resampler = new audio.Resampler();
-    var noise = new audio.Noise.stereo();
+    var noise = new audio.Noise();
 
     var sampleMode = tombola.item([1,3]);
 
