@@ -39,7 +39,7 @@ var proto = Action.prototype;
 
 
 proto.init = function(config,soundCloudReady) {
-    //soundCloud.init(config.soundcloud,soundCloudReady);
+    soundCloud.init(config.soundcloud,soundCloudReady);
     twitter.init(config.twitter);
 };
 

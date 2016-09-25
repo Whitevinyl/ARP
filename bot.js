@@ -31,13 +31,13 @@ global.sampleRate = 44100;
 function init() {
     action.init(config,soundCloudReady);
     //action.print('tweetInterview');
-    action.audio();
+    //action.audio();
 }
 init();
 
 // callback once SoundCloud has initialised //
 function soundCloudReady() {
-    //scheduler.init();
+    scheduler.init();
 }
 
 

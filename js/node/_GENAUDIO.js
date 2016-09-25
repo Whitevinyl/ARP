@@ -400,7 +400,9 @@ function printWaveform(seconds) {
 
 
 proto.test = function() {
-    var seconds = 28;
+    //var seconds = 28;
+    var seconds = tombola.range(26,32);
+    console.log('seconds: '+seconds);
     var peak = 0;
     var l = sampleRate * seconds;
     var inOut = new audio.InOut();
