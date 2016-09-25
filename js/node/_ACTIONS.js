@@ -68,7 +68,7 @@ proto.audio = function() {
                 console.log("succeeded in saving");
 
                 // upload file to soundcloud //
-                //uploadAudio(data,3);
+                uploadAudio(data,3);
             }
         });
     });
