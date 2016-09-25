@@ -133,6 +133,7 @@
           <option name="mySupportsDeletion" value="false" />
           <option name="myCanBeAbsent" value="false" />
           <option name="myId" value="UPDATED" />
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/js/node/_ACTIONS.js</PATH>
           <PATH vcs="Git" revision="">$PROJECT_DIR$/js/node/_SCHEDULER.js</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
