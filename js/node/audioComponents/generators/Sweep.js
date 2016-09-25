@@ -31,7 +31,7 @@ function Sweep() {
 Sweep.prototype.process = function(input,ducking,chance) {
 
     if (this.i<=0 && tombola.chance(1,chance)) {
-        this.cutoff = tombola.rangeFloat(100,3300);
+        this.cutoff = tombola.rangeFloat(100,3000);
         this.resonance = tombola.rangeFloat(0.4,1.2);
         this.l = tombola.range(30000,200000);
         this.i = 0;

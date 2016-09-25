@@ -167,6 +167,15 @@ proto.createComponent = function(componentName,args,mods) {
             break;
 
 
+        case 'fuzzBurst':
+            settings.filter = new audio.FuzzBurst();
+            settings.args.push( {value: pick( args[0], tombola.range(19000,20000))} ); // burst length
+            settings.args.push( {value: pick( args[1], tombola.range(39000,40000))} ); // space length
+            settings.args.push( pick( args[2], {mod: 0, min: tombola.rangeFloat(0,0.2), max: tombola.rangeFloat(0.8,1) }) ); // amp
+            settings.mods.push( pick( mods[0], this.createModType('amp','slow')) );
+            break;
+
+
         case 'growl':
             settings.filter = new audio.FilterGrowl();
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
@@ -421,7 +430,7 @@ proto.createComponent = function(componentName,args,mods) {
     }
 
     console.log(componentName.toUpperCase());
-    //console.log(settings.args);
+    //console.log(settings.mods);
     return new FilterWrapper(settings);
 };
 

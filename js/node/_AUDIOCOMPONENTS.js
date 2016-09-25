@@ -6,6 +6,8 @@ var tombola = new Tombola();
 // These are vanilla javascript components used for generating/filtering audio signals.
 // Multiple techniques are used, subtractive & additive synthesis, wavetables, granular
 // self-sampling, IIR & FIR filtering.
+// Generally learning & refining stuff as I go, combining what I've picked up from standard
+// signal processing techniques with generative/chance methods.
 // I've started separating these out to individual files, (in the folder 'audioComponents').
 // I'm no signal processing expert, so lots of trial & error and experimental noisiness here!
 
@@ -36,6 +38,7 @@ var Click = require('./audioComponents/generators/Click');
 var Cluster = require('./audioComponents/generators/Cluster');
 var Flocking = require('./audioComponents/generators/Flocking');
 var FMSine = require('./audioComponents/generators/FMSine');
+var FuzzBurst = require('./audioComponents/generators/FuzzBurst');
 var Metallic = require('./audioComponents/generators/Metallic');
 var Pattern = require('./audioComponents/generators/Pattern');
 var PatternII = require('./audioComponents/generators/PatternII'); // wip
@@ -70,6 +73,7 @@ var controlRange = require('./audioComponents/common/ControlRange');
 // !!!
 // Everything below this point is currently in the process of being tidied into the
 // 'audioComponents' folder (it's taking a while!)
+// so this section is pretty messy for now
 
 //-------------------------------------------------------------------------------------------
 //  VOICE OBJECT
@@ -1504,6 +1508,7 @@ module.exports = {
     Click: Click,
     Cluster: Cluster,
     Flocking: Flocking,
+    FuzzBurst: FuzzBurst,
     FM: FMSine.wrapper,
     Metallic: Metallic,
     Pattern: Pattern,
