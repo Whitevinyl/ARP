@@ -79,7 +79,6 @@ function setupConfig() {
             }
         }
     }
-    console.log(config);
     return config;
 }
 
