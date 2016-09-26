@@ -116,7 +116,7 @@ proto.createComponent = function(componentName,args,mods) {
             settings.filter = new audio.Cluster();
             settings.args.push( {value: pick( args[0], tombola.rangeFloat(500,600))} );  // frequency
             settings.args.push( {value: pick( args[1], tombola.rangeFloat(16000,30000))} );  // chance
-            settings.args.push( pick( args[2], {mod: 1, min: 0.5, max: tombola.rangeFloat(0.5,0.8) }) ); // amp
+            settings.args.push( pick( args[2], {mod: 1, min: 0.5, max: tombola.rangeFloat(0.7,1) }) ); // amp
             settings.mods.push( pick( mods[0], this.createMod('weave',[tombola.rangeFloat(0.05,0.12),tombola.range(8000,12000)])) );
             settings.mods.push( pick( mods[1], this.createMod('walk',[tombola.rangeFloat(0.05,0.25),tombola.range(11000,20000)])) );
             break;
@@ -135,7 +135,7 @@ proto.createComponent = function(componentName,args,mods) {
             settings.filter = new audio.Flocking();
             settings.args.push( pick( args[0], {mod: 0, min: 500, max: tombola.rangeFloat(700,800) }) );  // frequency
             settings.args.push( {value: pick( args[1], tombola.rangeFloat(0.001,0.002))} );  // rate
-            settings.args.push( pick( args[2], {mod: 1, min: tombola.rangeFloat(0.3,0.4), max: tombola.rangeFloat(0.85,1) }) ); // amp
+            settings.args.push( pick( args[2], {mod: 1, min: tombola.rangeFloat(0.3,0.4), max: tombola.rangeFloat(0.95,1) }) ); // amp
             settings.mods.push( pick( mods[0], this.createMod('weave',[tombola.rangeFloat(0.05,0.12),tombola.range(10000,30000)])) );
             settings.mods.push( pick( mods[1], this.createMod('walk',[tombola.rangeFloat(0.09,0.25),tombola.range(18000,25000)])) );
             break;
@@ -156,13 +156,13 @@ proto.createComponent = function(componentName,args,mods) {
 
         case 'foldBack':
             settings.filterFunc = audio.foldBack;
-            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.65,0.95))} ); // threshold
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.55,0.95))} ); // threshold
             break;
 
 
         case 'foldBackII':
             settings.filterFunc = audio.foldBackII;
-            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.65,0.95))} ); // threshold
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.55,0.95))} ); // threshold
             settings.args.push( {value: pick( args[1], tombola.rangeFloat(0.2,0.4))} ); // reduction power
             break;
 
@@ -186,7 +186,7 @@ proto.createComponent = function(componentName,args,mods) {
         case 'howl':
             settings.filter = new audio.FilterHowl();
             settings.args.push( pick( args[0], {mod: 0, min: tombola.rangeFloat(120,220), max: tombola.rangeFloat(800,1000) }) ); // frequency
-            settings.args.push( pick( args[1], {mod: 1, min: tombola.rangeFloat(0,0.2), max: tombola.rangeFloat(0.5,0.8) }) ); // amp
+            settings.args.push( pick( args[1], {mod: 1, min: tombola.rangeFloat(0,0.2), max: tombola.rangeFloat(0.7,1) }) ); // amp
             settings.mods.push( pick( mods[0], this.createMod('weave',[tombola.rangeFloat(0.05,0.12),tombola.range(8000,12000)])) );
             settings.mods.push( pick( mods[1], this.createMod('walk',[tombola.rangeFloat(0.05,0.25),tombola.range(11000,20000)])) );
             break;

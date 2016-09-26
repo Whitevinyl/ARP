@@ -29,7 +29,7 @@ var proto = Arranger.prototype;
 proto.arrangement = function() {
 
     // select algorithm //
-    var alg = tombola.weightedItem(['basic', 'ambient', 'classic' ],[3,1,1]);
+    var alg = tombola.weightedItem(['basic', 'ambient', 'classic' ],[2.6,1,1]);
     console.log(alg.toUpperCase());
 
     return this[''+alg]();
@@ -55,6 +55,7 @@ proto.basic = function() {
     var filters = [];
     var count, i;
     var reverbAllowed = true;
+    var more = tombola.percent(10);
 
     //------------- SETUP DECKS -------------//
 
@@ -91,6 +92,9 @@ proto.basic = function() {
 
     // BED //
     count = tombola.range(2,3);
+    if (more) {
+        count = tombola.range(3,4);
+    }
     for (i=0; i<count; i++) {
         filters.push( orchestrator.createComponent(bedDeck.draw()) );
     }
@@ -98,6 +102,9 @@ proto.basic = function() {
 
     // MAIN //
     count = tombola.range(5,9);
+    if (more) {
+        count = tombola.range(7,11);
+    }
     for (i=0; i<count; i++) {
         if (tombola.percent(70)) {
             filters.push( orchestrator.createComponent(generatorDeck.draw()) );

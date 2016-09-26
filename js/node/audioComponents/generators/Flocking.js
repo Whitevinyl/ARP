@@ -49,6 +49,7 @@ Flocking.prototype.process = function(input,frequency,rate,amp) {
             var ratio = tombola.rangeFloat(-0.1,0.1);
             var voiceType = tombola.item([table.Metallic,table.Voice2,table.SharkFin]);
             var v = new WavePlayer(new voiceType());
+            v.a = 0.4;
             this.voices.push(new FlockingVoice( frequency * tombola.rangeFloat(0.85,1.2), ratio, v ));
         }
     }
