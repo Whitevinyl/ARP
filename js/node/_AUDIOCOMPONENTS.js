@@ -85,7 +85,7 @@ function Voice(frequency) {
     this.frequency = frequency || 440;
     this.detune = 0;
     this.gain = 0.5;
-    this.panning = 0;
+    this.panning = tombola.rangeFloat(-1,1);
     this.amplitude = 0;
     this.polarity = -1;
     this.type = 1;
@@ -1284,7 +1284,7 @@ function FilterStereoDownSample() {
 FilterStereoDownSample.prototype.process = function(signal,size,mix) {
     return [
         (signal[0] * (1-mix)) + (this.ds1.process(size,signal[0]) * mix),
-        (signal[1] * (1-mix)) + (this.ds2.process(size,signal[0]) * mix)
+        (signal[1] * (1-mix)) + (this.ds2.process(size,signal[1]) * mix)
     ];
 };
 

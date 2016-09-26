@@ -29,7 +29,7 @@ var proto = Arranger.prototype;
 proto.arrangement = function() {
 
     // select algorithm //
-    var alg = tombola.weightedItem(['basic', 'ambient', 'classic' ],[2.2,1,0.5]);
+    var alg = tombola.weightedItem(['basic', 'ambient', 'classic' ],[3,1,1]);
     console.log(alg.toUpperCase());
 
     return this[''+alg]();

@@ -153,26 +153,12 @@ proto.drawWaveSection = function(data, x, y, w, h) {
     var cxa = this.cxa;
     var i;
 
-    // dash line divides //
-    /*color.strokeRGBA(cxa,230,230,230,1);
-    cxa.lineWidth = this.units*0.25;
-    cxa.beginPath();
-    var dw = this.units*2;
-    var ds = this.units*9;
-    for (i=0; i<(w/ds); i++) {
-        cxa.moveTo(x + (i*ds), y);
-        cxa.lineTo(x + (i*ds) + dw, y);
-    }
-    cxa.stroke();*/
 
     cxa.lineWidth = this.units*2;
     color.strokeRGBA(cxa,230,230,230,1);
 
     for (var j=0; j<data.length; j++) {
         var a = data[j][0];
-
-        //cxa.beginPath();
-        //cxa.moveTo(x, y + (h*a));
 
         for (i=0; i<l; i++) {
             a = data[j][i];
@@ -183,11 +169,7 @@ proto.drawWaveSection = function(data, x, y, w, h) {
             grad.addColorStop(0.5,color.string(new RGBA(255,255,255,0)));
             cxa.fillStyle = grad;
             cxa.fillRect(x + (sw*i),y,sw*2,(h*a));
-
-            //cxa.lineTo(x + (sw*i), y + (h*a));
         }
-
-        //cxa.stroke();
     }
     cxa.globalAlpha = 1;
 };
