@@ -2,8 +2,8 @@
 // running check //
 console.log("hello this is bot.");
 
+var fs = require('fs');
 var Colorflex = require('colorflex');
-var config = require('./config');
 
 var Scheduler = require('./js/node/_SCHEDULER');
 var scheduler = new Scheduler();
@@ -23,7 +23,7 @@ global.sampleRate = 44100;
 // what actions the bot will make during that 48 hr window.
 
 //-------------------------------------------------------------------------------------------
-//  INIT
+//  OPERATION MODE
 //-------------------------------------------------------------------------------------------
 
 // MODES FOR TESTING //
@@ -46,19 +46,56 @@ global.modes = {
     'tweetTweet':       14
 };
 
-// SET MODE //
-global.opMode = modes.running;
+// SET THE CURRENT OPERATION MODE //
+global.opMode = modes.audioTweet;
+
+
+//-------------------------------------------------------------------------------------------
+//  SETUP CONFIG
+//-------------------------------------------------------------------------------------------
+
+function setupConfig() {
+    var config = {};
+    var configExists = fs.existsSync('./config.js');
+    if (configExists) {
+        console.log('file config');
+        config = require('./config');
+    }
+    else {
+        console.log('environment config');
+        config = {
+            twitter: {
+                consumer_key:         process.env.TW_KEY,
+                consumer_secret:      process.env.TW_SECRET,
+                access_token:         process.env.TW_TOKEN,
+                access_token_secret:  process.env.TW_TOKEN_SECRET,
+                timeout_ms:           60*1000  // optional HTTP request timeout.
+            },
+            soundcloud: {
+                client_id :           process.env.SC_ID,
+                client_secret :       process.env.SC_SECRET,
+                username :            process.env.SC_USER,
+                password :            process.env.SC_PASS
+            }
+        }
+    }
+    return config;
+}
+
+//-------------------------------------------------------------------------------------------
+//  INIT
+//-------------------------------------------------------------------------------------------
 
 
 // START THE BOT RUNNING //
 function init() {
+    var config = setupConfig();
     action.init(config,soundCloudReady);
 
     // IF WE'RE IN A TESTING MODE //
     switch(opMode) {
 
         case modes.audio:
-        case modes.audioTweet:
             action.audio();
             break;
 
@@ -102,10 +139,19 @@ function init() {
 init();
 
 
+//-------------------------------------------------------------------------------------------
+//  INITIALISED CALLBACK
+//-------------------------------------------------------------------------------------------
+
+
 // NORMAL RUNNING - START THE SCHEDULER //
 // callback once SoundCloud has initialised in action.init //
 function soundCloudReady() {
-    scheduler.init();
+    if (opMode===modes.audioTweet) {
+        action.audio();
+    } else {
+        scheduler.init();
+    }
 }
 
 

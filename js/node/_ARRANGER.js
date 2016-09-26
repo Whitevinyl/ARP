@@ -79,7 +79,7 @@ proto.basic = function() {
     // EFFECT SETUP //
     var effectItems = ['saturation','chopper','foldBack','foldBackII','invert','panner','shear','bitCrush',tombola.weightedItem(['phaser','chorus'],[3,1])];
     var effectOptions = {
-        weights:[1, 2.2, 2, 1.6, 0.5, 1.2, 0.5, 1, 2.5],
+        weights:[1, 2.2, 2, 1.6, 0.5, 0.5, 0.5, 1, 2.5],
         instances:[1, 1, 1, 1, 1, 1, 1, 1, 1]
     };
     var effectDeck = tombola.weightedDeck(effectItems,effectOptions);
@@ -97,7 +97,7 @@ proto.basic = function() {
 
 
     // MAIN //
-    count = tombola.range(4,8);
+    count = tombola.range(5,9);
     for (i=0; i<count; i++) {
         if (tombola.percent(70)) {
             filters.push( orchestrator.createComponent(generatorDeck.draw()) );
@@ -130,7 +130,7 @@ proto.basic = function() {
     if (reverbAllowed && tombola.percent(4)) {
         filters.push( orchestrator.createComponent('reverseDelay') );
     } else {
-        if (tombola.percent(35)) {
+        if (tombola.percent(40)) {
             filters.push( orchestrator.createComponent('resampler') );
         }
     }
@@ -169,7 +169,7 @@ proto.ambient = function() {
     // EFFECT SETUP //
     var effectItems = ['saturation','chopper','foldBack','foldBackII','panner',tombola.weightedItem(['phaser','chorus'],[3,1])];
     var effectOptions = {
-        weights:[0.8, 2, 0.5, 0.5, 1, 2],
+        weights:[0.8, 2, 0.5, 0.5, 0.5, 2],
         instances:[1, 1, 1, 1, 1, 1]
     };
     var effectDeck = tombola.weightedDeck(effectItems,effectOptions);

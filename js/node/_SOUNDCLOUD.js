@@ -13,15 +13,29 @@ var SC = require('soundcloud-nodejs-api-wrapper');
 
 
 function SoundCloud() {
+    this.sc = null;
     this.client = null;
     this.clientToken = null;
+    this.tokenInterval = null;
 }
+var proto = SoundCloud.prototype;
 
-SoundCloud.prototype.init = function(credentials,callback) {
 
-    var sc = new SC(credentials);
-    this.client = sc.client();
+proto.init = function(credentials,callback) {
 
+    this.sc = new SC(credentials);
+    this.client = this.sc.client();
+    this.newToken(callback);
+    this.tokenRefresh();
+};
+
+
+//-------------------------------------------------------------------------------------------
+//  NEW TOKEN
+//-------------------------------------------------------------------------------------------
+
+
+proto.newToken = function(callback) {
     var that = this;
     this.client.exchange_token(function(err, result) {
 
@@ -31,21 +45,39 @@ SoundCloud.prototype.init = function(credentials,callback) {
         console.log(arguments);
 
         // we need to create a new client object which will use the access token now
-        that.client = sc.client({access_token : access_token});
+        that.client = that.sc.client({access_token : access_token});
         console.log(access_token);
         that.clientToken = access_token;
 
-        callback();
+        if (callback) {
+            callback();
+        }
     });
 };
 
 
 //-------------------------------------------------------------------------------------------
-//  UPLOAD
+//  REFRESH TOKEN PERIODICALLY
+//-------------------------------------------------------------------------------------------
+
+// possibly replace this with a non-expiring token, although SoundCloud have removed all
+// documentation of this so not sure I trust it over refreshing.
+
+var tokenTime = 1000 * 60 * 60 * 3; // every 3 hours
+proto.tokenRefresh = function() {
+    var that = this;
+    this.tokenInterval = setInterval(function() {that.newToken();},tokenTime);
+};
+proto.stop = function() {
+    clearInterval(this.tokenInterval);
+};
+
+//-------------------------------------------------------------------------------------------
+//  UPLOAD TRACK
 //-------------------------------------------------------------------------------------------
 
 
-SoundCloud.prototype.upload = function addTrack(options, callback) {
+proto.upload = function addTrack(options, callback) {
     var form = new FormData();
 
     form.append('format', 'json');
@@ -127,11 +159,11 @@ SoundCloud.prototype.upload = function addTrack(options, callback) {
 
 
 //-------------------------------------------------------------------------------------------
-//  DELETE
+//  DELETE TRACK
 //-------------------------------------------------------------------------------------------
 
 
-SoundCloud.prototype.delete = function(id,callback) {
+proto.delete = function(id,callback) {
 
     this.client.delete("/tracks/"+id,function(err,result) {
         if (err) {
@@ -150,7 +182,7 @@ SoundCloud.prototype.delete = function(id,callback) {
 //-------------------------------------------------------------------------------------------
 
 
-SoundCloud.prototype.status = function(id,callback) {
+proto.status = function(id,callback) {
 
     this.client.get('/tracks/'+id,function(err,result) {
         if (err) {

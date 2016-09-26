@@ -42,7 +42,6 @@ proto.init = function(config,soundCloudReady) {
     if (opMode===modes.running || opMode===modes.audioTweet) {
         soundCloud.init(config.soundcloud,soundCloudReady);
     }
-
     twitter.init(config.twitter);
 };
 
@@ -55,11 +54,11 @@ proto.init = function(config,soundCloudReady) {
 proto.audio = function() {
 
     // generate audio data //
-    //var data = genAudio.generate();
-    var data = genAudio.test();
+    var data = genAudio.generate();
 
     // encode audio data to wav //
-    wavEncoder.encode(data.audioData,{ float: false, bitDepth: 24 }).then(function(buffer){
+    //var options = { float: false, bitDepth: 24 }; // pass as 2nd param
+    wavEncoder.encode(data.audioData).then(function(buffer){
         console.log(buffer);
 
         // write wav as file //
@@ -298,6 +297,24 @@ proto.print = function(type) {
     var data = genTweet.generateTweet(type);
     console.log(data);
 };
+
+
+//-------------------------------------------------------------------------------------------
+//  TEST
+//-------------------------------------------------------------------------------------------
+
+
+proto.test = function() {
+    this.audio();
+    var that = this;
+    setTimeout(function() {
+        soundCloud.newToken();
+    },1000*60*3);
+    setTimeout(function() {
+        that.audio();
+    },1000*60*4);
+};
+
 
 
 module.exports = Action;
