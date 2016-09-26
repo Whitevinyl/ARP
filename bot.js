@@ -26,16 +26,84 @@ global.sampleRate = 44100;
 //  INIT
 //-------------------------------------------------------------------------------------------
 
+// MODES FOR TESTING //
+// (only partially implemented) //
+global.modes = {
+    'running':          0,
+    'audio':            1,
+    'audioTweet':       2,
+    'phase':            3,
+    'phaseTweet':       4,
+    'waveform':         5,
+    'waveformTweet':    6,
+    'periodic':         7,
+    'periodicTweet':    8,
+    'spectrum':         9,
+    'spectrumTweet':    10,
+    'starTrail':        11,
+    'starTrailTweet':   12,
+    'tweet':            13,
+    'tweetTweet':       14
+};
+
+// SET MODE //
+global.opMode = modes.running;
+
 
 // START THE BOT RUNNING //
 function init() {
     action.init(config,soundCloudReady);
-    //action.print('tweetInterview');
-    //action.audio();
+
+    // IF WE'RE IN A TESTING MODE //
+    switch(opMode) {
+
+        case modes.audio:
+        case modes.audioTweet:
+            action.audio();
+            break;
+
+        case modes.phase:
+        case modes.phaseTweet:
+            action.chartPhase();
+            break;
+
+        case modes.waveform:
+        case modes.waveformTweet:
+            action.chartWaveform();
+            break;
+
+        case modes.periodic:
+        case modes.periodicTweet:
+            action.chartPeriodic();
+            break;
+
+        case modes.spectrum:
+        case modes.spectrumTweet:
+            action.chartSpectrum();
+            break;
+
+        case modes.starTrail:
+        case modes.starTrailTweet:
+            action.starTrails();
+            break;
+
+        case modes.tweet:
+            action.print();
+            break;
+
+        case modes.tweetTweet:
+            action.tweet();
+            break;
+
+        default:
+            break;
+    }
 }
 init();
 
-// callback once SoundCloud has initialised //
+
+// NORMAL RUNNING - START THE SCHEDULER //
+// callback once SoundCloud has initialised in action.init //
 function soundCloudReady() {
     scheduler.init();
 }

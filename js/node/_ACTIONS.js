@@ -39,7 +39,10 @@ var proto = Action.prototype;
 
 
 proto.init = function(config,soundCloudReady) {
-    soundCloud.init(config.soundcloud,soundCloudReady);
+    if (opMode===modes.running || opMode===modes.audioTweet) {
+        soundCloud.init(config.soundcloud,soundCloudReady);
+    }
+
     twitter.init(config.twitter);
 };
 

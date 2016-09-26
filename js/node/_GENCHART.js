@@ -35,29 +35,21 @@ proto.generateWaveSection = function(length) {
     var peak = 0;
     var i;
 
-
-    var LPL = new audio.LowPass();
-    var LPR = new audio.LowPass();
-    var holdL = new audio.FilterDownSample();
-    var holdR = new audio.FilterDownSample();
+    var lowpass = new audio.StereoLowPass();
+    var downsample = new audio.FilterStereoDownSample();
     var resampler = new audio.Resampler();
-    var noise = new audio.Noise();
-
-    var sampleMode = tombola.item([1,3]);
+    var noise = new audio.StereoNoise();
 
 
     var voices = [new audio.Voice(tombola.rangeFloat(30,70))];
-    voices[0].panning = tombola.range(-1,1);
-
     var vx = tombola.range(0,5);
     for (i=0; i<vx; i++) {
         voices.push(new audio.Voice(tombola.rangeFloat(40, 400)));
-        voices[i].panning = tombola.range(-1, 1);
     }
 
 
+    var sampleMode = tombola.item([1,3]);
     var delay = tombola.range(20,200);
-
     var hold = tombola.range(10,200);
     var cutoff = tombola.range(20,2000);
     var noiseLevel = tombola.rangeFloat(0.0005,0.005);
@@ -79,35 +71,16 @@ proto.generateWaveSection = function(length) {
 
         // UPDATE VOICE //
         for (var h=0; h<voices.length; h++) {
-            if (tombola.chance(1, 500)) {
-                voices[h].gain += tombola.fudgeFloat(1, 0.05);
-            }
-            voices[h].panning += tombola.fudgeFloat(6, 0.005);
-            voices[h].gain = utils.valueInRange(voices[h].gain, 0, 0.5);
-            voices[h].panning = utils.valueInRange(voices[h].panning, -1, 1);
-
-
-            // UPDATE VOICE WAVE SHAPES //
-            if (tombola.chance(1, 3000)) {
-                voices[h].type = -voices[h].type;
-            }
-            if (voices[h].type === -1) {
-                audio.waveSawtooth(voices[h], 1);
-            } else {
-                audio.waveTriangle(voices[h], 1);
-            }
-            signal[0] += ((voices[h].amplitude * voices[h].gain) * (1 + (-voices[h].panning)));
-            signal[1] += ((voices[h].amplitude * voices[h].gain) * (1 + voices[h].panning));
+            signal = voices[h].process(signal,'triangle');
         }
 
+
         // BIT CRUSH //
-        signal[0] = holdL.process(hold,signal[0]);
-        signal[1] = holdR.process(hold,signal[1]);
+        signal = downsample.process(signal,hold,0.9);
         if (tombola.chance(1,100)) {
             hold += tombola.fudge(20, 2);
             hold = utils.valueInRange(hold, 10, 200);
         }
-
 
         // FEEDBACK FILTER //
         if (tombola.chance(1,500)) {
@@ -119,12 +92,12 @@ proto.generateWaveSection = function(length) {
 
         // FOLDBACK //
         if (fold) {
-            signal[0] = (audio.foldBack(signal[0],0.5)*2);
-             signal[1] = (audio.foldBack(signal[1],0.5)*2);
+            signal = audio.foldBack(signal,0.6);
         }
         if (tombola.chance(1,30000)) {
             fold = !fold;
         }
+
 
         // CLIPPING //
         if (clipping) {
@@ -134,22 +107,19 @@ proto.generateWaveSection = function(length) {
             clipping = !clipping;
         }
 
+
         // RESAMPLER //
         signal = resampler.process(signal,sampleMode,20000,channels,i);
 
 
         // LOW PASS FILTER //
-        signal[0] = LPL.process(cutoff,0.92,signal[0]);
-        signal[1] = LPR.process(cutoff,0.92,signal[1]);
+        signal = lowpass.process(signal,cutoff,0.92);
         if (tombola.chance(1,200)) {
             cutoff += tombola.fudge(20, 20);
             cutoff = utils.valueInRange(cutoff, 20, 2000);
         }
 
-
-        //signal[0] += audio.filterNoise(noise);
-        //signal[1] += audio.filterNoise(noise);
-
+        // NOISE //
         signal = noise.process(signal,noiseLevel);
 
         if (tombola.chance(1,ampChance)) {
@@ -506,105 +476,6 @@ proto.generatePeriodicWaves = function(n) {
 //-------------------------------------------------------------------------------------------
 
 
-proto.vectorScope = function(signal,scale) {
-    var a = signal[0];
-    var b = signal[1];
-    var arat = 1;
-    var brat = 1;
-    if (a<0) a = -a;
-    if (b<0) b = -b;
-
-    var peak = a;
-    if (b>a) {
-        peak = b;
-        arat = a/b;
-    } else {
-        brat = b/a;
-    }
-    var c = (-arat + brat)*0.5;
-
-
-    // ANGLE
-    var angle = (1.5 + c) * Math.PI;
-    var x = Math.cos(angle);
-    var y = Math.sin(angle);
-
-    return [
-        (x * peak) * scale,
-        (y * peak) * scale
-    ];
-};
-
-proto.vectorScope2 = function(signal,scale) {
-    var a = signal[0];
-    var b = signal[1];
-    var arat = 1;
-    var brat = 1;
-    if (a<0) a = -a;
-    if (b<0) b = -b;
-
-    var peak = a;
-    if (b>a) {
-        peak = b;
-        arat = a/b;
-    } else {
-        brat = b/a;
-    }
-
-    var c = (-arat + brat);
-    return [
-        c * scale,
-        -peak * scale
-    ];
-};
-
-proto.vectorScope3 = function(signal,scale) {
-    var a = signal[0];
-    var b = signal[1];
-    if (a<0) a = -a;
-    if (b<0) b = -b;
-
-    var peak = a;
-    if (b>a) peak = b;
-
-    return [
-        signal[1] * scale,
-        -peak * scale
-    ];
-};
-
-proto.vectorScope4 = function(signal,scale) {
-    var a = signal[0];
-    var b = signal[1];
-    var ba = a;
-    var bb = b;
-    var arat = 1;
-    var brat = 1;
-
-    if (ba<0) ba = -ba;
-    if (bb<0) bb = -bb;
-    if (bb>ba) {
-        arat = ba/bb;
-    } else {
-        brat = bb/ba;
-    }
-    var c = (-ba + bb);
-
-
-
-    var peak = b;
-    if (c>0) {
-        peak = a;
-    }
-    /*if (peak>0 && b>peak) peak = b;
-     if (peak<0 && b<peak) peak = b;*/
-
-    return [
-        c * scale,
-        -peak * scale
-    ];
-};
-
 proto.vectorScope5 = function(signal,scale) {
     var a = signal[0];
     var b = signal[1];
@@ -648,38 +519,6 @@ proto.vectorScope5 = function(signal,scale) {
     ];
 };
 
-proto.vectorScope6 = function(signal,scale,n) {
-    var a = signal[0];
-    var b = signal[1];
-    var ba = a;
-    var bb = b;
-    var arat = 1;
-    var brat = 1;
-
-    if (ba<0) ba = -ba;
-    if (bb<0) bb = -bb;
-    if (bb>ba) {
-        arat = ba/bb;
-    } else {
-        brat = bb/ba;
-    }
-    var c = (-ba + bb);
-
-
-
-    var peak = b;
-    if (c>0) {
-        peak = a;
-    }
-    /*if (peak>0 && b>peak) peak = b;
-     if (peak<0 && b<peak) peak = b;*/
-
-    return [
-        c * scale,
-        signal[n] * scale
-    ];
-};
-
 
 //-------------------------------------------------------------------------------------------
 //  VECTORSCOPE DATA
@@ -691,33 +530,25 @@ proto.generateScopeData = function(length) {
     var map = [];
     var peak = 0;
     var i;
-    var LPL = new audio.LowPass();
-    var LPR = new audio.LowPass();
-    var Lfo = new audio.LFO();
-    var noise = new audio.Noise();
+    var lowpass = new audio.StereoLowPass();
+    var noise = new audio.StereoNoise();
 
     for (var j=0; j<2; j++) {
 
         var channels = [new Float32Array(length),new Float32Array(length)];
 
         var voices = [new audio.Voice(tombola.rangeFloat(30,70))];
-        voices[0].panning = tombola.range(-1,1);
-
         var vx = tombola.range(0,5);
         for (i=0; i<vx; i++) {
             voices.push(new audio.Voice(tombola.rangeFloat(30, 200)));
-            voices[i].panning = tombola.range(-1, 1);
         }
 
-        var modRoot = tombola.range(1500,7000);
-        var modLevel = tombola.rangeFloat(0.05,0.6);
+        var downsample = new audio.FilterStereoDownSample();
 
+        var crushLevel = tombola.rangeFloat(0.5,1);
         var delay = tombola.range(20,100);
-        var holdL = new audio.FilterDownSample();
-        var holdR = new audio.FilterDownSample();
         var hold = tombola.range(20,900);
         var cutoff = tombola.range(40,1000);
-        var thresh = tombola.rangeFloat(0.6,1);
         var noiseLevel = tombola.rangeFloat(0.0005,0.005);
 
         // LOOP SAMPLES //
@@ -727,31 +558,11 @@ proto.generateScopeData = function(length) {
 
             // UPDATE VOICE //
             for (var h=0; h<voices.length; h++) {
-                if (tombola.chance(1, 500)) {
-                    voices[h].gain += tombola.fudgeFloat(1, 0.05);
-                }
-                voices[h].panning += tombola.fudgeFloat(6, 0.005);
-                voices[h].gain = utils.valueInRange(voices[h].gain, 0, 0.5);
-                voices[h].panning = utils.valueInRange(voices[h].panning, -1, 1);
-
-
-                // UPDATE VOICE WAVE SHAPES //
-                if (tombola.chance(1, 3000)) {
-                    voices[h].type = -voices[h].type;
-                }
-                if (voices[h].type === -1) {
-                    audio.waveSawtooth(voices[h], 1);
-                } else {
-                    audio.waveTriangle(voices[h], 1);
-                }
-                signal[0] += ((voices[h].amplitude * voices[h].gain) * (1 + (-voices[h].panning)));
-                signal[1] += ((voices[h].amplitude * voices[h].gain) * (1 + voices[h].panning));
+                signal = voices[h].process(signal);
             }
 
             // BIT CRUSH //
-            signal[0] = holdL.process(hold,signal[0]);
-            signal[1] = holdR.process(hold,signal[1]);
-
+            signal = downsample.process(signal,hold,crushLevel);
 
 
             // FEEDBACK FILTER //
@@ -762,36 +573,13 @@ proto.generateScopeData = function(length) {
             signal = audio.feedback(signal,0.6,delay,channels,i);
 
 
-            /*signal[0] = filterFoldBack2(signal[0],thresh,0.5);
-             signal[1] = filterFoldBack2(signal[1],thresh,0.5);*/
-
-            /*signal[0] = filterFoldBack(signal[0],0.02);
-             signal[1] = filterFoldBack(signal[1],0.02);*/
-
-            /*signal[0] = filterInvert(signal[0],0.5);
-             signal[1] = filterInvert(signal[1],0.5);*/
-
-            //signal[0] = filterErode(signal[0],100,i);
-            //signal[1] = filterErode(signal[1],10,i);
-
-            // FEEDBACK FILTER //
-            /*var dt = modRoot + (Lfo.process(1.2)*1500);
-             signal[0] += filterFeedback(modLevel,dt,channels[1],i);
-             signal[1] += filterFeedback(modLevel,dt,channels[0],i);
-             */
-            // REVERB //
-            /*signal[0] += filterReverb(0.5,20,11,channels[1],i);
-             signal[1] += filterReverb(0.5,20,11,channels[0],i);*/
-
-
             // LOW PASS FILTER //
-            signal[0] = LPL.process(cutoff,0.92,signal[0]);
-            signal[1] = LPR.process(cutoff,0.92,signal[1]);
+            signal = lowpass.process(signal,cutoff,0.92);
 
-            //signal[0] += audio.filterNoise(noise);
-            //signal[1] += audio.filterNoise(noise);
 
+            // NOISE //
             signal = noise.process(signal,noiseLevel);
+
 
             // WRITE VALUES //
             if (channels[0][i]) {
