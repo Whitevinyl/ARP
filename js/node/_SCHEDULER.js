@@ -7,7 +7,7 @@ var tombola = new Tombola();
 var Action = require('./_ACTIONS');
 var action = new Action();
 
-var DEBUG = true;
+var DEBUG = false;
 
 var checkTime = 1000 * 60 * 10; // polling frequency: 10 minutes
 var windowTime = 1000 * 60 * 60 * 48; // schedule window 48 hours
