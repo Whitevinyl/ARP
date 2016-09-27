@@ -216,7 +216,7 @@ proto.createComponent = function(componentName,args,mods) {
 
         case 'noise':
             settings.filter = new audio.NoiseWrapper();
-            if (args.length || tombola.percent(10)) {
+            if (args.length || tombola.percent(20)) {
                 settings.args.push( {value: pick( args[0], tombola.range(10000,30000))} ); // changing noise
             }
             break;

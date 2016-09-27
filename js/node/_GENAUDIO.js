@@ -85,7 +85,7 @@ proto.generate = function() {
 
 
     // SECOND PASS //
-    var mult = 1/peak;
+    var mult = 0.96875/peak;
     for (i=0; i<l; i++) {
 
         // GET VALUES //

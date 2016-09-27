@@ -30,6 +30,7 @@ proto.arrangement = function() {
 
     // select algorithm //
     var alg = tombola.weightedItem(['basic', 'ambient', 'classic' ],[2.6,1,1]);
+    //alg = 'test';
     console.log(alg.toUpperCase());
 
     return this[''+alg]();
@@ -45,7 +46,7 @@ proto.test = function() {
     var filters = [];
     filters.push( orchestrator.createComponent('flocking') );
 
-    filters.push( orchestrator.createComponent('fuzzBurst') );
+    filters.push( orchestrator.createComponent('resampler',[6,50000]) );
     return filters;
 };
 
@@ -252,7 +253,7 @@ proto.classic = function() {
     // GENERATOR SETUP //
     var generatorItems = ['fuzzBurst','metallic','flocking','howl','purr','pattern','growl','siren','pulse','noisePulse','beep','click','sub', 'wail','burst','ramp','fm','sweep','sweepII','phaseSine'];
     var generatorOptions = {
-        weights:[1.1, 0.5, 1, 1, 1.5, 1.5, 1.5, 1.5, 0.8, 1.2, 1.2, 1.5, 0.8, 1.5, 1.5, 1.2, 1, 0.8, 1.2, 1.5],
+        weights:[1.1, 0.5, 1, 1, 1.5, 1.5, 1.5, 1.5, 0.7, 1.2, 1.2, 1.5, 0.8, 1.5, 1.5, 1.2, 1, 0.8, 1.2, 1.5],
         instances:[1, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 2]
     };
     var generatorDeck = tombola.weightedDeck(generatorItems,generatorOptions);

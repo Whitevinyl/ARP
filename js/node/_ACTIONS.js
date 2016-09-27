@@ -70,7 +70,9 @@ proto.audio = function() {
                 console.log("succeeded in saving");
 
                 // upload file to soundcloud //
-                uploadAudio(data,3);
+                if (opMode===modes.running || opMode===modes.audioTweet) {
+                    uploadAudio(data, 3);
+                }
             }
         });
     });
@@ -96,7 +98,7 @@ function uploadAudio(data,attempts) {
         if (err) {
             console.log(err)
         }
-        console.log(track);
+        //console.log(track);
 
 
         // after upload wait a bit to see if it processed. Sometimes SC gets stuck in the processing state //
@@ -106,28 +108,35 @@ function uploadAudio(data,attempts) {
             console.log('track id: '+track.id);
             soundCloud.status(track.id, function(err,result) {
 
-                // we're good, post it to twitter //
-                if (result==='finished') {
-                    console.log('done processing');
-                    var tweet = {
-                        status: 'Audio: signal received by ARP Observatory on ' + data.date.strict + ': '+ track.permalink_url
-                    };
-                    // tweet //
-                    twitter.post(tweet);
+                if (result) {
+                    // we're good, post it to twitter //
+                    if (result==='finished') {
+                        console.log('done processing');
+                        var tweet = {
+                            status: 'Audio: signal received by ARP Observatory on ' + data.date.strict + ': '+ track.permalink_url
+                        };
+                        // tweet //
+                        twitter.post(tweet);
 
-                    // we're not good, Delete the track and try again //
-                } else {
-                    console.log('still processing or failed');
-                    soundCloud.delete(track.id, function(err,result) {
-                        // try again?
-                        if (err.statusCode===500 && attempts>0) {
-                            uploadAudio(data,attempts-1);
-                        }
-                    });
+                        // we're not good, Delete the track and try again //
+                    } else {
+                        console.log('still processing or failed');
+                        soundCloud.delete(track.id, function(err,result) {
+                            // try again?
+                            if (err.statusCode===500 && attempts>0) {
+                                uploadAudio(data,attempts-1);
+                            }
+                        });
+                    }
                 }
+                else {
+                    // we got a 404 on the track - not sure how to handle this yet
+                    // currently track is neither tweeted or deleted
+                }
+
             });
 
-        },10000,track,data,attempts);
+        },1000*14,track,data,attempts);
 
     });
 }

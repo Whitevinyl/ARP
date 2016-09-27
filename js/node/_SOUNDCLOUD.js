@@ -26,7 +26,9 @@ proto.init = function(credentials,callback) {
     this.sc = new SC(credentials);
     this.client = this.sc.client();
     this.newToken(callback);
-    this.tokenRefresh();
+    if (opMode===modes.running) {
+        this.tokenRefresh();
+    }
 };
 
 
@@ -190,7 +192,12 @@ proto.status = function(id,callback) {
         } else {
             console.log(result.state);
         }
-        callback(err,result.state);
+        if (result) {
+            callback(err,result.state);
+        } else {
+            callback(err);
+        }
+
     });
 
 };

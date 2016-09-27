@@ -47,7 +47,7 @@ global.modes = {
 };
 
 // SET THE CURRENT OPERATION MODE //
-global.opMode = modes.audioTweet;
+global.opMode = modes.running;
 
 
 //-------------------------------------------------------------------------------------------

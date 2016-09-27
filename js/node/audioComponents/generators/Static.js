@@ -27,7 +27,7 @@ function Static() {
 //-------------------------------------------------------------------------------------------
 
 Static.prototype.process = function(signal,level) {
-    level = utils.arg(level,tombola.rangeFloat(0.002,0.003));
+    level = utils.arg(level,tombola.rangeFloat(0.001,0.002));
 
 
     // create noise //
@@ -37,7 +37,7 @@ Static.prototype.process = function(signal,level) {
 
 
     // filter a little //
-    noiseLayer = this.filter.process(noiseLayer,'LP',10000,0.8);
+    noiseLayer = this.filter.process(noiseLayer,'LP',9000,0.8);
 
 
     return common.add(signal,noiseLayer);
