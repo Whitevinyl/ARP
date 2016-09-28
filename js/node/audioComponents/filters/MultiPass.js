@@ -5,6 +5,8 @@ var tombola = new Tombola();
 
 // Low Pass or High Pass filter converted from Java answer here:
 // http://stackoverflow.com/questions/28291582/implementing-a-high-pass-filter-to-an-audio-signal
+// I didn't realise at first but it looks to be the same as Patrice Tarrabia's tweaked
+// butterworth used in LowPass.js: http://www.musicdsp.org/archive.php?classid=3#243
 
 //-------------------------------------------------------------------------------------------
 //  MONO INIT

@@ -3,8 +3,10 @@ var utils = require('../../lib/utils');
 var Tombola = require('tombola');
 var tombola = new Tombola();
 
-// Low Pass filter (forget which type - will research). Res is a bit dangerous, I find a
-// value of 0.92 is both safe and pleasing sounding.
+// Low Pass filter. Res is a bit dangerous when filtering overall mix (I leave it at 0.92)
+// but can be cranked on individual sounds.
+// adapted from Patrice Tarrabia's tweaked Butterworth:
+// http://www.musicdsp.org/archive.php?classid=3#243
 
 //-------------------------------------------------------------------------------------------
 //  MONO INIT

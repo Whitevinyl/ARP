@@ -3,7 +3,9 @@ var utils = require('../../lib/utils');
 var Tombola = require('tombola');
 var tombola = new Tombola();
 
-//  A cheap Low Pass filter, doesn't sound too great, but useful for some simple shaping
+//  A cheap Low Pass filter, doesn't sound too great, but useful for some simple shaping.
+// Modified from Scoofy's Simple 1 pole LP and HP filter:
+// http://www.musicdsp.org/archive.php?classid=3#243
 
 //-------------------------------------------------------------------------------------------
 //  MONO INIT
