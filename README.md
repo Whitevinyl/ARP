@@ -24,6 +24,6 @@ http://whitevinyldesign.com
 
 ---
 
-I've tried to keep the code here as accessible as possible for others to see, however it is also a work in progress - in particular the audio components are still in the process of being separated & structured, and a few other areas need tidying.
+I've tried to keep the code here as accessible as possible for others to see, however it is also a work in progress - in particular the audio components are still in the process of being separated & structured. All the good stuff is in js/node/, the web folder is very neglected for now.
 The audio is generated algorithmically direct into two signal arrays (stereo channels) before being encoded as .wav, so no Web Audio API or pre existing samples, just vanilla js. I'm no signal processing expert so hoping to keep experimenting and learning with it.
-Each type of generation (audio/data/imagery/tweets) makes heavy use of my chance library tombola.js - https://github.com/Whitevinyl/tombola.js 
+Each type of generation (audio/data/imagery/tweets) makes heavy use of my chance library tombola.js - https://github.com/Whitevinyl/tombola.js
