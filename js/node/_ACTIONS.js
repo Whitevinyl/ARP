@@ -83,12 +83,12 @@ function uploadAudio(data,attempts) {
 
     var options = {
         title: '#' + data.id.strict + '-' + data.cat.strict,
-        description: 'Audio received by ARP Observatory on ' + data.date.strict + ' | time: '+data.time.short + ' | length: '+data.seconds + ' seconds | ' + data.frequency.string + ' | BW: ' + data.bandwidth + ' | ' + data.level,
+        description: 'Audio received by ARP Observatory on ' + data.date.strict + ' | time: '+data.time.short + ' | length: '+data.seconds + ' seconds | ' + data.frequency.string + ' | BW: ' + data.bandwidth + ' | ' + data.level + ' | RA: 15h 15m 15.04s | DEC: -70 31 10.7',
         genre: 'astronomy',
-        sharing: 'private',
-        //license: 'cc-by-nc',
-        //downloadable: 'true',
-        //tag_list: 'astronomy space science radio',
+        sharing: 'public',
+        license: 'cc-by-nc',
+        downloadable: 'true',
+        tag_list: 'astronomy space science radio',
         oauth_token: soundCloud.clientToken,
         asset_data: 'output.wav'
     };

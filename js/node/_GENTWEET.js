@@ -108,7 +108,7 @@ function TweetTalk() {
 
     var order = tombola.percent(50);
     var specify = tombola.percent(50);
-    var style = tombola.range(0, 2);
+    var style = tombola.range(0, 1);
     var preframe = tombola.percent(50);
     var me = tombola.percent(20);
     var multiple = tombola.percent(20);
