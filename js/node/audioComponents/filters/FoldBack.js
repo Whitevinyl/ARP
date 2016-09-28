@@ -3,6 +3,7 @@
 var utils = require('../../lib/utils');
 
 // Distortion effect which folds waveform peaks back on themselves beyond a given threshold.
+// From Hellfire's Fold Back Distortion: http://www.musicdsp.org/archive.php?classid=4#42
 
 //-------------------------------------------------------------------------------------------
 //  MONO

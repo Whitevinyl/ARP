@@ -1,7 +1,8 @@
 
 var utils = require('../../lib/utils');
 
-// Distortion effect
+// Distortion effect, adds a nice color, adapted from Bram de Jong's Soft Saturation:
+// http://www.musicdsp.org/archive.php?classid=4#42
 
 //-------------------------------------------------------------------------------------------
 //  MONO
