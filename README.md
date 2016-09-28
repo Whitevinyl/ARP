@@ -17,5 +17,7 @@ https://soundcloud.com/arpobservatory
 ---
 
 ARP is a project by Luke Twyman / whitevinyl
-http://whitevinyldesign
+
+http://whitevinyldesign.com
+
 @whitevinyluk
