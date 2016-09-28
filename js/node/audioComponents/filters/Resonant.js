@@ -3,7 +3,8 @@ var utils = require('../../lib/utils');
 var Tombola = require('tombola');
 var tombola = new Tombola();
 
-// A resonant type filter (code from dsp.org forums) with diff outputs - currently BP
+// A resonant type filter with selectable outputs. From Paul Kellet's Resonant Filter:
+// http://www.musicdsp.org/archive.php?classid=3#29
 
 //-------------------------------------------------------------------------------------------
 //  MONO INIT
