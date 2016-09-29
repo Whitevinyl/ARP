@@ -36,7 +36,7 @@ var proto = GenerateAudio.prototype;
 proto.generate = function() {
 
     // SETUP THIS AUDIO //
-    var seconds = tombola.range(24,32);
+    var seconds = tombola.range(23,31);
     console.log('seconds: '+seconds);
 
     var l = sampleRate * seconds;
