@@ -210,16 +210,16 @@ function actionDealer() {
 
     var tweetActions = [
         'tweetJourney','tweetTalk','tweetToday','tweetSighting','tweetSky','tweetLight',
-        'tweetQuality','tweetVoices','tweetPeaks','tweetUpdate', 'tweetMichael', 'tweetInterview'
+        'tweetQuality','tweetVoices','tweetPeaks','tweetUpdate', 'tweetMichael', 'tweetInterview', 'tweetWork'
     ];
     var tweetOptions = {
         weights: [
             7, 1.5, 1, 7, 4, 5,
-            10, 1, 3, 2, 0.75, 1
+            10, 1, 3, 2, 0.75, 1, 1.1
         ],
         instances: [
             1,1,1,1,1,1,
-            2,1,2,1,1,1
+            2,1,2,1,1,1,1
         ]
     };
 
@@ -233,7 +233,7 @@ function actionDealer() {
 
         var audioNo = tombola.range(6,9); // averaging at 23:37 (23.625) minutes of SC allowance per week
         var chartNo = tombola.range(3,5);
-        var tweetNo = tombola.range(3,6);
+        var tweetNo = tombola.range(4,6);
         if (DEBUG) {
             audioNo = tombola.range(5,4);
             chartNo = tombola.range(1,3);

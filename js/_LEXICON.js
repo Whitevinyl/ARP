@@ -326,6 +326,56 @@ function Lexicon() {
         }
     };
 
+    this.LexWork = {
+        past: {
+            who: ["I've", "we've", "Sara's", 'Sara has', "Michael's", 'Michael has', 'Sara and Michael have', 'Sara and I have', 'Michael and I have'],
+            frame: ['this shift', 'this watch', 'this session', 'the last few sessions', 'the last few days', 'the last few hours'],
+            fix: {
+                work: ['working on', 'focusing on', 'working through', 'fixing', 'figuring out', 'trying to fix', 'correcting'],
+                single: {
+                    a: ['an array calibration', 'an antenna motor', 'a power', 'a decoder', 'a software', 'a signal testing', 'a data transmission', 'a computer', 'a storage', 'a lighting', 'an electrical', 'a network switch', 'an antenna feed', 'a dish pointing', 'a beam former', 'an antenna tracking', 'a dish locking', 'an interference filter'],
+                    b: ['issue', 'problem', 'update', 'upgrade', 'glitch', 'bug', 'error', 'failure', 'fault', 'malfunction', 'defect', 'hiccup']
+                },
+                plural: {
+                    a: ['array calibration', 'antenna motor', 'power', 'decoder', 'software', 'signal testing', 'data transmission', 'computer', 'storage', 'lighting', 'electrical', 'network switch', 'antenna feed', 'dish pointing', 'beam former', 'antenna tracking', 'dish locking', 'interference filter'],
+                    b: ['issues', 'problems', 'updates', 'upgrades', 'glitches', 'bugs', 'errors', 'failures', 'faults', 'malfunctions', 'defects']
+                }
+            },
+            improve: {
+                work: ['doing', 'figuring out', 'working on', 'working though', 'focusing on', 'planning out', 'focused on'],
+                single: {
+                    a: ['a display', 'an audio', 'a decoder', 'an array calibrator', 'a power', 'a data feed', 'a software', 'a noise reduction', 'a lighting', 'a computer', 'an efficiency', 'a processing', 'an electrical', 'a signal detection', 'a signal verification', 'a network switch', 'an antenna feed', 'a dish pointing', 'a beam former', 'an antenna tracking', 'a dish locking', 'an interference filter'],
+                    b: ['revamp', 'modification', 'update', 'upgrade', 'adjustment', 'repair', 'fix', 'mod', 'overhaul']
+                },
+                plural: {
+                    a: ['display', 'audio', 'decoder', 'array calibrator', 'power', 'data feed', 'software', 'noise reduction', 'lighting', 'computer', 'efficiency', 'performance', 'processing', 'electrical', 'signal detection', 'signal verification', 'network switch', 'antenna feed', 'dish pointing', 'beam former', 'antenna tracking', 'dish locking', 'interference filter'],
+                    b: ['improvements', 'modifications', 'updates', 'upgrades', 'adjustments', 'repairs', 'fixes', 'mods', 'maintenance']
+                }
+            }
+
+        },
+        present: {
+            who: ["I'm", "we're", "Sara's", 'Sara is', "Michael's", 'Michael is', 'Sara and Michael are'],
+            work: ['working on', 'planning', 'starting on', 'continuing with']
+
+        },
+        comment: {
+            been: {
+                a: ["Everything's been", 'Things have been', "We've been", "The site's been", "The array's been", "The operations site's been"],
+                b: ['pretty', 'fairly', 'a little', 'noticeably', 'surprisingly', 'relatively', 'especially', 'unusually', 'very'],
+                c: ['quiet', 'slow', 'busy', 'hectic', 'active', 'sporadic', 'inactive', 'hushed', 'fast-moving', 'slow-moving', 'swamped'],
+                d: ['recently', 'lately', 'overall', 'in general']
+            },
+            activity: {
+                a: ["We've been receiving", "We've been having", "We've been logging"],
+                b: ['intermittent', 'prolonged', 'an hour of', 'a couple hours of', 'several hours', 'a lot of', 'sporadic', 'regular', 'clustered', 'distorted', 'choppy', 'some quieter', 'some louder', 'some broken', 'some unusable', 'erratic'],
+                c: ['signal activity', 'radio events', 'radio activity', 'signal bursts', 'signal activity'],
+                d: ['again']
+            }
+
+        }
+    };
+
 
     this.Names = {
         a: ['Arturo','Eduardo','Jorge','Pedro','Juan', 'José', 'Patricio', 'Manuel', 'Ramon', 'Luis', 'Luisa', 'Luco', 'Maria', 'Marisa', 'Delia', 'Federico', 'Violetta', 'Emiliano'],

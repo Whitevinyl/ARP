@@ -48,6 +48,7 @@ global.modes = {
 
 // SET THE CURRENT OPERATION MODE //
 global.opMode = modes.running;
+var testTweet = 'tweetWork';
 
 
 //-------------------------------------------------------------------------------------------
@@ -125,11 +126,11 @@ function init() {
             break;
 
         case modes.tweet:
-            action.print();
+            action.print(testTweet);
             break;
 
         case modes.tweetTweet:
-            action.tweet();
+            action.tweet(testTweet);
             break;
 
         default:

@@ -92,10 +92,82 @@ proto.generateTweet = function(type) {
             return TweetInterview();
             break;
 
+        case 'tweetWork':
+            return TweetWork();
+            break;
+
         default: return '';
     }
 };
 
+
+//-------------------------------------------------------------------------------------------
+//  WORK
+//-------------------------------------------------------------------------------------------
+
+function TweetWork() {
+    console.log('work');
+    var s1 = "";
+    var s2 = "";
+    var string = "";
+
+    var frame = tombola.percent(80);
+    var preframe = tombola.percent(50);
+    var plural = tombola.percent(50);
+    var comment = tombola.percent(65);
+    var precomment = tombola.percent(30);
+    var type = tombola.item(['fix','improve']);
+    var commentType = tombola.weightedItem(['been','activity'],[2,1.5]);
+
+
+    if (precomment && (comment || !frame)) {
+        s1 += tombola.item(lexicon.LexWork.comment[''+commentType].a) + " ";
+        s1 += tombola.item(lexicon.LexWork.comment[''+commentType].b) + " ";
+        s1 += tombola.item(lexicon.LexWork.comment[''+commentType].c);
+        if (tombola.percent(20)) {
+            s1 += " " + tombola.item(lexicon.LexWork.comment[''+commentType].d);
+        }
+        s1 += ". ";
+    }
+    if (frame && preframe) {
+        if (tombola.percent(50)) {
+            s2 += "today ";
+        } else {
+            s2 += tombola.item(lexicon.LexWork.past.frame) + " ";
+        }
+    }
+    s2 += tombola.item(lexicon.LexWork.past.who) + " been ";
+    s2 += tombola.item(lexicon.LexWork.past[''+type].work) + " ";
+    if (plural) {
+        s2 += "some ";
+        s2 += tombola.item(lexicon.LexWork.past[''+type].plural.a) + " ";
+        s2 += tombola.item(lexicon.LexWork.past[''+type].plural.b);
+    } else {
+        s2 += tombola.item(lexicon.LexWork.past[''+type].single.a) + " ";
+        s2 += tombola.item(lexicon.LexWork.past[''+type].single.b);
+    }
+    if (frame && !preframe) {
+        if (tombola.percent(50)) {
+            s2 += " today";
+        } else {
+            s2 += " " + tombola.item(lexicon.LexWork.past.frame);
+        }
+    }
+
+    if (!precomment && (comment || !frame)) {
+        s2 += ". ";
+        s2 += tombola.item(lexicon.LexWork.comment[''+commentType].a) + " ";
+        s2 += tombola.item(lexicon.LexWork.comment[''+commentType].b) + " ";
+        s2 += tombola.item(lexicon.LexWork.comment[''+commentType].c);
+        if (tombola.percent(20)) {
+            s2 += " " + tombola.item(lexicon.LexWork.comment[''+commentType].d);
+        }
+    }
+
+    string = "" + capitalize(s1) + capitalize(s2);
+
+    return conclude(string);
+}
 
 //-------------------------------------------------------------------------------------------
 //  TALK
