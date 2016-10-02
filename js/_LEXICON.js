@@ -256,11 +256,11 @@ function Lexicon() {
                 light: ['light', 'dusk', 'sunlight', 'sunset', 'evening light']
             },
             single: {
-                thing: ['the Atacama', 'the desert', 'the plain', 'the Andean range', 'the Altiplano', 'Caichinque', 'Chiliques', 'Colachi', 'the volcano Lascar', 'Cerro Miñiques', 'Cerro Miscanti', 'the salt flat', 'the ridge', 'the mountain backdrop', 'the volcano backdrop', 'the lanscape', 'the volcano range', 'the mountain-pass', 'the desert-edge', 'the telescope-site', 'the observatory-site', 'the operations-site'],
+                thing: ['the Atacama', 'the desert', 'the plain', 'the Andean range', 'the Altiplano', 'Caichinque', 'Chiliques', 'Colachi', 'the volcano Lascar', 'Cerro Miñiques', 'Cerro Miscanti', 'the salt flat', 'the ridge', 'the mountain backdrop', 'the volcanic backdrop', 'the landscape', 'the volcano range', 'the mountain-pass', 'the desert-edge', 'the telescope-site', 'the observatory-site', 'the operations-site'],
                 looks: ['looks', 'appears']
             },
             plural: {
-                thing: ['the plains', 'the Altiplano slopes', 'the Andes', 'Caichinque & Chiliques', 'the Colachi foothills', "Lascar and it's foothills", 'Miñiques & Miscanti', 'the salt flats', 'the flats', 'the mountains', 'the volcanos', 'the hills', 'the surrounding hills', 'the surrounding peaks', 'the surrounding rock-faces', 'the lava fields', 'the lagoons', 'the nearby mountains', 'the nearby volcanoes'],
+                thing: ['the plains', 'the Altiplano slopes', 'the Andes', 'Caichinque & Chiliques', 'the Colachi foothills', "Lascar and it's foothills", 'Miñiques & Miscanti', 'the salt flats', 'the flats', 'the mountains', 'the volcanoes', 'the hills', 'the surrounding hills', 'the surrounding peaks', 'the surrounding rock-faces', 'the lava fields', 'the lagoons', 'the nearby mountains', 'the nearby volcanoes'],
                 looks: ['look', 'appear']
             },
             pre: ['subtle', 'bright', 'brilliant', 'soft', 'milky', 'washed-out', 'faded', 'strong', 'glowing', 'eerie', 'deep', 'pale', 'rich', 'powdery'],
@@ -374,6 +374,12 @@ function Lexicon() {
             }
 
         }
+    };
+
+
+    this.LexAnalysing = {
+        a: ['hidden', 'ancient', 'lost', 'concealed', 'coded', 'buried', 'jumbled', 'scrambled', 'glitched', 'broken', 'indecipherable', 'fractured'],
+        b: ['secrets', 'words', 'languages', 'songs', 'meanings', 'greetings', 'plans', 'instructions', 'truths', 'conversations', 'connections', 'maps']
     };
 
 

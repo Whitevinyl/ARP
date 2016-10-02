@@ -231,7 +231,7 @@ function actionDealer() {
         var tweetDeck = tombola.weightedDeck(tweetActions,tweetOptions);
 
 
-        var audioNo = tombola.range(6,9); // averaging at 23:37 (23.625) minutes of SC allowance per week
+        var audioNo = tombola.range(6,7); // 6 - 9 averaging at 23:37 (23.625) minutes of SC allowance per week
         var chartNo = tombola.range(3,5);
         var tweetNo = tombola.range(4,6);
         if (DEBUG) {

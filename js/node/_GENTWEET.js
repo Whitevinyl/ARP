@@ -109,7 +109,7 @@ function TweetWork() {
     console.log('work');
     var s1 = "";
     var s2 = "";
-    var string = "";
+    var string;
 
     var frame = tombola.percent(80);
     var preframe = tombola.percent(50);
