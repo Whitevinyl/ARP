@@ -7,6 +7,7 @@
 //-------------------------------------------------------------------------------------------
 
 var Add = require('./Add');
+var ADSREnvelope = require('./ADSREnvelope');
 var ArrayEnvelope = require('./ArrayEnvelope');
 var ControlRange = require('./ControlRange');
 var Pan = require('./Pan');
@@ -18,6 +19,7 @@ var ToStereo = require('./ToStereo');
 
 module.exports = {
     add: Add,
+    ADSREnvelope: ADSREnvelope,
     arrayEnvelope: ArrayEnvelope,
     range: ControlRange,
     pan: Pan,

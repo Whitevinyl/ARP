@@ -76,6 +76,20 @@ proto.createComponent = function(componentName,args,mods) {
             break;
 
 
+        case 'chime':
+            settings.filter = new audio.Chime();
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
+            settings.args.push( {value: pick( args[1], tombola.range(10000,200000))} ); // chance
+            break;
+
+
+        case 'chimeCluster':
+            settings.filter = new audio.ChimeCluster();
+            settings.args.push( {value: pick( args[0], tombola.rangeFloat(0.4,0.8))} ); // ducking
+            settings.args.push( {value: pick( args[1], tombola.range(60000,300000))} ); // chance
+            break;
+
+
         case 'chopper':
             settings.filter = new audio.FilterStereoChopper();
             settings.args.push( pick( args[0], {mod: 0, min: tombola.rangeFloat(150,250), max: tombola.rangeFloat(11000,13000) }) ); // rate

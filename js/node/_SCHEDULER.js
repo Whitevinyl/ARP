@@ -201,7 +201,7 @@ function actionDealer() {
     ];
     var chartOptions = {
         weights: [
-            10, 9, 9, 10, 0.5
+            10, 9, 9, 9, 0.5
         ],
         instances: [
             1,1,1,2,1

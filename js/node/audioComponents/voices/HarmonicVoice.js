@@ -38,6 +38,21 @@ HarmonicVoice.prototype.process = function(input, frequency, cutoff, resonance, 
             partials.negativeDisorganise(p,0.4,3);
             break;
 
+        case 'tine':
+            partials.negativePeakInterval(p,4,0);
+            partials.negativeLowPass(p,0.8,0);
+            break;
+
+        case 'metallic2':
+            partials.negativePeakInterval(p,5,0);
+            partials.negativeLowPass(p,0.8,0);
+            break;
+
+        case 'metallic3':
+            partials.negativePeakInterval(p,3,0);
+            partials.negativeLowPass(p,0.8,0);
+            break;
+
         default:
             break;
     }

@@ -35,6 +35,8 @@ var Tremolo = require('./audioComponents/filters/Tremolo');
 
 // SIGNAL GENERATORS //
 var Call = require('./audioComponents/generators/Call'); // wip
+var Chime = require('./audioComponents/generators/Chime');
+var ChimeCluster = require('./audioComponents/generators/ChimeCluster');
 var Click = require('./audioComponents/generators/Click');
 var Cluster = require('./audioComponents/generators/Cluster');
 var Flocking = require('./audioComponents/generators/Flocking');
@@ -1506,6 +1508,8 @@ module.exports = {
 
     Testing: Testing,
     Call: Call,
+    Chime: Chime,
+    ChimeCluster: ChimeCluster,
     Click: Click,
     Cluster: Cluster,
     Flocking: Flocking,

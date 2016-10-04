@@ -291,7 +291,7 @@ function Lexicon() {
         our: ['our', 'our recent', 'some of our', 'our early', 'the latest', 'our newest'],
         on: {
             a: ['audio', 'radio', 'unencoding', 'astronomy', 'radio-astronomy'],
-            b: ['work', 'findings', 'results', 'studies', 'objectives', 'processes', 'techniques', 'challenges', 'collections', 'experiments', 'research']
+            b: ['work', 'findings', 'results', 'studies', 'objectives', 'processes', 'techniques', 'challenges', 'collections', 'tests', 'research','discoveries']
         }
     };
 
@@ -318,7 +318,7 @@ function Lexicon() {
         our: ['our', 'our recent', 'some of our', 'our early', 'the latest', 'our newest'],
         on: {
             a: ['audio', 'radio', 'unencoding', 'astronomy', 'radio-astronomy'],
-            b: ['work', 'findings', 'results', 'studies', 'objectives', 'processes', 'techniques', 'challenges', 'collections', 'experiments', 'research']
+            b: ['work', 'findings', 'results', 'studies', 'objectives', 'processes', 'techniques', 'challenges', 'collections', 'tests', 'research','discoveries']
         },
         on2: {
             a: ['language &', 'interplanetary', 'extrasolar', 'intercivilizational', 'long-range', 'extraterrestrial', 'astronomy &', 'loneliness &', 'isolation &', 'Earth &', 'Time &', 'Space &'],

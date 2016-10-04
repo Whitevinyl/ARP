@@ -313,7 +313,7 @@ proto.drawVectorScopeChart = function(data) {
     cxa.font = "400 " + this.midType + "px Cabin";
     cxa.fillText('STEREO PHASE IMAGE',this.units*125, this.units*54);
     cxa.font = "400 " + this.dataType + "px Cabin";
-    cxa.fillText('Phase Corellation over Time',this.units*125, this.units*70);
+    cxa.fillText('Phase Correlation over Time',this.units*125, this.units*70);
 
     // text //
     var thirdX = (third * 1.5) + gutter;

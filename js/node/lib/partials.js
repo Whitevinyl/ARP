@@ -359,6 +359,32 @@ function negativeDisorganise(partials,strength,multiplesOf) {
     }
 }
 
+function negativePeakInterval(partials,interval,strength) {
+    var l = partials.length;
+    var c = 1;
+    for (var i=1; i<l; i++) {
+
+        if (c!==interval) {
+            partials[i] *= strength;
+
+        } else {
+            c = -1;
+        }
+        c ++;
+    }
+}
+
+function negativeLowPass(partials,strength,boost) {
+    /*for (var i=(length-1); i>1; i--) {
+        partials[i] -= ((i/length)*strength);
+        partials[i] += boost;
+    }*/
+    var l = partials.length;
+    for (var i=1; i<l; i++) {
+        partials[i] *= (((l/(l-i)) * strength) + (1-strength));
+    }
+}
+
 function negativeNoise(partials,strength) {
     var l = partials.length;
     for (var i=1; i<l; i++) {
@@ -385,6 +411,8 @@ module.exports = {
     disorganise: filterDisorganise,
     negativeDisorganise: negativeDisorganise,
     negativeNoise: negativeNoise,
+    negativePeakInterval: negativePeakInterval,
+    negativeLowPass: negativeLowPass,
     peakInterval: filterPeakInterval,
     zeroMultiple: filterZeroMultiple,
     zeroInterval: filterZeroInterval,

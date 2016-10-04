@@ -46,7 +46,7 @@ proto.test = function() {
     var filters = [];
     filters.push( orchestrator.createComponent('flocking') );
 
-    filters.push( orchestrator.createComponent('resampler',[6,50000]) );
+    filters.push( orchestrator.createComponent('chimeCluster') );
     return filters;
 };
 
@@ -70,10 +70,10 @@ proto.basic = function() {
 
 
     // GENERATOR SETUP //
-    var generatorItems = ['fuzzBurst','purr','pattern','growl','siren','pulse','noisePulse','beep','click','sub','wail','burst','ramp','fm','sweep','sweepII'];
+    var generatorItems = ['chimeCluster','chime','fuzzBurst','purr','pattern','growl','siren','pulse','noisePulse','beep','click','sub','wail','burst','ramp','fm','sweep','sweepII'];
     var generatorOptions = {
-        weights:[1.5, 1.8, 2, 1.7, 2, 0.8, 2, 1.3, 1.5, 1, 1.4, 1.5, 1.2, 1, 1.5, 1.5],
-        instances:[2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1]
+        weights:[1.5, 2, 1.5, 1.8, 2, 1.7, 2, 0.8, 2, 1.3, 1.5, 1, 1.4, 1.5, 1.2, 1, 1.5, 1.5],
+        instances:[1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1]
     };
     var generatorDeck = tombola.weightedDeck(generatorItems,generatorOptions);
 
@@ -166,10 +166,10 @@ proto.ambient = function() {
     var bedDeck = tombola.weightedDeck(bedItems,bedOptions);
 
     // GENERATOR SETUP //
-    var generatorItems = ['fuzzBurst','flocking','howl','purr','pattern','growl','siren','pulse','noisePulse','beep','click','sub', 'wail','burst','ramp','fm','sweep','sweepII','phaseSine'];
+    var generatorItems = ['chime','fuzzBurst','flocking','howl','purr','pattern','growl','siren','pulse','noisePulse','beep','click','sub', 'wail','burst','ramp','fm','sweep','sweepII','phaseSine'];
     var generatorOptions = {
-        weights:[1, 1, 1, 1.5, 1.5, 1.5, 1.5, 0.8, 1.2, 1.2, 1.5, 0.8, 1.5, 1.5, 1.2, 1, 0.8, 1.2, 1.5],
-        instances:[1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 2]
+        weights:[1.5, 1, 1, 1, 1.5, 1.5, 1.5, 1.5, 0.8, 1.2, 1.2, 1.5, 0.8, 1.5, 1.5, 1.2, 1, 0.8, 1.2, 1.5],
+        instances:[2, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 2]
     };
     var generatorDeck = tombola.weightedDeck(generatorItems,generatorOptions);
 
@@ -251,10 +251,10 @@ proto.classic = function() {
 
 
     // GENERATOR SETUP //
-    var generatorItems = ['fuzzBurst','metallic','flocking','howl','purr','pattern','growl','siren','pulse','noisePulse','beep','click','sub', 'wail','burst','ramp','fm','sweep','sweepII','phaseSine'];
+    var generatorItems = ['chimeCluster','chime','fuzzBurst','metallic','flocking','howl','purr','pattern','growl','siren','pulse','noisePulse','beep','click','sub', 'wail','burst','ramp','fm','sweep','sweepII','phaseSine'];
     var generatorOptions = {
-        weights:[1.1, 0.5, 1, 1, 1.5, 1.5, 1.5, 1.5, 0.7, 1.2, 1.2, 1.5, 0.8, 1.5, 1.5, 1.2, 1, 0.8, 1.2, 1.5],
-        instances:[1, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 2]
+        weights:[1, 1, 1.1, 0.5, 1, 1, 1.5, 1.5, 1.5, 1.5, 0.7, 1.2, 1.2, 1.5, 0.8, 1.5, 1.5, 1.2, 1, 0.8, 1.2, 1.5],
+        instances:[1, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 2]
     };
     var generatorDeck = tombola.weightedDeck(generatorItems,generatorOptions);
 
